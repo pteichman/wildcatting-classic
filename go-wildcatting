@@ -4,4 +4,8 @@ from wildcatting import client
 
 if __name__ == "__main__":
     c = client.client()
-    c.run()
+
+    try:
+        c.run()
+    except KeyboardInterrupt:
+        pass

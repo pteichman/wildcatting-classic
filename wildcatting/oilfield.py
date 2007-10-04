@@ -3,6 +3,8 @@ import string
 import math
 import time
 
+import curses
+
 class Field:
     def __init__(self, width, height):
         self._width = width
@@ -28,6 +30,12 @@ class Field:
                 line += self._field[i][j].ansi() + " "
             print line
 
+    def curses(self, win):
+        for i in xrange(self._height-1):
+            for j in xrange(self._width-2):
+                win.addch(i, j, ord("O"), self._field[i][j].color())
+        win.refresh()
+
 class Site:
     def __init__(self, prob):
         self._prob = prob
@@ -39,3 +47,8 @@ class Site:
         b = self.bracket() % 9
         ansi = chr(27) + '['+ str(32+b) +'m' + "O"
         return ansi
+
+    def color(self):
+        bracket = (self._prob / 30) % 6
+        return curses.color_pair(bracket + 1)
+

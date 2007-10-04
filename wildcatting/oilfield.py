@@ -1,5 +1,3 @@
-#!/usr/bin/python
-
 import random
 import string
 import math
@@ -7,7 +5,7 @@ import time
 
 SIZE = 40
 
-class field:
+class Field:
     def __init__(self):
         self._peak = (int(random.random() * SIZE), int(random.random() * SIZE))
 
@@ -21,7 +19,7 @@ class field:
                 b = j - self._peak[1]
                 c = math.sqrt(a*a + b*b)
                 prob = abs(int(100 - c/2*c/1 - random.random() * 10))
-                self._field[i][j] = site(prob)
+                self._field[i][j] = Site(prob)
 
     def ansi(self):
         for i in xrange(SIZE):
@@ -30,18 +28,11 @@ class field:
                 line += self._field[i][j].ansi() + " "
             print line
 
-class site:
+class Site:
     def __init__(self, prob):
-        #self._prob = int(random.random() * 100)
         self._prob = prob
     
     def ansi(self):
         bracket = (self._prob / 30) % 9
         ansi = chr(27) + '['+ str(32+bracket) +'m' + "O"
         return ansi
-
-if __name__ == "__main__":
-    while 1:
-        f = field()
-        f.ansi()
-        time.sleep(.25)

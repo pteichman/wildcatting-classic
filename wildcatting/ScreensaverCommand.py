@@ -1,7 +1,8 @@
 import logging
+import time
 
 from wildcatting.cmdparse import Command
-from wildcatting.client import client
+from wildcatting.oilfield import Field
 
 class ScreensaverCommand(Command):
     log = logging.getLogger("Wildcatting")
@@ -11,6 +12,5 @@ class ScreensaverCommand(Command):
 
     def run(self, options, args):
         while True:
-            # 10 PRINT "Peter is awesome"
-            print "Peter is awesome"
-            # 20 GOTO 10
+            Field().ansi()
+            time.sleep(.25)

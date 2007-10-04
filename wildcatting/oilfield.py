@@ -20,7 +20,8 @@ class Field:
                 a = i - self._peak[0]
                 b = j - self._peak[1]
                 c = math.sqrt(a*a + b*b)
-                prob = abs(int(100 - c/2*c/1 - random.random() * 10))
+                d = 20 * c / math.sqrt(width * height)
+                prob = abs(int(100 - d/2*d/2 - random.random() * 10))
                 self._field[i][j] = Site(prob)
 
     def ansi(self):
@@ -41,7 +42,20 @@ class Site:
         self._prob = prob
 
     def bracket(self):
-        return int(self._prob / 10)
+        p = self._prob
+        if (p > 95):
+            b = 0
+        elif (p > 85):
+            b = 1
+        elif (p > 70):
+            b = 2
+        elif (p > 55):
+            b = 3
+        elif (p > 35):
+            b = 4
+        else:
+            b = 5
+        return b 
     
     def ansi(self):
         b = self.bracket() % 9
@@ -49,6 +63,6 @@ class Site:
         return ansi
 
     def color(self):
-        bracket = (self._prob / 30) % 6
-        return curses.color_pair(bracket + 1)
+        b = self.bracket() % 6
+        return curses.color_pair(b + 1)
 

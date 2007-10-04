@@ -31,8 +31,11 @@ class Field:
 class Site:
     def __init__(self, prob):
         self._prob = prob
+
+    def bracket(self):
+        return int(self._prob / 10)
     
     def ansi(self):
-        bracket = (self._prob / 30) % 9
-        ansi = chr(27) + '['+ str(32+bracket) +'m' + "O"
+        b = self.bracket() % 9
+        ansi = chr(27) + '['+ str(32+b) +'m' + "O"
         return ansi

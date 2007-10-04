@@ -12,5 +12,5 @@ class ScreensaverCommand(Command):
 
     def run(self, options, args):
         while True:
-            Field().ansi()
+            Field(40,40).ansi()
             time.sleep(.25)

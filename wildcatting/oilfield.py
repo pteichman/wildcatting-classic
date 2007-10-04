@@ -3,16 +3,16 @@ import string
 import math
 import time
 
-SIZE = 40
-
 class Field:
-    def __init__(self):
-        self._peak = (int(random.random() * SIZE), int(random.random() * SIZE))
+    def __init__(self, width, height):
+        self._width = width
+        self._height = height
+        self._peak = (int(random.random() * width), int(random.random() * height))
 
-        self._field = [0]*SIZE
-        for i in xrange(SIZE):
-            self._field[i] = [0]*SIZE
-            for j in xrange(SIZE):
+        self._field = [0]*height
+        for i in xrange(height):
+            self._field[i] = [0]*width
+            for j in xrange(width):
 
                 # calculate distance from peak
                 a = i - self._peak[0]
@@ -22,9 +22,9 @@ class Field:
                 self._field[i][j] = Site(prob)
 
     def ansi(self):
-        for i in xrange(SIZE):
+        for i in xrange(self._height):
             line = ""
-            for j in xrange(SIZE):
+            for j in xrange(self._width):
                 line += self._field[i][j].ansi() + " "
             print line
 

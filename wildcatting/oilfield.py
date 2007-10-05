@@ -4,11 +4,11 @@ import math
 import time
 import curses
 
-MIN_DROPOFF = 5
-MAX_DROPOFF = 20
-MAX_PEAKS = 5
-FUDGE = 5
-LESSER_PEAK_FACTOR = 10
+MIN_DROPOFF = 25
+MAX_DROPOFF = 25
+MAX_PEAKS = 15
+FUDGE = 0
+LESSER_PEAK_FACTOR = 0
 
 class Field:
     def __init__(self, width, height):
@@ -31,6 +31,7 @@ class Field:
                         closest = k
                 d = random.randint(MIN_DROPOFF, MAX_DROPOFF) * minc * minc / math.sqrt(width * height)
                 prob = int(100 - closest * random.random() * LESSER_PEAK_FACTOR - d) - random.randint(0, FUDGE)
+                prob = max(0, prob)
                 self._field[i][j] = Site(prob)
 
     def _generatePeaks(self):

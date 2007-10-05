@@ -7,7 +7,7 @@ import curses
 MIN_DROPOFF = 5
 MAX_DROPOFF = 20
 MAX_PEAKS = 5
-FUDGE = 10
+FUDGE = 5
 
 class Field:
     def __init__(self, width, height):

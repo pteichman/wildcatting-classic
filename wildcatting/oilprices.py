@@ -16,7 +16,7 @@ class Price:
         self._price = price
 
     def __str__(self):
-        return "%f (%s)" % (self._price, self._date.isoformat())
+        return "%.2f (%s)" % (self._price, self._date.isoformat())
 
 historical_data = [
     Price(datetime.date(1986, 1, 2), 25.560000),

@@ -22,7 +22,7 @@ class ScreensaverCommand(Command):
 
     def asciiScreensaver(self):
         while True:
-            Field(80, 24).ascii()
+            Field(80, 23).ascii()
             time.sleep(.25)
 
     def cursesScreensaver(self, stdscr, options, args):

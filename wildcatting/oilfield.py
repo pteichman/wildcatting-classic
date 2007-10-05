@@ -4,8 +4,9 @@ import math
 import time
 import curses
 
-TWEAK = 2
-MAX_PEAKS = 3
+MIN_DROPOFF = 5
+MAX_DROPOFF = 20
+MAX_PEAKS = 5
 FUDGE = 10
 
 class Field:
@@ -25,7 +26,7 @@ class Field:
                     b = j - self._peaks[k][1]
                     c = math.sqrt(a*a + b*b)
                     minc = min(c, minc)
-                d = TWEAK * minc * minc / math.sqrt(width * height)
+                d = random.randint(MIN_DROPOFF, MAX_DROPOFF) * minc * minc / math.sqrt(width * height)
                 prob = int(100 - d) - random.randint(0, FUDGE)
                 self._field[i][j] = Site(prob)
 

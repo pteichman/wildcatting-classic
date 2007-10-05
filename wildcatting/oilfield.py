@@ -6,6 +6,7 @@ import curses
 
 TWEAK = 2
 MAX_PEAKS = 3
+FUDGE = 10
 
 class Field:
     def __init__(self, width, height):
@@ -25,7 +26,7 @@ class Field:
                     c = math.sqrt(a*a + b*b)
                     minc = min(c, minc)
                 d = TWEAK * minc * minc / math.sqrt(width * height)
-                prob = int(100 - d) - random.randint(0, 10)
+                prob = int(100 - d) - random.randint(0, FUDGE)
                 self._field[i][j] = Site(prob)
 
     def _generatePeaks(self):

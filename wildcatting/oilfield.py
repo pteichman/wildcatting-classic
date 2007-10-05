@@ -5,6 +5,7 @@ import time
 import curses
 
 TWEAK = 2
+MAX_PEAKS = 3
 
 class Field:
     def __init__(self, width, height):
@@ -28,7 +29,7 @@ class Field:
                 self._field[i][j] = Site(prob)
 
     def _generatePeaks(self):
-        self._peaks = [0]*int(random.randint(1,3))
+        self._peaks = [0]*int(random.randint(1,MAX_PEAKS))
         for i in xrange(len(self._peaks)):
             self._peaks[i] = (int(random.random() * self._height), int(random.random() * self._width))
 

@@ -10,7 +10,7 @@ class ScreensaverCommand(Command):
     log = logging.getLogger("Wildcatting")
 
     def __init__(self):
-        Command.__init__(self, "screensaver", summary="Run the Wildcatting screensaver")
+        Command.__init__(self, "screensaver", summary="avoid character burn-in on your terminals")
 
         self.add_option("", "--no-border", action="store_true",
                         help="disable border")

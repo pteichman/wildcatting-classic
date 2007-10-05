@@ -2,27 +2,35 @@ import random
 import string
 import math
 import time
-
 import curses
+
+TWEAK = 2
 
 class Field:
     def __init__(self, width, height):
         self._width = width
         self._height = height
-        self._peak = (int(random.random() * width), int(random.random() * height))
+        self._generatePeaks()
 
         self._field = [0]*height
         for i in xrange(height):
             self._field[i] = [0]*width
             for j in xrange(width):
-
-                # calculate distance from peak
-                a = i - self._peak[0]
-                b = j - self._peak[1]
-                c = math.sqrt(a*a + b*b)
-                d = 20 * c / math.sqrt(width * height)
-                prob = abs(int(100 - d/2*d/2 - random.random() * 10))
+                # calculate sum of distances from peak
+                minc = 99999
+                for k in xrange(len(self._peaks)):
+                    a = i - self._peaks[k][0]
+                    b = j - self._peaks[k][1]
+                    c = math.sqrt(a*a + b*b)
+                    minc = min(c, minc)
+                d = TWEAK * minc * minc / math.sqrt(width * height)
+                prob = int(100 - d) - random.randint(0, 10)
                 self._field[i][j] = Site(prob)
+
+    def _generatePeaks(self):
+        self._peaks = [0]*int(random.randint(1,3))
+        for i in xrange(len(self._peaks)):
+            self._peaks[i] = (int(random.random() * self._height), int(random.random() * self._width))
 
     def ansi(self):
         for i in xrange(self._height):
@@ -65,4 +73,3 @@ class Site:
     def color(self):
         b = self.bracket() % 6
         return curses.color_pair(b + 1)
-

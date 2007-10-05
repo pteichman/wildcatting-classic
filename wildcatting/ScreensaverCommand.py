@@ -28,9 +28,12 @@ class ScreensaverCommand(Command):
             time.sleep(.25)
 
     def ansiScreensaver(self):
-        while True:
-            Field(80, 23).ansi()
-            time.sleep(.25)
+        try:
+            while True:
+                Field(80, 23).ansi()
+                time.sleep(.25)
+        except:
+            print chr(27) + '[0m'
 
     def cursesScreensaver(self, stdscr, options, args):
         curses.init_pair(1, curses.COLOR_RED, curses.COLOR_RED)

@@ -4,11 +4,11 @@ import math
 import time
 import curses
 
-MIN_DROPOFF = 25
-MAX_DROPOFF = 25
-MAX_PEAKS = 15
-FUDGE = 0
-LESSER_PEAK_FACTOR = 0
+MIN_DROPOFF = 5
+MAX_DROPOFF = 20
+MAX_PEAKS = 5
+FUDGE = 5
+LESSER_PEAK_FACTOR = 10
 
 class Field:
     def __init__(self, width, height):

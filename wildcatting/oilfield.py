@@ -43,14 +43,14 @@ class Field:
         for i in xrange(self._height):
             line = ""
             for j in xrange(self._width):
-                line += self._field[i][j].ansi() + " "
+                line += self._field[i][j].ansi()
             print line
 
     def ascii(self):
         for i in xrange(self._height):
             line = ""
             for j in xrange(self._width):
-                line += self._field[i][j].ascii() + ""
+                line += self._field[i][j].ascii()
             print line
 
     def curses(self, win):

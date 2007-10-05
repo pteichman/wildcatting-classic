@@ -91,7 +91,9 @@ class Site:
         return ansi
 
     def color(self):
-        b = self.choice(range(1, 6))
+        seq = range(0,6)
+        seq.reverse()
+        b = self.choice(seq)
         return curses.color_pair(b + 1)
 
     def ascii(self):

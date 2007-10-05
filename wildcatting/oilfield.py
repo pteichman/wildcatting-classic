@@ -46,6 +46,13 @@ class Field:
                 line += self._field[i][j].ansi() + " "
             print line
 
+    def ascii(self):
+        for i in xrange(self._height):
+            line = ""
+            for j in xrange(self._width):
+                line += self._field[i][j].ascii() + ""
+            print line
+
     def curses(self, win):
         for i in xrange(self._height-1):
             for j in xrange(self._width-2):
@@ -71,12 +78,22 @@ class Site:
         else:
             b = 5
         return b 
+
+    def choice(self, seq):
+        p = self._prob
+        if p == 100:
+            return seq[-1]
+        return seq[int(p / 100. * len(seq))]
     
     def ansi(self):
-        b = self.bracket() % 9
+        b = self.choice(range(1, 9))
         ansi = chr(27) + '['+ str(32+b) +'m' + "O"
         return ansi
 
     def color(self):
-        b = self.bracket() % 6
+        b = self.choice(range(1, 6))
         return curses.color_pair(b + 1)
+
+    def ascii(self):
+        return self.choice(".+%2YODAUQ#HM")
+

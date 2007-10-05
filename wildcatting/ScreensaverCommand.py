@@ -14,9 +14,16 @@ class ScreensaverCommand(Command):
 
         self.add_option("", "--no-border", action="store_true",
                         help="disable border")
+        self.add_option("", "--ascii", action="store_true",
+                        help="enable advanced ascii display")
 
         self.y_border = 2
         self.x_border = 3
+
+    def asciiScreensaver(self):
+        while True:
+            Field(80, 24).ascii()
+            time.sleep(.25)
 
     def cursesScreensaver(self, stdscr, options, args):
         curses.init_pair(1, curses.COLOR_RED, curses.COLOR_RED)
@@ -47,4 +54,7 @@ class ScreensaverCommand(Command):
             time.sleep(.25)
 
     def run(self, options, args):
+        if options.ascii:
+            self.asciiScreensaver()
+
         curses.wrapper(self.cursesScreensaver, options, args)

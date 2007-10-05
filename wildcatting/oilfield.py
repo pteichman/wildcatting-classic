@@ -8,6 +8,7 @@ MIN_DROPOFF = 5
 MAX_DROPOFF = 20
 MAX_PEAKS = 5
 FUDGE = 5
+LESSER_PEAK_FACTOR = 10
 
 class Field:
     def __init__(self, width, height):
@@ -26,8 +27,10 @@ class Field:
                     b = j - self._peaks[k][1]
                     c = math.sqrt(a*a + b*b)
                     minc = min(c, minc)
+                    if c == minc:
+                        closest = k
                 d = random.randint(MIN_DROPOFF, MAX_DROPOFF) * minc * minc / math.sqrt(width * height)
-                prob = int(100 - d) - random.randint(0, FUDGE)
+                prob = int(100 - closest * random.random() * LESSER_PEAK_FACTOR - d) - random.randint(0, FUDGE)
                 self._field[i][j] = Site(prob)
 
     def _generatePeaks(self):

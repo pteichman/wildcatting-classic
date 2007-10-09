@@ -10,11 +10,11 @@ MAX_PEAKS = 5
 FUDGE = 5
 LESSER_PEAK_FACTOR = 10
 
-class Field:
+class OilField:
     def __init__(self, width, height):
-        self._width = width
-        self._height = height
-        self._generatePeaks()
+        self.width = width
+        self.height = height
+        self.generatePeaks()
 
         self._field = [0]*height
         for i in xrange(height):
@@ -34,68 +34,39 @@ class Field:
                 prob = max(0, prob)
                 self._field[i][j] = Site(prob)
 
-    def _generatePeaks(self):
+    def generatePeaks(self):
         self._peaks = [0]*int(random.randint(1,MAX_PEAKS))
         for i in xrange(len(self._peaks)):
-            self._peaks[i] = (int(random.random() * self._height), int(random.random() * self._width))
+            self._peaks[i] = (int(random.random() * self.height), int(random.random() * self.width))
 
     def ansi(self):
-        for i in xrange(self._height):
+        for i in xrange(self.height):
             line = ""
-            for j in xrange(self._width):
+            for j in xrange(self.width):
                 line += self._field[i][j].ansi()
             print line
 
     def ascii(self):
-        for i in xrange(self._height):
+        for i in xrange(self.height):
             line = ""
-            for j in xrange(self._width):
+            for j in xrange(self.width):
                 line += self._field[i][j].ascii()
             print line
 
-    def curses(self, win):
-        for i in xrange(self._height-1):
-            for j in xrange(self._width-2):
-                win.addch(i, j, ord("O"), self._field[i][j].color())
-        win.refresh()
+    def getSite(self, x, y):
+        return self._field[y][x]
+
 
 class Site:
     def __init__(self, prob):
         self._prob = prob
+        self._surveyed = False
+        self._rig = None
 
-    def bracket(self):
-        p = self._prob
-        if (p > 95):
-            b = 0
-        elif (p > 85):
-            b = 1
-        elif (p > 70):
-            b = 2
-        elif (p > 55):
-            b = 3
-        elif (p > 35):
-            b = 4
-        else:
-            b = 5
-        return b 
-
-    def choice(self, seq):
-        p = self._prob
-        if p == 100:
-            return seq[-1]
-        return seq[int(p / 100. * len(seq))]
-    
     def ansi(self):
         b = self.choice(range(1, 9))
         ansi = chr(27) + '['+ str(32+b) +'m' + "O"
         return ansi
 
-    def color(self):
-        seq = range(0,6)
-        seq.reverse()
-        b = self.choice(seq)
-        return curses.color_pair(b + 1)
-
     def ascii(self):
         return self.choice(".+%2YODAUQ#HM")
-

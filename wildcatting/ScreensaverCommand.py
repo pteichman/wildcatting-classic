@@ -5,7 +5,6 @@ import curses
 
 from wildcatting.cmdparse import Command
 from wildcatting.oilfield import OilField
-from wildcatting.screensaver import ScreenSaver
 from wildcatting.views import FieldView
 from wildcatting.views import PlayerField
 

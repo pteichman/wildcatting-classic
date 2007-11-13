@@ -32,7 +32,7 @@ class OilField:
                 d = random.randint(MIN_DROPOFF, MAX_DROPOFF) * minc * minc / math.sqrt(width * height)
                 prob = int(100 - closest * random.random() * LESSER_PEAK_FACTOR - d) - random.randint(0, FUDGE)
                 prob = max(0, prob)
-                self._field[i][j] = Site(prob)
+                self._field[i][j] = Site(i, j, prob)
 
     def generatePeaks(self):
         self._peaks = [0]*int(random.randint(1,MAX_PEAKS))
@@ -58,7 +58,9 @@ class OilField:
 
 
 class Site:
-    def __init__(self, prob):
+    def __init__(self, x, y, prob):
+        self.x = x
+        self.y = y
         self.prob = prob
         self.surveyed = False
         self.rig = None

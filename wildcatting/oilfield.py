@@ -59,9 +59,9 @@ class OilField:
 
 class Site:
     def __init__(self, prob):
-        self._prob = prob
-        self._surveyed = False
-        self._rig = None
+        self.prob = prob
+        self.surveyed = False
+        self.rig = None
 
     def ansi(self):
         b = self.choice(range(1, 9))

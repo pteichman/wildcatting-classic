@@ -36,7 +36,7 @@ class FieldView:
             return curses.color_pair(1)
         seq = range(1,7)
         seq.reverse()
-        p = site._prob
+        p = site.prob
         if p == 100:
             b = seq[-1]
         else:
@@ -47,7 +47,8 @@ class FieldView:
         for i in xrange(0, self._field.height):
             for j in xrange(0, self._field.width):
                 site = self._field.getSite(j, i)
-                self._win.addch(i, j, ord("O"), self.siteColor(site))
+                if site != None:
+                    self._win.addch(i, j, ord("O"), self.siteColor(site))
         self._win.refresh()
 
 def main(stdscr):

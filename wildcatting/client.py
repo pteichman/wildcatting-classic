@@ -59,8 +59,8 @@ class client:
                 mid, mx, my, mz, bstate = curses.getmouse()
                 dx = mx - x - 3
                 dy = my - y - 2
-                self.survey(stdscr, mx-3, my-2)
-                stdscr.addstr(1, w-6, str(self._playerfield.getSite(mx-3, my-2).prob) + "% ")
+                self.survey(mx-3, my-2)
+                #stdscr.addstr(1, w-6, str(self._playerfield.getSite(mx-3, my-2).prob) + "% ")
             elif c == ord(' '): 
                 self.survey(x, y)
 

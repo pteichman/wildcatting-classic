@@ -5,7 +5,8 @@ from oilfield import Site
 
 class SurveyorsReport:
 
-    def __init__(self, win, site):
+    def __init__(self, stdscr, win, site):
+        self._stdscr = stdscr
         self._win = win
         self._site = site
 
@@ -36,23 +37,31 @@ class SurveyorsReport:
     def input(self):
         done = False
         cur = 'n'
+        self._win.move(15, 30)
+        self._win.refresh()
         while not done:
-            c = self._win.getch()
-            if c == curses.KEY_UP: cur = 'y'
-            elif c == curses.KEY_DOWN: cur = 'n'
-            elif c == curses.KEY_LEFT: cur = 'y'
-            elif c == curses.KEY_RIGHT: cur = 'n'
-            elif c == ord('y') or c == ord('Y'):
+            c = self._stdscr.getch()
+            if c == curses.KEY_UP:
+                cur = 'y'
+            elif c == curses.KEY_DOWN:
+                cur = 'n'
+            elif c == curses.KEY_LEFT:
+                cur = 'y'
+            elif c == curses.KEY_RIGHT:
+                cur = 'n'
+            elif c == ord('y'):
                 cur = 'y'
                 done = True
-            elif c == ord('n') or c == ord('N'):
+            elif c == ord('n'):
                 cur = 'n'
+                done = True
+            elif (c == ord(' ')) or (c == 10):
                 done = True
 
             if cur == 'y':
-                self._win.move(15, 29)
+                self._win.move(15, 28)
             else:
-                self._win.move(15, 31)
+                self._win.move(15, 30)
                 
             self._win.refresh()
             

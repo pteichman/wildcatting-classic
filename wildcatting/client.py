@@ -13,7 +13,7 @@ class client:
         self._stdscr.refresh()
         (h,w) = self._stdscr.getmaxyx()
         reportWin = self._stdscr.derwin(16, 48, (h-16)/2, (w-48)/2)
-        report = SurveyorsReport(reportWin, site)
+        report = SurveyorsReport(self._stdscr, reportWin, site)
         report.display()
         yes = report.input()
         if yes:
@@ -44,7 +44,7 @@ class client:
 
         x = 1 ; y = 1
         
-        curses.curs_set(0)
+        #curses.curs_set(0)
         self._field_win.addch(y, x, " ", curses.A_REVERSE)
         self._field_win.refresh()
         curses.mousemask(curses.ALL_MOUSE_EVENTS)
@@ -60,7 +60,6 @@ class client:
                 dx = mx - x - 3
                 dy = my - y - 2
                 self.survey(mx-3, my-2)
-                #stdscr.addstr(1, w-6, str(self._playerfield.getSite(mx-3, my-2).prob) + "% ")
             elif c == ord(' '): 
                 self.survey(x, y)
 

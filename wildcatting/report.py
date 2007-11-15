@@ -33,13 +33,37 @@ class SurveyorsReport:
 
         self._win.refresh()
 
+    def input(self):
+        done = False
+        cur = 'n'
+        while not done:
+            c = self._win.getch()
+            if c == curses.KEY_UP: cur = 'y'
+            elif c == curses.KEY_DOWN: cur = 'n'
+            elif c == curses.KEY_LEFT: cur = 'y'
+            elif c == curses.KEY_RIGHT: cur = 'n'
+            elif c == ord('y') or c == ord('Y'):
+                cur = 'y'
+                done = True
+            elif c == ord('n') or c == ord('N'):
+                cur = 'n'
+                done = True
+
+            if cur == 'y':
+                self._win.move(15, 29)
+            else:
+                self._win.move(15, 31)
+                
+            self._win.refresh()
+            
+        return cur == 'y'
+            
+
+
 def main(stdscr):
         (h,w) = stdscr.getmaxyx()
         win = stdscr.derwin(16, 48, (h-16)/2, (w-48)/2)
-        
         site = Site(32, 15, 25)
-        site.cost = 12
-        site.tax = 615
         report = SurveyorsReport(win, site)
         report.display()
         while True:

@@ -62,6 +62,8 @@ class Site:
         self.x = x
         self.y = y
         self.prob = prob
+        self.cost = 12
+        self.tax = 615
         self.surveyed = False
         self.rig = None
 

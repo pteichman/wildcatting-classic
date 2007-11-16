@@ -65,7 +65,7 @@ class Site:
         self.cost = 12
         self.tax = 615
         self.surveyed = False
-        self.rig = None
+        self.rig = " "
 
     def ansi(self):
         b = self.choice(range(1, 9))

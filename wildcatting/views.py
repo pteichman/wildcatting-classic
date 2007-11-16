@@ -23,13 +23,13 @@ class FieldView:
         self._field = field
 
         # TODO put this somewhere sensible
-        curses.init_pair(1, curses.COLOR_BLACK, curses.COLOR_BLACK)
-        curses.init_pair(2, curses.COLOR_RED, curses.COLOR_RED)
-        curses.init_pair(3, curses.COLOR_GREEN, curses.COLOR_GREEN)
-        curses.init_pair(4, curses.COLOR_YELLOW, curses.COLOR_YELLOW)
-        curses.init_pair(5, curses.COLOR_BLUE, curses.COLOR_BLUE)
-        curses.init_pair(6, curses.COLOR_MAGENTA, curses.COLOR_MAGENTA)
-        curses.init_pair(7, curses.COLOR_CYAN, curses.COLOR_CYAN)
+        curses.init_pair(1, curses.COLOR_WHITE, curses.COLOR_BLACK)
+        curses.init_pair(2, curses.COLOR_WHITE, curses.COLOR_RED)
+        curses.init_pair(3, curses.COLOR_WHITE, curses.COLOR_GREEN)
+        curses.init_pair(4, curses.COLOR_WHITE, curses.COLOR_YELLOW)
+        curses.init_pair(5, curses.COLOR_WHITE, curses.COLOR_BLUE)
+        curses.init_pair(6, curses.COLOR_WHITE, curses.COLOR_MAGENTA)
+        curses.init_pair(7, curses.COLOR_WHITE, curses.COLOR_CYAN)
 
     def siteColor(self, site):
         if site == None:
@@ -48,7 +48,7 @@ class FieldView:
             for j in xrange(0, self._field.width):
                 site = self._field.getSite(j, i)
                 if site != None:
-                    self._win.addch(i, j, ord("O"), self.siteColor(site))
+                    self._win.addch(i, j, ord(site.rig), self.siteColor(site))
         self._win.refresh()
 
 def main(stdscr):

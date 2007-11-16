@@ -9,15 +9,12 @@ class client:
 
     def survey(self, x, y):
         site = self._oilfield.getSite(x, y)
-        self._stdscr.clear()
-        self._stdscr.refresh()
-        (h,w) = self._stdscr.getmaxyx()
-        reportWin = self._stdscr.derwin(16, 48, (h-16)/2, (w-48)/2)
-        report = SurveyorsReport(self._stdscr, reportWin, site)
+        report = SurveyorsReport(self._stdscr, site)
         report.display()
         yes = report.input()
         if yes:
-            self._playerfield.setSite(x, y, site)
+            site.rig = "B"
+        self._playerfield.setSite(x, y, site)
         self._stdscr.clear()
         self.border()
 
@@ -38,17 +35,18 @@ class client:
         self._playerfield = PlayerField(field_w, field_h)
 
         self._field_win = stdscr.derwin(field_h, field_w, 2, 3)
+        self._field_win.keypad(1)
         self.border()
 
         view = FieldView(self._field_win, self._playerfield)
 
         x = 1 ; y = 1
         
-        #curses.curs_set(0)
         self._field_win.addch(y, x, " ", curses.A_REVERSE)
         self._field_win.refresh()
         curses.mousemask(curses.ALL_MOUSE_EVENTS)
         while True:
+            curses.curs_set(0)
             dx = 0 ; dy = 0
             c = stdscr.getch()
             if c == curses.KEY_UP: dy = -1
@@ -67,6 +65,8 @@ class client:
                 self._field_win.addch(y, x, " ", curses.color_pair(0))
                 x += dx ; y += dy
                 self._field_win.addstr(y, x, " ")
+                self._field_win.move(y, x)
+                self._field_win.refresh()
 
             self._field_win.addch(y, x, " ", curses.A_REVERSE)
             view.display()

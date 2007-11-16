@@ -5,16 +5,18 @@ from oilfield import Site
 
 class SurveyorsReport:
 
-    def __init__(self, stdscr, win, site):
+    def __init__(self, stdscr, site):
         self._stdscr = stdscr
-        self._win = win
         self._site = site
-
+        (h,w) = self._stdscr.getmaxyx()
+        self._win = self._stdscr.derwin(16, 48, (h-16)/2, (w-48)/2)
         curses.init_pair(1, curses.COLOR_BLACK, curses.COLOR_GREEN)
 
     def display(self):
+        self._stdscr.clear()
+        self._stdscr.refresh()
+        
         (h, w) = self._win.getmaxyx()
- 
         coord_str = "X=%s  Y=%s" % (self._site.x, self._site.y)
         prob_str = str(self._site.prob) + "%"
         cost_str = "$" + str(self._site.cost).rjust(4)
@@ -35,19 +37,20 @@ class SurveyorsReport:
         self._win.refresh()
 
     def input(self):
+        (h, w) = self._stdscr.getmaxyx()
+        (wh, ww) = self._win.getmaxyx()
         done = False
         cur = 'n'
+        self._win.keypad(1)
         self._win.move(15, 30)
         self._win.refresh()
+        curses.mousemask(curses.ALL_MOUSE_EVENTS)
+        curses.curs_set(1)
         while not done:
-            c = self._stdscr.getch()
-            if c == curses.KEY_UP:
+            c = self._win.getch()
+            if c == curses.KEY_UP or c == curses.KEY_LEFT:
                 cur = 'y'
-            elif c == curses.KEY_DOWN:
-                cur = 'n'
-            elif c == curses.KEY_LEFT:
-                cur = 'y'
-            elif c == curses.KEY_RIGHT:
+            elif c == curses.KEY_DOWN or c == curses.KEY_RIGHT:
                 cur = 'n'
             elif c == ord('y'):
                 cur = 'y'
@@ -57,6 +60,17 @@ class SurveyorsReport:
                 done = True
             elif (c == ord(' ')) or (c == 10):
                 done = True
+            elif c == curses.KEY_MOUSE:
+                mid, mx, my, mz, bstate = curses.getmouse()
+                x = mx - (w-ww)/2
+                y = my - (h-wh)/2
+                
+                if y == 15 and x == 28:
+                    cur = 'y'
+                    done = True
+                if y == 15 and x == 30:
+                    cur = 'n'
+                    done = True
 
             if cur == 'y':
                 self._win.move(15, 28)

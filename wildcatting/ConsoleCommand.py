@@ -40,7 +40,7 @@ class ConsoleCommand(Command):
 
         while True:
             try:
-                cmd = raw_input("> ")
+                cmd = raw_input("wildcatting> ")
             except EOFError:
                 print
                 sys.exit(0)

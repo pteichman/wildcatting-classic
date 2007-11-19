@@ -125,22 +125,21 @@ class CommandParser(OptionParser):
         self.disable_interspersed_args()
         (options, args) = OptionParser.parse_args(self, *args, **kwargs)
 
-        if len(args) == 0:
-            self.print_help()
-            self.exit()
+        cmd = None
 
-        cmd = self.find_command(args[0])
-        if cmd is None:
-            self.print_unknown_command(args[0])
-            self.exit()
+        if len(args) > 0:
+            cmd = self.find_command(args[0])
 
-        (cmdoptions, args) = cmd.parse_args(args[1:])
+            if cmd is None:
+                self.print_unknown_command(args[0])
+            else:
+                (cmdoptions, args) = cmd.parse_args(args[1:])
 
-        # update cmdoptions with the values from options
-        for (attr, val) in options.__dict__.items():
-            setattr(cmdoptions, attr, val)
+                # update options with the values from cmdoptions
+                for (attr, val) in cmdoptions.__dict__.items():
+                    setattr(options, attr, val)
 
-        return (cmd, cmdoptions, args)
+        return (cmd, options, args)
 
     def print_unknown_command(self, cmdname, file=None):
         if file is None:
@@ -149,7 +148,9 @@ class CommandParser(OptionParser):
 
     def format_help(self, *args, **kwargs):
         help = OptionParser.format_help(self, *args, **kwargs)
+        return help + "\n" + self.format_command_help()
 
+    def format_command_help(self):
         result = []
 
         groups = self.groups.keys()
@@ -160,10 +161,10 @@ class CommandParser(OptionParser):
             max_cmd_length = max(max_cmd_length, len(cmd.helpstr))
 
         for group in groups:
-            result.append("\n%s commands:\n" % group)
+            result.append("%s commands:\n" % group)
             commands = self.groups[group]
             commands.sort(lambda x, y: cmp(x.get_name(), y.get_name()))
 
             for cmd in commands:
                 result.append("  %s%s  %s\n" % (cmd.helpstr, " "*(max_cmd_length-len(cmd.helpstr)), cmd.summary))
-        return help + "".join(result)
+        return "".join(result)

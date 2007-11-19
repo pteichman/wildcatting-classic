@@ -8,10 +8,13 @@ from wildcatting import ClientCommand
 from wildcatting import ConsoleCommand
 from wildcatting import ScreensaverCommand
 from wildcatting import ServerCommand
+from wildcatting import version
 
 parser = CommandParser()
 parser.add_option("", "--debug", action="store_true",
                   help="enable debugging output")
+parser.add_option("", "--version", action="store_true",
+                  help="print the version and exit")
 
 parser.add_commands(ClientCommand)
 parser.add_commands(ConsoleCommand)
@@ -31,11 +34,16 @@ if __name__ == "__main__":
     else:
         logging.root.setLevel(logging.ERROR)
 
+    if options.version:
+        print version.VERSION_STRING
+        sys.exit(0)
+
     if command is None:
         parser.print_help()
-        parser.exit()
-    
+        sys.exit(1)
+
     try:
         command.run(options, args)
     except KeyboardInterrupt:
+        print
         sys.exit(1)

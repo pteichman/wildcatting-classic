@@ -1,8 +1,17 @@
+import sys
+import socket
 import logging
+import readline
+import wildcatting.console
 
-from wildcatting.cmdparse import Command
+from optparse import OptionParser
+from wildcatting.cmdparse import Command, CommandParser
 
 from xmlrpclib import ServerProxy
+
+class ConsoleParser(CommandParser):
+    def format_help(self, *args, **kwargs):
+        return self.format_command_help()
 
 class ConsoleCommand(Command):
     log = logging.getLogger("Wildcatting")
@@ -15,5 +24,31 @@ class ConsoleCommand(Command):
                         default="localhost", help="server hostname")
 
     def run(self, options, args):
-        s = ServerProxy("http://localhost:%d" % options.port)
-        print s.echo("Server is up.")
+        url = "http://localhost:%d" % options.port
+        s = ServerProxy(url)
+        try:
+            s.ping()
+        except socket.error, e:
+            print "Socket error contacting %s" % url
+            print e.args[1]
+            sys.exit(0)
+
+        parser = ConsoleParser()
+        parser.add_option("", "--server", action="store_const", default=s)
+        parser.add_option("", "--parser", action="store_const", default=parser)
+        parser.add_commands(wildcatting.console, "Console")
+
+        while True:
+            try:
+                cmd = raw_input("> ")
+            except EOFError:
+                print
+                sys.exit(0)
+            
+            (command, opts, args) = parser.parse_args(cmd.split())
+
+            if command is not None:
+                if command == "help":
+                    parser.print_help()
+                else:
+                    command.run(opts, args)

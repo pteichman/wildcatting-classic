@@ -48,8 +48,22 @@ class FieldView:
             for j in xrange(0, self._field.width):
                 site = self._field.getSite(j, i)
                 if site != None:
-                    self._win.addch(i, j, ord(site.rig), self.siteColor(site))
+                    putch(self._win, i, j, ord(site.rig), self.siteColor(site))
         self._win.refresh()
+
+def putch(win, y, x, ch, attr=None):
+    (h,w) = win.getmaxyx()
+    if y == h-1 and x == w-1:
+        f = win.insch
+    else:
+        f = win.addch
+            
+    if attr:
+        f(y, x, ch, attr)
+    else:
+        f(y, x, ch)
+
+
 
 def main(stdscr):
         (h,w) = stdscr.getmaxyx()

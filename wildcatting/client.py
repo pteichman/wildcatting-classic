@@ -2,6 +2,7 @@ import curses
 
 from views import PlayerField
 from views import FieldView
+from views import putch
 from oilfield import OilField
 from report import SurveyorsReport
 
@@ -35,7 +36,7 @@ class client:
         field_h = border_h - 2
         self._oilfield = OilField(field_w, field_h)
         self._playerfield = PlayerField(field_w, field_h)
-        self._border_win = stdscr.derwin(border_h, border_w, 2, 3) 
+        self._border_win = stdscr.derwin(border_h, border_w, 2, 3)
         self._field_win = stdscr.derwin(field_h, field_w, 3, 4)
         self._field_win.keypad(1)
         self.border()
@@ -44,7 +45,7 @@ class client:
 
         x = 0 ; y = 0
         
-        self._field_win.addch(y, x, " ", curses.A_REVERSE)
+        self._field_win.addch(y, x, " ", curses.A_REVERSE | curses.A_BLINK)
         self._field_win.refresh()
         curses.mousemask(curses.ALL_MOUSE_EVENTS)
         while True:
@@ -69,16 +70,16 @@ class client:
                     (x + dx) < 0 or (y + dy) < 0:
                     continue
                 
-                self._field_win.addch(y, x, " ", curses.color_pair(0))
+                putch(self._field_win, y, x, " ", curses.color_pair(0))
                 x += dx ; y += dy
-                self._field_win.addstr(y, x, " ")
+                putch(self._field_win, y, x, " ")
                 self._field_win.move(y, x)
                 self._field_win.refresh()
 
             if survey:
                 self.survey(x, y)
 
-            self._field_win.addch(y, x, " ", curses.A_REVERSE)
+            putch(self._field_win, y, x, " ", curses.A_REVERSE | curses.A_BLINK)
             view.display()
 
     def run(self):

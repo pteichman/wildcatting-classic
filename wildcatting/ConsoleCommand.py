@@ -27,7 +27,8 @@ class ConsoleCommand(Command):
         url = "http://localhost:%d" % options.port
         s = ServerProxy(url)
         try:
-            s.ping()
+            ver = s.ping()
+            print "Connected to %s server at %s" % (ver, url)
         except socket.error, e:
             print "Socket error contacting %s" % url
             print e.args[1]

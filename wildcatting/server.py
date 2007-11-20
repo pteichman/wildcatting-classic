@@ -1,6 +1,6 @@
 import version
 
-class server():
+class server:
     def echo(self, s):
         return s
 

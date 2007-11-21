@@ -21,6 +21,15 @@ class HelpCommand(Command):
     def run(self, options, args):
         options.parser.print_help()
 
+class ListMethodsCommand(Command):
+    log = logging.getLogger("Wildcatting")
+
+    def __init__(self):
+        Command.__init__(self, "list-methods", summary="list server side methods")
+
+    def run(self, options, args):
+        print options.server.system.listMethods()
+
 class QuitCommand(Command):
     log = logging.getLogger("Wildcatting")
 

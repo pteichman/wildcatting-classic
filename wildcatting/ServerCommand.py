@@ -1,10 +1,8 @@
 import logging
 
 import wildcatting.version
+import wildcatting.server
 from wildcatting.cmdparse import Command
-from wildcatting.server import server
-
-from SimpleXMLRPCServer import SimpleXMLRPCServer
 
 class ServerCommand(Command):
     log = logging.getLogger("Wildcatting")
@@ -16,8 +14,11 @@ class ServerCommand(Command):
 
     def run(self, options, args):
         hostname = "localhost"
-        s = SimpleXMLRPCServer((hostname, options.port))
-        s.register_instance(server())
+        s = wildcatting.server.TieredXMLRPCServer((hostname, options.port))
+
+        s.register_instance(wildcatting.server.server())
+        s.register_subinstance("admin", wildcatting.server.admin())
+        s.register_introspection_functions()
 
         url = "http://%s:%d/" % (hostname, options.port)
 

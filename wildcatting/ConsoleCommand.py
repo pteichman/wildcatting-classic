@@ -24,18 +24,18 @@ class ConsoleCommand(Command):
                         default="localhost", help="server hostname")
 
     def run(self, options, args):
-        url = "http://localhost:%d" % options.port
-        s = ServerProxy(url)
+        url = "http://localhost:%d/" % options.port
+        server = ServerProxy(url)
         try:
-            ver = s.ping()
-            print "Connected to %s server at %s" % (ver, url)
+            version = server.version()
+            print "Connected to %s server at %s" % (version, url)
         except socket.error, e:
             print "Socket error contacting %s" % url
             print e.args[1]
             sys.exit(0)
 
         parser = ConsoleParser()
-        parser.add_option("", "--server", action="store_const", default=s)
+        parser.add_option("", "--server", action="store_const", default=server)
         parser.add_option("", "--parser", action="store_const", default=parser)
         parser.add_commands(wildcatting.console, "Console")
 

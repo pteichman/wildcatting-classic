@@ -1,5 +1,6 @@
 import logging
 
+import wildcatting.version
 from wildcatting.cmdparse import Command
 from wildcatting.server import server
 
@@ -14,6 +15,11 @@ class ServerCommand(Command):
                         default="7777", help="server port")
 
     def run(self, options, args):
-        s = SimpleXMLRPCServer(("localhost", options.port))
+        hostname = "localhost"
+        s = SimpleXMLRPCServer((hostname, options.port))
         s.register_instance(server())
+
+        url = "http://%s:%d/" % (hostname, options.port)
+
+        print "%s server listening at %s" % (wildcatting.version.VERSION_STRING, url)
         s.serve_forever()

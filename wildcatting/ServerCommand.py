@@ -16,8 +16,9 @@ class ServerCommand(Command):
         hostname = "localhost"
         s = wildcatting.server.TieredXMLRPCServer((hostname, options.port))
 
-        s.register_instance(wildcatting.server.server())
-        s.register_subinstance("admin", wildcatting.server.admin())
+        s.register_instance(wildcatting.server.BaseService())
+        s.register_subinstance("admin", wildcatting.server.AdminService())
+        s.register_subinstance("game", wildcatting.server.GameService())
         s.register_introspection_functions()
 
         url = "http://%s:%d/" % (hostname, options.port)

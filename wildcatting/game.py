@@ -33,7 +33,7 @@ class OilFieldFiller:
                 d = random.randint(self.MIN_DROPOFF, self.MAX_DROPOFF) * minc * minc / math.sqrt(model.getWidth() * model.getHeight())
                 prob = int(100 - closest * random.random() * self.LESSER_PEAK_FACTOR - d) - random.randint(0, self.FUDGE)
                 prob = max(0, prob)
-                model.setSite(row, col, wildcatting.model.Site(prob))
+                model.setSite(row, col, wildcatting.model.Site(row, col, prob))
 
     def generatePeaks(self, model):
         peaks = [None]*random.randint(1, self.MAX_PEAKS)

@@ -42,23 +42,6 @@ class ScreensaverCommand(Command):
         except:
             print chr(27) + '[0m'
 
-    def cursesScreensaver(self, stdscr, options, args):
-        if options.no_border:
-            win = stdscr
-            border = 0
-        else:
-            screen_h, screen_w = stdscr.getmaxyx()
-            win = stdscr.derwin(screen_h-self.y_border*2,
-                                screen_w-self.x_border*2,
-                                self.y_border, self.x_border)
-    
-            win.box()
-            border = 1
-
-        win_h, win_w = win.getmaxyx()
-        win = win.derwin(win_h-border*2, win_w-border*2, border, border)
-        ScreenSaver(win).run()
-
     def borderWin(self, parent, no_border):
         if no_border:
             win = parent

@@ -42,18 +42,37 @@ class OilPlayerField(Serializable):
             self._rows.append(newrow)
 
 class Site(Serializable):
-    def __init__(self, prob):
+    def __init__(self, row, col, prob):
+        assert isinstance(row, int)
+        assert isinstance(col, int)
+        assert isinstance(prob, int)
+
+        assert 0 <= prob <= 100
+
+        self._row = row
+        self._col = col
         self._prob = prob
         self._rig = " "
+        self._cost = 0
+        self._tax = 0
 
-    def __repr__(self):
-        return str(self._prob)
+    def getCol(self):
+        return self._col
+
+    def getCost(self):
+        return self._cost
 
     def getProbability(self):
         return self._prob
 
     def getRig(self):
         return self._rig
+
+    def getRow(self):
+        return self._row
+
+    def getTax(self):
+        return self._tax
 
 class OilPlayerSite(Serializable):
     def __init__(self, site):

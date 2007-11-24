@@ -1,6 +1,8 @@
 import curses
 import random
 
+import wildcatting.model
+
 class SurveyorsReport:
 
     def __init__(self, stdscr, site):
@@ -15,10 +17,10 @@ class SurveyorsReport:
         self._stdscr.refresh()
         
         (h, w) = self._win.getmaxyx()
-        coord_str = "X=%s  Y=%s" % (self._site.x, self._site.y)
-        prob_str = str(self._site.prob) + "%"
-        cost_str = "$" + str(self._site.cost).rjust(4)
-        tax_str = "$" + str(self._site.tax).rjust(4)
+        coord_str = "X=%s  Y=%s" % (self._site.getCol(), self._site.getRow())
+        prob_str = str(self._site.getProbability()) + "%"
+        cost_str = "$" + str(self._site.getCost()).rjust(4)
+        tax_str = "$" + str(self._site.getTax()).rjust(4)
 
         self._win.bkgd(" ", curses.color_pair(1))
         self._win.addstr(1, 14, "SURVEYOR'S REPORT")
@@ -84,7 +86,7 @@ class SurveyorsReport:
 def main(stdscr):
         (h,w) = stdscr.getmaxyx()
         win = stdscr.derwin(16, 48, (h-16)/2, (w-48)/2)
-        site = Site(32, 15, 25)
+        site = wildcatting.model.Site(32, 15, 25)
         report = SurveyorsReport(win, site)
         report.display()
         while True:

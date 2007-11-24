@@ -1,10 +1,11 @@
 import curses
 
-from views import PlayerField
 from views import OilFieldCursesView
 from views import putch
-from oilfield import OilField
 from report import SurveyorsReport
+from game import Game
+
+import wildcatting.model
 
 class client:
 
@@ -35,7 +36,7 @@ class client:
         field_w = border_w - 2
         field_h = border_h - 2
         self._oilfield = OilField(field_w, field_h)
-        self._playerfield = PlayerField(field_w, field_h)
+        self._playerfield = wildcatting.model.PlayerField(self._oilfield.getModel())
         self._border_win = stdscr.derwin(border_h, border_w, 2, 3)
         self._field_win = stdscr.derwin(field_h, field_w, 3, 4)
         self._field_win.keypad(1)

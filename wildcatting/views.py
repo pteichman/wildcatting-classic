@@ -1,23 +1,7 @@
 import curses
 import random
 
-from oilfield import OilField
-
 import wildcatting.model
-
-class PlayerField:
-    def __init__(self, width, height):
-        self.width = width
-        self.height = height
-        self._field = [None]*height
-        for i in xrange(height):
-            self._field[i] = [None]*width
-
-    def setSite(self, x, y, site):
-        self._field[y][x] = site
-
-    def getSite(self, x, y):
-        return self._field[y][x]
 
 class OilFieldTextView:
     def __init__(self, model):
@@ -68,6 +52,9 @@ class OilFieldTextView:
 class OilFieldCursesView:
     def __init__(self, win, field):
         self._win = win
+
+        assert isinstance(field, wildcatting.model.OilField)
+        
         self._field = field
 
         # TODO put this somewhere sensible
@@ -96,11 +83,11 @@ class OilFieldCursesView:
         return curses.color_pair(b)
 
     def display(self):
-        model = self._field.getModel()
+        field = self._field
 
-        for row in xrange(model.getHeight()):
-            for col in xrange(model.getWidth()):
-                site = model.getSite(row, col)
+        for row in xrange(field.getHeight()):
+            for col in xrange(field.getWidth()):
+                site = field.getSite(row, col)
                 putch(self._win, row, col,
                       ord(site.getRig()), self.siteColor(site))
         self._win.refresh()

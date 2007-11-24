@@ -29,6 +29,18 @@ class OilField(Serializable):
     def getWidth(self):
         return self._width
 
+class OilPlayerField(Serializable):
+    def __init__(self, field):
+        assert isinstance(field, OilField)
+
+        self._rows = []
+
+        for row in xrange(field.getHeight()):
+            newrow = []
+            for col in xrange(field.getWidth()):
+                newrow.append(OilPlayerSite(field.getSite(row, col)))
+            self._rows.append(newrow)
+
 class Site(Serializable):
     def __init__(self, prob):
         self._prob = prob
@@ -43,3 +55,11 @@ class Site(Serializable):
     def getRig(self):
         return self._rig
 
+class OilPlayerSite(Serializable):
+    def __init__(self, site):
+        assert isinstance(site, Site)
+
+        self._rig = site.getRig()
+
+    def getRig(self):
+        return self._rig

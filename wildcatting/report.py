@@ -1,8 +1,6 @@
 import curses
 import random
 
-from oilfield import Site
-
 class SurveyorsReport:
 
     def __init__(self, stdscr, site):

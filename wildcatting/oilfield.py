@@ -4,6 +4,8 @@ import math
 import time
 import curses
 
+import wildcatting.model
+
 MIN_DROPOFF = 5
 MAX_DROPOFF = 20
 MAX_PEAKS = 5
@@ -12,65 +14,72 @@ LESSER_PEAK_FACTOR = 10
 
 class OilField:
     def __init__(self, width, height):
-        self.width = width
-        self.height = height
-        self.generatePeaks()
+        model = wildcatting.model.OilField(width, height)
+        peaks = self.generatePeaks(model)
 
-        self._field = [0]*height
-        for i in xrange(height):
-            self._field[i] = [0]*width
-            for j in xrange(width):
+        self._fillModel(model, peaks)
+        self._model = model
+        self._peaks = peaks
+
+    def _fillModel(self, model, peaks):
+        for row in xrange(model.getHeight()):
+            for col in xrange(model.getWidth()):
                 # calculate sum of distances from peak
                 minc = 99999
-                for k in xrange(len(self._peaks)):
-                    a = i - self._peaks[k][0]
-                    b = j - self._peaks[k][1]
+                for p in xrange(len(peaks)):
+                    (y, x) = peaks[p]
+                    
+                    a = row - y
+                    b = col - x
                     c = math.sqrt(a*a + b*b)
                     minc = min(c, minc)
                     if c == minc:
-                        closest = k
-                d = random.randint(MIN_DROPOFF, MAX_DROPOFF) * minc * minc / math.sqrt(width * height)
+                        closest = p
+
+                d = random.randint(MIN_DROPOFF, MAX_DROPOFF) * minc * minc / math.sqrt(model.getWidth() * model.getHeight())
                 prob = int(100 - closest * random.random() * LESSER_PEAK_FACTOR - d) - random.randint(0, FUDGE)
                 prob = max(0, prob)
-                self._field[i][j] = Site(i, j, prob)
+                model.setSite(row, col, wildcatting.model.Site(prob))
 
-    def generatePeaks(self):
-        self._peaks = [0]*int(random.randint(1,MAX_PEAKS))
-        for i in xrange(len(self._peaks)):
-            self._peaks[i] = (int(random.random() * self.height), int(random.random() * self.width))
+    def generatePeaks(self, model):
+        peaks = [None]*random.randint(1, MAX_PEAKS)
+        for i in xrange(len(peaks)):
+            peaks[i] = (random.randint(0, model.getHeight()),
+                        random.randint(0, model.getWidth()))
+        return peaks
 
-    def ansi(self):
-        for i in xrange(self.height):
-            line = ""
-            for j in xrange(self.width):
-                line += self._field[i][j].ansi()
-            print line
+    def getModel(self):
+        return self._model
 
-    def ascii(self):
-        for i in xrange(self.height):
-            line = ""
-            for j in xrange(self.width):
-                line += self._field[i][j].ascii()
-            print line
+class OilFieldView:
+    def __init__(self, model):
+        assert isinstance(model, wildcatting.model.OilField)
+        self._model = model
 
-    def getSite(self, x, y):
-        return self._field[y][x]
+    def bracket(self, site):
+        p = site.getProbability()
+        if p > 95:
+            b = 0
+        elif p > 85:
+            b = 1
+        elif p > 70:
+            b = 2
+        elif p > 55:
+            b = 3
+        elif p > 35:
+            b = 4
+        else:
+            b = 5
+        return b
 
-
-class Site:
-    def __init__(self, x, y, prob):
-        self.x = x
-        self.y = y
-        self.prob = prob
-        self.cost = 12
-        self.tax = 615
-        self.surveyed = False
-        self.rig = " "
-
-    def ansi(self):
-        b = self.choice(range(1, 9))
+    def toAnsi(self, site):
+        b = self.bracket(site) % 9
         ansi = chr(27) + '['+ str(32+b) +'m' + "O"
         return ansi
 
-    def ascii(self):
-        return self.choice(".+%2YODAUQ#HM")
+    def ansi(self):
+        for row in xrange(self._model.getHeight()):
+            line = ""
+            for col in xrange(self._model.getWidth()):
+                line += self.toAnsi(self._model.getSite(row, col))
+            print line

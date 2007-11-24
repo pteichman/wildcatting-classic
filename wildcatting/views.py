@@ -17,7 +17,7 @@ class PlayerField:
     def getSite(self, x, y):
         return self._field[y][x]
 
-class FieldView:
+class OilFieldView:
     def __init__(self, win, field):
         self._win = win
         self._field = field
@@ -34,21 +34,20 @@ class FieldView:
     def siteColor(self, site):
         if site == None:
             return curses.color_pair(1)
-        seq = range(1,7)
+        seq = range(2, 7)
         seq.reverse()
-        p = site.prob
+        p = site.getProbability()
         if p == 100:
             b = seq[-1]
         else:
             b = seq[int(p / 100. * len(seq))]
-        return curses.color_pair(b + 1)
+        return curses.color_pair(b)
 
     def display(self):
-        for i in xrange(0, self._field.height):
-            for j in xrange(0, self._field.width):
-                site = self._field.getSite(j, i)
-                if site != None:
-                    putch(self._win, i, j, ord(site.rig), self.siteColor(site))
+        for row in xrange(self._field.getModel().getHeight()):
+            for col in xrange(self._field.getModel().getWidth()):
+                site = self._field.getModel().getSite(row, col)
+                putch(self._win, row, col, ord(site.getRig()), self.siteColor(site))
         self._win.refresh()
 
 def putch(win, y, x, ch, attr=None):

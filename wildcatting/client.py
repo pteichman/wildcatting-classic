@@ -1,7 +1,7 @@
 import curses
 
 from views import PlayerField
-from views import FieldView
+from views import OilFieldView
 from views import putch
 from oilfield import OilField
 from report import SurveyorsReport
@@ -41,7 +41,7 @@ class client:
         self._field_win.keypad(1)
         self.border()
 
-        view = FieldView(self._field_win, self._playerfield)
+        view = OilFieldView(self._field_win, self._playerfield)
 
         x = 0 ; y = 0
         

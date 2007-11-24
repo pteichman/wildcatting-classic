@@ -5,7 +5,7 @@ import curses
 
 from wildcatting.cmdparse import Command
 from wildcatting.oilfield import OilField
-from wildcatting.views import FieldView
+from wildcatting.views import OilFieldView
 from wildcatting.views import PlayerField
 
 class ScreensaverCommand(Command):
@@ -28,13 +28,15 @@ class ScreensaverCommand(Command):
 
     def asciiScreensaver(self):
         while True:
-            OilField(80, 23).ascii()
+            field = OilField(80, 23)
+            OilFieldView(field.getModel()).ascii()
             time.sleep(.25)
 
     def ansiScreensaver(self):
         try:
             while True:
-                OilField(80, 23).ansi()
+                field = OilField(80, 23)
+                OilFieldView(field.getModel()).ansi()
                 time.sleep(.25)
         except:
             print chr(27) + '[0m'
@@ -81,7 +83,7 @@ class ScreensaverCommand(Command):
         while True:
             field = OilField(win_w-1, win_h)
             playerField = PlayerField(win_w-1, win_h)
-            view = FieldView(win, playerField)
+            view = OilFieldView(win, playerField)
             coords = []
             for i in xrange(0, win_w-1):
                 for j in xrange(0, win_h):
@@ -103,8 +105,8 @@ class ScreensaverCommand(Command):
         win = border_win.derwin(height, width, border, border)
         win_h, win_w = win.getmaxyx()
         while True:
-            field = OilField(win_w-1, win_h)
-            view = FieldView(win, field)
+            field = OilField(win_w, win_h)
+            view = OilFieldView(win, field)
             view.display()
             time.sleep(0.25)
 

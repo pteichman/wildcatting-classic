@@ -13,7 +13,9 @@ class TestOilField(unittest.TestCase):
 
         for row in xrange(rows):
             for col in xrange(cols):
-                self.assertEqual(field.getSite(row, col), None)
+                site = field.getSite(row, col)
+
+                self.assertNotEqual(site, None)
 
 if __name__ == "__main__":
     unittest.main()

@@ -18,8 +18,8 @@ class SurveyorsReport:
         
         (h, w) = self._win.getmaxyx()
         coord_str = "X=%s  Y=%s" % (self._site.getCol(), self._site.getRow())
-        prob_str = str(self._site.getProbability()) + "%"
-        cost_str = "$" + str(self._site.getCost()).rjust(4)
+        prob_str = str(self._site.getProbability()).rjust(2) + "%"
+        cost_str = "$" + str(self._site.getDrillCost()).rjust(4)
         tax_str = "$" + str(self._site.getTax()).rjust(4)
 
         self._win.bkgd(" ", curses.color_pair(1))
@@ -86,7 +86,12 @@ class SurveyorsReport:
 def main(stdscr):
         (h,w) = stdscr.getmaxyx()
         win = stdscr.derwin(16, 48, (h-16)/2, (w-48)/2)
-        site = wildcatting.model.Site(32, 15, 25)
+
+        site = wildcatting.model.Site(32, 15)
+        site.setProbability(random.randint(0, 100))
+        site.setDrillCost(random.randint(10, 30))
+        site.setTax(random.randint(600, 1000))
+
         report = SurveyorsReport(win, site)
         report.display()
         while True:

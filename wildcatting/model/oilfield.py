@@ -9,7 +9,7 @@ class OilField(Serializable):
         for row in xrange(height):
             newrow = []
             for col in xrange(width):
-                newrow.append(None)
+                newrow.append(Site(row, col))
             self._rows.append(newrow)
 
     def getSite(self, row, col):
@@ -42,28 +42,34 @@ class OilPlayerField(Serializable):
             self._rows.append(newrow)
 
 class Site(Serializable):
-    def __init__(self, row, col, prob):
+    def __init__(self, row, col):
         assert isinstance(row, int)
         assert isinstance(col, int)
-        assert isinstance(prob, int)
-
-        assert 0 <= prob <= 100
 
         self._row = row
         self._col = col
-        self._prob = prob
+
+        self._prob = 0
         self._rig = " "
-        self._cost = 0
+        self._drillCost = 0
         self._tax = 0
 
     def getCol(self):
         return self._col
 
-    def getCost(self):
-        return self._cost
+    def getDrillCost(self):
+        return self._drillCost
+
+    def setDrillCost(self, drillCost):
+        assert isinstance(drillCost, int)
+        self._drillCost = drillCost
 
     def getProbability(self):
         return self._prob
+
+    def setProbability(self, prob):
+        assert 0 <= prob <= 100
+        self._prob = prob
 
     def getRig(self):
         return self._rig
@@ -73,6 +79,11 @@ class Site(Serializable):
 
     def getTax(self):
         return self._tax
+
+    def setTax(self, tax):
+        assert isinstance(tax, int)
+
+        self._tax = tax
 
 class OilPlayerSite(Serializable):
     def __init__(self, site):

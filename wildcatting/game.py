@@ -3,7 +3,7 @@ import math
 
 import wildcatting.model
 
-class OilFieldFiller:
+class OilFiller:
     MIN_DROPOFF = 5
     MAX_DROPOFF = 20
     MAX_PEAKS = 5
@@ -33,7 +33,9 @@ class OilFieldFiller:
                 d = random.randint(self.MIN_DROPOFF, self.MAX_DROPOFF) * minc * minc / math.sqrt(model.getWidth() * model.getHeight())
                 prob = int(100 - closest * random.random() * self.LESSER_PEAK_FACTOR - d) - random.randint(0, self.FUDGE)
                 prob = max(0, prob)
-                model.setSite(row, col, wildcatting.model.Site(row, col, prob))
+
+                site = model.getSite(row, col)
+                site.setProbability(prob)
 
     def generatePeaks(self, model):
         peaks = [None]*random.randint(1, self.MAX_PEAKS)
@@ -42,10 +44,22 @@ class OilFieldFiller:
                         random.randint(0, model.getWidth()))
         return peaks
 
+class TaxFiller:
+    def fill(self, field):
+        assert isinstance(field, wildcatting.model.OilField)
+
+        for row in xrange(field.getHeight()):
+            for col in xrange(field.getWidth()):
+                site = field.getSite(row, col)
+
+                site.setDrillCost(random.randint(10, 30))
+                site.setTax(random.randint(600, 1000))
+
 class Game:
     def __init__(self, width, height):
         self._oilField = wildcatting.model.OilField(width, height)
-        OilFieldFiller().fill(self._oilField)
+        OilFiller().fill(self._oilField)
+        TaxFiller().fill(self._oilField)
 
     def getOilField(self):
         return self._oilField

@@ -106,7 +106,7 @@ class ScreensaverCommand(Command):
         win_h, win_w = win.getmaxyx()
         while True:
             field = OilField(win_w, win_h)
-            view = OilFieldView(win, field)
+            view = OilFieldCursesView(win, field)
             view.display()
             time.sleep(0.25)
 

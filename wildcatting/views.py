@@ -67,8 +67,6 @@ class OilFieldTextView:
 
 class OilFieldCursesView:
     def __init__(self, win, field):
-        assert isinstance(field, wildcatting.model.OilField)
-
         self._win = win
         self._field = field
 

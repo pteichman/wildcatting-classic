@@ -44,12 +44,14 @@ class OilFieldView:
         return curses.color_pair(b)
 
     def display(self):
-        for row in xrange(self._field.getModel().getHeight()):
-            for col in xrange(self._field.getModel().getWidth()):
-                site = self._field.getModel().getSite(row, col)
+        model = self._field.getModel()
+
+        for row in xrange(model.getHeight()):
+            for col in xrange(model.getWidth()-1):
+                site = model.getSite(row, col)
                 putch(self._win, row, col, ord(site.getRig()), self.siteColor(site))
         self._win.refresh()
-
+                                
 def putch(win, y, x, ch, attr=None):
     (h,w) = win.getmaxyx()
     if y == h-1 and x == w-1:

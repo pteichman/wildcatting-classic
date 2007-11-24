@@ -3,6 +3,8 @@ import random
 
 from oilfield import OilField
 
+import wildcatting.model
+
 class PlayerField:
     def __init__(self, width, height):
         self.width = width
@@ -17,8 +19,56 @@ class PlayerField:
     def getSite(self, x, y):
         return self._field[y][x]
 
-class OilFieldView:
+class OilFieldTextView:
+    def __init__(self, model):
+        assert isinstance(model, wildcatting.model.OilField)
+        self._model = model
+
+    def bracket(self, site):
+        p = site.getProbability()
+        if p > 95:
+            b = 0
+        elif p > 85:
+            b = 1
+        elif p > 70:
+            b = 2
+        elif p > 55:
+            b = 3
+        elif p > 35:
+            b = 4
+        else:
+            b = 5
+        return b
+
+    def toAscii(self, site):
+        assert isinstance(site, wildcatting.model.Site)
+        b = self.bracket(site)
+        return ".x%*&#"[b]
+
+    def ascii(self):
+        model = self._model
+        for row in xrange(model.getHeight()):
+            line = ""
+            for col in xrange(model.getWidth()):
+                line += self.toAscii(model.getSite(row, col))
+            print line
+
+    def toAnsi(self, site):
+        b = self.bracket(site) % 9
+        ansi = chr(27) + '['+ str(32+b) +'m' + "O"
+        return ansi
+
+    def ansi(self):
+        for row in xrange(self._model.getHeight()):
+            line = ""
+            for col in xrange(self._model.getWidth()):
+                line += self.toAnsi(self._model.getSite(row, col))
+            print line
+
+class OilFieldCursesView:
     def __init__(self, win, field):
+        assert isinstance(field, wildcatting.model.OilField)
+
         self._win = win
         self._field = field
 
@@ -32,10 +82,14 @@ class OilFieldView:
         curses.init_pair(7, curses.COLOR_WHITE, curses.COLOR_CYAN)
 
     def siteColor(self, site):
-        if site == None:
+        if site is None:
             return curses.color_pair(1)
+
+        assert isinstance(site, wildcatting.model.Site)
+        
         seq = range(2, 7)
         seq.reverse()
+
         p = site.getProbability()
         if p == 100:
             b = seq[-1]

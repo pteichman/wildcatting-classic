@@ -50,36 +50,3 @@ class OilField:
 
     def getModel(self):
         return self._model
-
-class OilFieldView:
-    def __init__(self, model):
-        assert isinstance(model, wildcatting.model.OilField)
-        self._model = model
-
-    def bracket(self, site):
-        p = site.getProbability()
-        if p > 95:
-            b = 0
-        elif p > 85:
-            b = 1
-        elif p > 70:
-            b = 2
-        elif p > 55:
-            b = 3
-        elif p > 35:
-            b = 4
-        else:
-            b = 5
-        return b
-
-    def toAnsi(self, site):
-        b = self.bracket(site) % 9
-        ansi = chr(27) + '['+ str(32+b) +'m' + "O"
-        return ansi
-
-    def ansi(self):
-        for row in xrange(self._model.getHeight()):
-            line = ""
-            for col in xrange(self._model.getWidth()):
-                line += self.toAnsi(self._model.getSite(row, col))
-            print line

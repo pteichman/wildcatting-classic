@@ -47,18 +47,19 @@ class OilFieldView:
         model = self._field.getModel()
 
         for row in xrange(model.getHeight()):
-            for col in xrange(model.getWidth()-1):
+            for col in xrange(model.getWidth()):
                 site = model.getSite(row, col)
-                putch(self._win, row, col, ord(site.getRig()), self.siteColor(site))
+                putch(self._win, row, col,
+                      ord(site.getRig()), self.siteColor(site))
         self._win.refresh()
-                                
+
 def putch(win, y, x, ch, attr=None):
     (h,w) = win.getmaxyx()
     if y == h-1 and x == w-1:
         f = win.insch
     else:
         f = win.addch
-            
+
     if attr:
         f(y, x, ch, attr)
     else:
@@ -78,6 +79,6 @@ def main(stdscr):
             site = field.getSite(x, y)
             playerField.setSite(x, y, site)
             view.display()
-    
+
 if __name__ == "__main__":
     curses.wrapper(main)

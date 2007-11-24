@@ -91,6 +91,12 @@ class ScreensaverCommand(Command):
         while True:
             game = Game(win_w, win_h)
             field = game.getOilField()
+
+            for row in xrange(field.getHeight()):
+                for col in xrange(field.getWidth()):
+                    site = field.getSite(row, col)
+                    site.setSurveyed(True)
+            
             view = OilFieldCursesView(win, field)
             view.display()
             time.sleep(0.25)

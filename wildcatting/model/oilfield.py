@@ -69,6 +69,11 @@ class Site(Serializable):
     def getRig(self):
         return self._rig
 
+    def setRig(self, rig):
+        assert isinstance(rig, str)
+        assert len(rig) == 1
+        self._rig = rig
+
     def getRow(self):
         return self._row
 

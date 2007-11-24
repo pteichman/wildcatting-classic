@@ -109,14 +109,14 @@ def putch(win, y, x, ch, attr=None):
 def main(stdscr):
         (h,w) = stdscr.getmaxyx()
         win = stdscr.derwin(h, w, 0, 0)
-        field = OilField(w, h-1)
-        playerField = PlayerField(w, h-1)
-        view = FieldView(win, playerField)
+        field = wildcatting.model.OilField(w, h)
+        view = OilFieldCursesView(win, field)
         while True:
-            x = random.choice(range(0,w-1))
-            y = random.choice(range(0,h-2))
-            site = field.getSite(x, y)
-            playerField.setSite(x, y, site)
+            col = random.choice(range(0,w))
+            row = random.choice(range(0,h))
+            site = field.getSite(row, col)
+            site.setSurveyed(True)
+            site.setRig("B")
             view.display()
 
 if __name__ == "__main__":

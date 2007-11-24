@@ -8,12 +8,8 @@ class OilField(Serializable):
         self._width = width
         self._height = height
 
-        self._rows = []
-        for row in xrange(height):
-            newrow = []
-            for col in xrange(width):
-                newrow.append(Site(row, col))
-            self._rows.append(newrow)
+        self._rows = [ [ Site(row, col) for col in xrange(width) ]
+                       for row in xrange(height) ]
 
     def getSite(self, row, col):
         assert row < self._height

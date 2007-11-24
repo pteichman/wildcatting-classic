@@ -1,5 +1,7 @@
-import curses
 import random
+import curses
+
+from wildcatting.colors import Colors
 
 import wildcatting.model
 
@@ -10,7 +12,6 @@ class SurveyorsReport:
         self._site = site
         (h,w) = self._stdscr.getmaxyx()
         self._win = self._stdscr.derwin(16, 48, (h-16)/2, (w-48)/2)
-        curses.init_pair(1, curses.COLOR_BLACK, curses.COLOR_GREEN)
 
     def display(self):
         self._stdscr.clear()
@@ -22,7 +23,7 @@ class SurveyorsReport:
         cost_str = "$" + str(self._site.getDrillCost()).rjust(4)
         tax_str = "$" + str(self._site.getTax()).rjust(4)
 
-        self._win.bkgd(" ", curses.color_pair(1))
+        self._win.bkgd(" ", Colors.get(curses.COLOR_BLACK, curses.COLOR_GREEN))
         self._win.addstr(1, 14, "SURVEYOR'S REPORT")
         self._win.addstr(4, 12, "LOCATION")
         self._win.addstr(4, 24, coord_str)
@@ -84,18 +85,18 @@ class SurveyorsReport:
 
 
 def main(stdscr):
-        (h,w) = stdscr.getmaxyx()
-        win = stdscr.derwin(16, 48, (h-16)/2, (w-48)/2)
+    (h,w) = stdscr.getmaxyx()
+    win = stdscr.derwin(16, 48, (h-16)/2, (w-48)/2)
 
-        site = wildcatting.model.Site(32, 15)
-        site.setProbability(random.randint(0, 100))
-        site.setDrillCost(random.randint(10, 30))
-        site.setTax(random.randint(600, 1000))
+    site = wildcatting.model.Site(32, 15)
+    site.setProbability(random.randint(0, 100))
+    site.setDrillCost(random.randint(10, 30))
+    site.setTax(random.randint(600, 1000))
 
-        report = SurveyorsReport(win, site)
-        report.display()
-        while True:
-            pass
+    report = SurveyorsReport(win, site)
+    report.display()
+    while True:
+        pass
 
 if __name__ == "__main__":
     curses.wrapper(main)

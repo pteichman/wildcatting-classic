@@ -1,6 +1,7 @@
 import curses
 import random
 
+from wildcatting.colors import Colors
 import wildcatting.game
 import wildcatting.model
 
@@ -54,17 +55,17 @@ class OilFieldTextView:
 class OilFieldCursesView:
     def __init__(self, win, field):
         self._win = win
-
         self.setField(field)
 
-        # TODO put this somewhere sensible
-        curses.init_pair(1, curses.COLOR_WHITE, curses.COLOR_BLACK)
-        curses.init_pair(2, curses.COLOR_WHITE, curses.COLOR_RED)
-        curses.init_pair(3, curses.COLOR_WHITE, curses.COLOR_GREEN)
-        curses.init_pair(4, curses.COLOR_WHITE, curses.COLOR_YELLOW)
-        curses.init_pair(5, curses.COLOR_WHITE, curses.COLOR_BLUE)
-        curses.init_pair(6, curses.COLOR_WHITE, curses.COLOR_MAGENTA)
-        curses.init_pair(7, curses.COLOR_WHITE, curses.COLOR_CYAN)
+        # increasing order of hotness
+        self._colors = [
+            Colors.get(curses.COLOR_WHITE, curses.COLOR_BLUE),
+            Colors.get(curses.COLOR_WHITE, curses.COLOR_CYAN),
+            Colors.get(curses.COLOR_WHITE, curses.COLOR_GREEN),
+            Colors.get(curses.COLOR_WHITE, curses.COLOR_YELLOW),
+            Colors.get(curses.COLOR_WHITE, curses.COLOR_MAGENTA),
+            Colors.get(curses.COLOR_WHITE, curses.COLOR_RED),
+            ]
 
     def setField(self, field):
         assert isinstance(field, wildcatting.model.OilField)
@@ -72,7 +73,7 @@ class OilFieldCursesView:
 
     def siteColor(self, site):
         if site is None:
-            return curses.color_pair(1)
+            return Colors.get(curses.COLOR_WHITE, curses.COLOR_BLACK)
 
         assert isinstance(site, wildcatting.model.Site)
 
@@ -81,10 +82,9 @@ class OilFieldCursesView:
 
         p = site.getProbability()
         if p == 100:
-            b = seq[-1]
-        else:
-            b = seq[int(p / 100. * len(seq))]
-        return curses.color_pair(b)
+            return self._colors[-1]
+
+        return self._colors[int(p / 100. * len(self._colors))]
 
     def display(self):
         field = self._field

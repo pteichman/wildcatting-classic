@@ -2,23 +2,33 @@ from serialize import Serializable
 
 class OilField(Serializable):
     def __init__(self, width, height):
+        assert isinstance(width, int)
+        assert isinstance(height, int)
+
         self._width = width
         self._height = height
 
-        self._rows = []
-        for row in xrange(height):
-            newrow = []
-            for col in xrange(width):
-                newrow.append(Site(row, col))
-            self._rows.append(newrow)
+        if width is not None and height is not None:
+            self._rows = []
+            for row in xrange(height):
+                newrow = []
+                for col in xrange(width):
+                    newrow.append(Site(row, col))
+                self._rows.append(newrow)
 
     def getSite(self, row, col):
         assert row < self._height
         assert col < self._width
         
-        return self._rows[row][col]
+        site = self._rows[row][col]
+
+        assert site.getRow() == row
+        assert site.getCol() == col
+
+        return site
 
     def setSite(self, row, col, site):
+        assert False
         assert isinstance(site, Site)
 
         self._rows[row][col] = site
@@ -28,18 +38,6 @@ class OilField(Serializable):
 
     def getWidth(self):
         return self._width
-
-class OilPlayerField(Serializable):
-    def __init__(self, field):
-        assert isinstance(field, OilField)
-
-        self._rows = []
-
-        for row in xrange(field.getHeight()):
-            newrow = []
-            for col in xrange(field.getWidth()):
-                newrow.append(OilPlayerSite(field.getSite(row, col)))
-            self._rows.append(newrow)
 
 class Site(Serializable):
     def __init__(self, row, col):
@@ -53,6 +51,8 @@ class Site(Serializable):
         self._rig = " "
         self._drillCost = 0
         self._tax = 0
+
+        self._surveyed = False
 
     def getCol(self):
         return self._col
@@ -77,19 +77,16 @@ class Site(Serializable):
     def getRow(self):
         return self._row
 
+    def getSurveyed(self):
+        return self._surveyed
+
+    def setSurveyed(self, surveyed):
+        assert isinstance(surveyed, bool)
+        self._surveyed = surveyed
+
     def getTax(self):
         return self._tax
 
     def setTax(self, tax):
         assert isinstance(tax, int)
-
         self._tax = tax
-
-class OilPlayerSite(Serializable):
-    def __init__(self, site):
-        assert isinstance(site, Site)
-
-        self._rig = site.getRig()
-
-    def getRig(self):
-        return self._rig

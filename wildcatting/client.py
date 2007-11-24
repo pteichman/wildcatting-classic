@@ -5,18 +5,19 @@ from views import putch
 from report import SurveyorsReport
 from game import Game
 
-import wildcatting.model
+from wildcatting.model import OilField, Site
 
-class client:
+class Client:
 
     def survey(self, x, y):
-        site = self._oilfield.getSite(x, y)
+        site = Site.deserialize(self._server.game.survey(self._gameId, y, x))
+        
         report = SurveyorsReport(self._stdscr, site)
         report.display()
         yes = report.input()
         if yes:
-            site.rig = "B"
-        self._playerfield.setSite(x, y, site)
+            self._server.game.drill(self._gameId, "B")
+
         self._stdscr.clear()
         self.border()
 
@@ -29,14 +30,17 @@ class client:
 
     def wildcatting(self, stdscr):
         self._stdscr = stdscr
-        
+
         (h,w) = stdscr.getmaxyx()
         border_h = h - 4
         border_w = w - 6
         field_w = border_w - 2
         field_h = border_h - 2
-        self._oilfield = OilField(field_w, field_h)
-        self._playerfield = wildcatting.model.PlayerField(self._oilfield.getModel())
+
+        self._gameId = self._server.game.new(field_w, field_h)
+
+        self._playerfield = OilField.deserialize(self._server.game.getPlayerField(self._gameId))
+
         self._border_win = stdscr.derwin(border_h, border_w, 2, 3)
         self._field_win = stdscr.derwin(field_h, field_w, 3, 4)
         self._field_win.keypad(1)
@@ -83,5 +87,7 @@ class client:
             putch(self._field_win, y, x, " ", curses.A_REVERSE | curses.A_BLINK)
             view.display()
 
-    def run(self):
+    def run(self, server):
+        self._server = server
+
         curses.wrapper(self.wildcatting)

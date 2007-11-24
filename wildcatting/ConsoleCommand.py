@@ -24,7 +24,7 @@ class ConsoleCommand(Command):
                         default="localhost", help="server hostname")
 
     def run(self, options, args):
-        url = "http://localhost:%d/" % options.port
+        url = "http://%s:%d/" % (options.hostname, options.port)
         server = ServerProxy(url)
         try:
             version = server.version()

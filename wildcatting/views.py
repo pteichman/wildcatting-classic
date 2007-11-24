@@ -77,9 +77,6 @@ class OilFieldCursesView:
 
         assert isinstance(site, wildcatting.model.Site)
 
-        seq = range(2, 7)
-        seq.reverse()
-
         p = site.getProbability()
         if p == 100:
             return self._colors[-1]

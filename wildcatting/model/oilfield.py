@@ -77,7 +77,7 @@ class Site(Serializable):
     def getRow(self):
         return self._row
 
-    def getSurveyed(self):
+    def isSurveyed(self):
         return self._surveyed
 
     def setSurveyed(self, surveyed):

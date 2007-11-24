@@ -1,6 +1,7 @@
 import curses
 import random
 
+import wildcatting.game
 import wildcatting.model
 
 class OilFieldTextView:
@@ -43,19 +44,18 @@ class OilFieldTextView:
         return ansi
 
     def ansi(self):
-        for row in xrange(self._model.getHeight()):
+        model = self._model
+        for row in xrange(model.getHeight()):
             line = ""
-            for col in xrange(self._model.getWidth()):
-                line += self.toAnsi(self._model.getSite(row, col))
+            for col in xrange(model.getWidth()):
+                line += self.toAnsi(model.getSite(row, col))
             print line
 
 class OilFieldCursesView:
     def __init__(self, win, field):
         self._win = win
 
-        assert isinstance(field, wildcatting.model.OilField)
-
-        self._field = field
+        self.setField(field)
 
         # TODO put this somewhere sensible
         curses.init_pair(1, curses.COLOR_WHITE, curses.COLOR_BLACK)
@@ -65,6 +65,10 @@ class OilFieldCursesView:
         curses.init_pair(5, curses.COLOR_WHITE, curses.COLOR_BLUE)
         curses.init_pair(6, curses.COLOR_WHITE, curses.COLOR_MAGENTA)
         curses.init_pair(7, curses.COLOR_WHITE, curses.COLOR_CYAN)
+
+    def setField(self, field):
+        assert isinstance(field, wildcatting.model.OilField)
+        self._field = field
 
     def siteColor(self, site):
         if site is None:
@@ -88,8 +92,9 @@ class OilFieldCursesView:
         for row in xrange(field.getHeight()):
             for col in xrange(field.getWidth()):
                 site = field.getSite(row, col)
-                putch(self._win, row, col,
-                      ord(site.getRig()), self.siteColor(site))
+                if site.isSurveyed():
+                    putch(self._win, row, col,
+                          ord(site.getRig()), self.siteColor(site))
         self._win.refresh()
 
 def putch(win, y, x, ch, attr=None):
@@ -110,6 +115,8 @@ def main(stdscr):
     (h,w) = stdscr.getmaxyx()
     win = stdscr.derwin(h, w, 0, 0)
     field = wildcatting.model.OilField(w, h)
+    wildcatting.game.OilFiller().fill(field)
+
     view = OilFieldCursesView(win, field)
     while True:
         col = random.choice(range(0,w))

@@ -50,7 +50,7 @@ class GameService:
         return site.serialize()
 
 
-    def drill(self, id, rig):
+    def drill(self, id, row, col, rig):
         game = self._getGame(id)
         field = game.getOilField()
 
@@ -70,7 +70,7 @@ class GameService:
                 site = field.getSite(row, col)
                 playerSite = playerField.getSite(row, col)
 
-                surveyed = site.getSurveyed()
+                surveyed = site.isSurveyed()
                 playerSite.setSurveyed(surveyed)
 
                 if surveyed:

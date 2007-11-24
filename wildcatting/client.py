@@ -8,6 +8,14 @@ from game import Game
 from wildcatting.model import OilField, Site
 
 class Client:
+    def _refresh(self):
+        self._playerfield = OilField.deserialize(self._server.game.getPlayerField(self._gameId))
+
+        self._view.setField(self._playerfield)
+        self._view.display()
+
+        self._stdscr.clear()
+        self.border()
 
     def survey(self, x, y):
         site = Site.deserialize(self._server.game.survey(self._gameId, y, x))
@@ -16,10 +24,9 @@ class Client:
         report.display()
         yes = report.input()
         if yes:
-            self._server.game.drill(self._gameId, "B")
+            self._server.game.drill(self._gameId, y, x, "B")
 
-        self._stdscr.clear()
-        self.border()
+        self._refresh()
 
     def border(self):
         (h,w) = self._stdscr.getmaxyx()
@@ -46,7 +53,7 @@ class Client:
         self._field_win.keypad(1)
         self.border()
 
-        view = OilFieldCursesView(self._field_win, self._playerfield)
+        self._view = view = OilFieldCursesView(self._field_win, self._playerfield)
 
         x = 0 ; y = 0
 

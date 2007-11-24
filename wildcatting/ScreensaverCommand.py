@@ -65,20 +65,21 @@ class ScreensaverCommand(Command):
         win_h, win_w = win.getmaxyx()
 
         while True:
-            field = OilField(win_w-1, win_h)
-            playerField = PlayerField(win_w-1, win_h)
-            view = OilFieldView(win, playerField)
-            coords = []
-            for i in xrange(0, win_w-1):
-                for j in xrange(0, win_h):
-                    coords += [(i, j)]
+            game = Game(win_w, win_h)
+            field = game.getOilField()
+
+            view = OilFieldCursesView(win, field)
+
+            coords = [(row, col) for row in xrange(field.getHeight())
+                      for col in xrange(field.getWidth())]
 
             while len(coords) > 0:
-                choice = random.randint(0,len(coords)-1)
-                x, y = coords[choice]
+                choice = random.randint(0, len(coords) - 1)
+                row, col = coords[choice]
                 del coords[choice]
-                site = field.getSite(x, y)
-                playerField.setSite(x, y, site)
+
+                site = field.getSite(row, col)
+                site.setSurveyed(True)
                 view.display()
 
     def viewScreensaver(self, stdscr, options, args):
@@ -96,7 +97,7 @@ class ScreensaverCommand(Command):
                 for col in xrange(field.getWidth()):
                     site = field.getSite(row, col)
                     site.setSurveyed(True)
-            
+
             view = OilFieldCursesView(win, field)
             view.display()
             time.sleep(0.25)

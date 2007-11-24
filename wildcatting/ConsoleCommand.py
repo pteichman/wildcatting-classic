@@ -45,7 +45,7 @@ class ConsoleCommand(Command):
             except EOFError:
                 print
                 sys.exit(0)
-            
+
             (command, opts, args) = parser.parse_args(cmd.split())
 
             if command is not None:

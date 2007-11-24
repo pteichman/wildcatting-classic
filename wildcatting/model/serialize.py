@@ -22,7 +22,7 @@ class Serializable:
     def __deserialize_subinstance(self, state):
         if isinstance(state, dict) and state.has_key("class"):
             clsname = state["class"]
-            
+
             cls = getattr(wildcatting.model, clsname)
             return cls.deserialize(state)
 

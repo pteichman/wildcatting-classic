@@ -15,7 +15,7 @@ class SurveyorsReport:
     def display(self):
         self._stdscr.clear()
         self._stdscr.refresh()
-        
+
         (h, w) = self._win.getmaxyx()
         coord_str = "X=%s  Y=%s" % (self._site.getCol(), self._site.getRow())
         prob_str = str(self._site.getProbability()).rjust(2) + "%"
@@ -64,7 +64,7 @@ class SurveyorsReport:
                 mid, mx, my, mz, bstate = curses.getmouse()
                 x = mx - (w-ww)/2
                 y = my - (h-wh)/2
-                
+
                 if y == 15 and x == 28:
                     cur = 'y'
                     done = True
@@ -76,11 +76,11 @@ class SurveyorsReport:
                 self._win.move(15, 28)
             else:
                 self._win.move(15, 30)
-                
+
             self._win.refresh()
-            
+
         return cur == 'y'
-            
+
 
 
 def main(stdscr):
@@ -96,6 +96,6 @@ def main(stdscr):
         report.display()
         while True:
             pass
-    
+
 if __name__ == "__main__":
     curses.wrapper(main)

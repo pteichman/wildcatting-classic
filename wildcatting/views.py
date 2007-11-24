@@ -54,7 +54,7 @@ class OilFieldCursesView:
         self._win = win
 
         assert isinstance(field, wildcatting.model.OilField)
-        
+
         self._field = field
 
         # TODO put this somewhere sensible
@@ -71,7 +71,7 @@ class OilFieldCursesView:
             return curses.color_pair(1)
 
         assert isinstance(site, wildcatting.model.Site)
-        
+
         seq = range(2, 7)
         seq.reverse()
 
@@ -107,17 +107,17 @@ def putch(win, y, x, ch, attr=None):
 
 
 def main(stdscr):
-        (h,w) = stdscr.getmaxyx()
-        win = stdscr.derwin(h, w, 0, 0)
-        field = wildcatting.model.OilField(w, h)
-        view = OilFieldCursesView(win, field)
-        while True:
-            col = random.choice(range(0,w))
-            row = random.choice(range(0,h))
-            site = field.getSite(row, col)
-            site.setSurveyed(True)
-            site.setRig("B")
-            view.display()
+    (h,w) = stdscr.getmaxyx()
+    win = stdscr.derwin(h, w, 0, 0)
+    field = wildcatting.model.OilField(w, h)
+    view = OilFieldCursesView(win, field)
+    while True:
+        col = random.choice(range(0,w))
+        row = random.choice(range(0,h))
+        site = field.getSite(row, col)
+        site.setSurveyed(True)
+        site.setRig("B")
+        view.display()
 
 if __name__ == "__main__":
     curses.wrapper(main)

@@ -22,7 +22,7 @@ class OilFiller:
                 minc = 99999
                 for p in xrange(len(peaks)):
                     (y, x) = peaks[p]
-                    
+
                     a = row - y
                     b = col - x
                     c = math.sqrt(a*a + b*b)

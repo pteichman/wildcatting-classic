@@ -14,7 +14,7 @@ class OilField(Serializable):
     def getSite(self, row, col):
         assert row < self._height
         assert col < self._width
-        
+
         site = self._rows[row][col]
 
         assert site.getRow() == row

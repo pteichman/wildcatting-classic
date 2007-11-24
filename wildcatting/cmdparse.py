@@ -66,7 +66,7 @@ class Command(OptionParser):
         # "no such option" error messages to include the command name.
         # I wonder how to add i18n properly here, so we'll match the
         # correct string everywhere
-        
+
         s = "no such option: "
         if msg and msg.startswith(s):
             msg = _("no such %s option: %s") % (self.name, msg[len(s):])
@@ -106,7 +106,7 @@ class CommandParser(OptionParser):
 
             if not type(cls) is types.ClassType:
                 continue
-            
+
             if (not cls is Command) \
                    and issubclass(getattr(module, attr), Command):
                 self.add_command(cls(), group)

@@ -33,11 +33,11 @@ class GameService:
 
     def _getGame(self, id):
         return self._games[id]
-    
+
     def new(self, width, height):
         id = self._nextid
         self._nextid = self._nextid + 1
-        
+
         self._games[id] = Game(width, height)
         return id
 

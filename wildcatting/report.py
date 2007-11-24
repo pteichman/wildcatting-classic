@@ -23,7 +23,15 @@ class SurveyorsReport:
         cost_str = "$" + str(self._site.getDrillCost()).rjust(4)
         tax_str = "$" + str(self._site.getTax()).rjust(4)
 
-        self._win.bkgd(" ", Colors.get(curses.COLOR_BLACK, curses.COLOR_GREEN))
+        bkgd = Colors.get(curses.COLOR_GREEN, curses.COLOR_GREEN)
+        text = Colors.get(curses.COLOR_BLACK, curses.COLOR_GREEN)
+
+        # work around a problem with the MacOS X Terminal - draw the
+        # background explicitly by drawing green on green "." characters
+        self._win.bkgdset(" ", text)
+        for row in xrange(h):
+            self._win.addstr(row, 0, "." * (w-1), bkgd)
+
         self._win.addstr(1, 14, "SURVEYOR'S REPORT")
         self._win.addstr(4, 12, "LOCATION")
         self._win.addstr(4, 24, coord_str)

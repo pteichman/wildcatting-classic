@@ -17,14 +17,6 @@ class AdminService:
         return True
 
 class BaseService:
-    def foo(self):
-        f = wildcatting.model.Foo()
-        f.setValue(3)
-        f.setBar(wildcatting.model.Bar())
-        dict = f.serialize()
-        print dict
-        return dict
-    
     def echo(self, s):
         return s
 

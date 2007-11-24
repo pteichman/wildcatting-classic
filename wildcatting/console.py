@@ -13,19 +13,6 @@ class EchoCommand(Command):
     def run(self, options, args):
         print options.server.echo(" ".join(args))
 
-class FooCommand(Command):
-    log = logging.getLogger("Wildcatting")
-
-    def __init__(self):
-        Command.__init__(self, "foo", summary="get a foo from the server")
-
-    def run(self, options, args):
-        f = wildcatting.model.Foo()
-        dict = options.server.foo()
-        print dict
-        f.deserialize(dict)
-        print "Value is", f.getValue()
-
 class HelpCommand(Command):
     log = logging.getLogger("Wildcatting")
 

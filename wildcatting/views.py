@@ -67,6 +67,15 @@ class OilFieldCursesView:
             Colors.get(curses.COLOR_WHITE, curses.COLOR_RED),
             ]
 
+        self._blankColors = [
+            Colors.get(curses.COLOR_BLUE, curses.COLOR_BLUE),
+            Colors.get(curses.COLOR_CYAN, curses.COLOR_CYAN),
+            Colors.get(curses.COLOR_GREEN, curses.COLOR_GREEN),
+            Colors.get(curses.COLOR_YELLOW, curses.COLOR_YELLOW),
+            Colors.get(curses.COLOR_MAGENTA, curses.COLOR_MAGENTA),
+            Colors.get(curses.COLOR_RED, curses.COLOR_RED),
+            ]
+
     def setField(self, field):
         assert isinstance(field, wildcatting.model.OilField)
         self._field = field
@@ -77,11 +86,21 @@ class OilFieldCursesView:
 
         assert isinstance(site, wildcatting.model.Site)
 
+        return self._chooseColor(site, self._colors)
+
+    def _chooseColor(self, site, colors):
         p = site.getProbability()
         if p == 100:
-            return self._colors[-1]
+            return colors[-1]
+        return colors[int(p / 100. * len(colors))]
 
-        return self._colors[int(p / 100. * len(self._colors))]
+    def blankColor(self, site):
+        if site is None:
+            return Colors.get(curses.COLOR_BLACK, curses.COLOR_BLACK)
+
+        assert isinstance(site, wildcatting.model.Site)
+
+        return self._chooseColor(site, self._blankColors)
 
     def display(self):
         field = self._field
@@ -90,8 +109,18 @@ class OilFieldCursesView:
             for col in xrange(field.getWidth()):
                 site = field.getSite(row, col)
                 if site.isSurveyed():
-                    putch(self._win, row, col,
-                          ord(site.getRig()), self.siteColor(site))
+                    rig = site.getRig()
+                    if rig is None:
+                        # work around an MacOS X terminal problem with
+                        # displaying blank characters - it doesn't draw
+                        # the background if the rig is " "
+                        rig = "."
+                        color = self.blankColor(site)
+                    else:
+                        color = self.siteColor(site)
+
+                    putch(self._win, row, col, ord(rig), color)
+
         self._win.refresh()
 
 def putch(win, y, x, ch, attr=None):

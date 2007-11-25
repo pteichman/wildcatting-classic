@@ -59,9 +59,10 @@ class ScreensaverCommand(Command):
 
     def playerScreensaver(self, stdscr, options, args):
         border, border_win = self.borderWin(stdscr, options.no_border)
-
         border_win_h, border_win_w = border_win.getmaxyx()
-        win = border_win.derwin(border_win_h-border*2, border_win_w-border*2, border, border)
+        height = border_win_h - border * 2
+        width = border_win_w - border * 2
+        win = border_win.derwin(height, width, border, border)
         win_h, win_w = win.getmaxyx()
 
         while True:
@@ -81,6 +82,7 @@ class ScreensaverCommand(Command):
                 site = field.getSite(row, col)
                 site.setSurveyed(True)
                 view.display()
+            time.sleep(0.25)
 
     def viewScreensaver(self, stdscr, options, args):
         border, border_win = self.borderWin(stdscr, options.no_border)
@@ -89,16 +91,18 @@ class ScreensaverCommand(Command):
         width = border_win_w - border * 2
         win = border_win.derwin(height, width, border, border)
         win_h, win_w = win.getmaxyx()
+
         while True:
             game = Game(win_w, win_h)
             field = game.getOilField()
+
+            view = OilFieldCursesView(win, field)
 
             for row in xrange(field.getHeight()):
                 for col in xrange(field.getWidth()):
                     site = field.getSite(row, col)
                     site.setSurveyed(True)
 
-            view = OilFieldCursesView(win, field)
             view.display()
             time.sleep(0.25)
 

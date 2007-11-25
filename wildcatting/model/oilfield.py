@@ -43,7 +43,7 @@ class Site(Serializable):
         self._col = col
 
         self._prob = 0
-        self._rig = " "
+        self._rig = None
         self._drillCost = 0
         self._tax = 0
 

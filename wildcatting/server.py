@@ -1,16 +1,30 @@
+import logging
+
 import version
 import inspect
 
 from SimpleXMLRPCServer import SimpleXMLRPCServer
+import xmlrpclib
 
 from wildcatting.game import Game
 import wildcatting.model
 
 class TieredXMLRPCServer(SimpleXMLRPCServer):
+    log = logging.getLogger("XMLRPCServer")
+
     def register_subinstance(self, tier, instance):
         for (name, method) in inspect.getmembers(instance, inspect.ismethod):
             if not name.startswith("_"):
                 self.register_function(method, "%s.%s" % (tier, name))
+
+    def _dispatch(self, *args, **kwargs):
+        """Log all Exceptions raised by XML-RPC handlers"""
+        try:
+            response = SimpleXMLRPCServer._dispatch(self, *args, **kwargs)
+        except:
+            self.log.debug("XML-RPC Fault", exc_info=True)
+            raise
+        return response
 
 class AdminService:
     def ping(self):

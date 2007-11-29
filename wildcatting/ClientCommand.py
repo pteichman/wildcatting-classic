@@ -2,6 +2,8 @@ import logging
 import socket
 import sys
 
+import wildcatting.util
+
 from wildcatting.cmdparse import Command
 from wildcatting.client import Client
 
@@ -18,6 +20,8 @@ class ClientCommand(Command):
                         default="localhost", help="server hostname")
 
     def run(self, options, args):
+        wildcatting.util.startLogger("client.log")
+        
         url = "http://%s:%d/" % (options.hostname, options.port)
         server = ServerProxy(url)
         try:

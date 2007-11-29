@@ -2,6 +2,7 @@ import logging
 
 import wildcatting.version
 import wildcatting.server
+import wildcatting.util
 from wildcatting.cmdparse import Command
 
 class ServerCommand(Command):
@@ -13,6 +14,8 @@ class ServerCommand(Command):
                         default="7777", help="server port")
 
     def run(self, options, args):
+        wildcatting.util.startLogger("server.log")
+
         hostname = "localhost"
         s = wildcatting.server.TieredXMLRPCServer((hostname, options.port))
 

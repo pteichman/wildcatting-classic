@@ -47,37 +47,36 @@ class BaseService:
 class GameService:
     def __init__(self):
         self._games = {}
-        self._nextid = 0
+        self._nextGameId = 0
 
-    def _getGame(self, id):
-        return self._games[id]
+    def _getGame(self, gameId):
+        return self._games[gameId]
 
     def new(self, width, height):
-        id = self._nextid
-        self._nextid = self._nextid + 1
+        gameId = self._nextGameId
+        self._nextGameId = self._nextGameId + 1
 
-        self._games[id] = Game(width, height)
-        return id
+        self._games[gameId] = Game(width, height)
+        return gameId
 
-    def survey(self, id, row, col):
-        game = self._getGame(id)
+    def survey(self, gameId, row, col):
+        game = self._getGame(gameId)
         field = game.getOilField()
 
         site = field.getSite(row, col)
         site.setSurveyed(True)
         return site.serialize()
 
-
-    def drill(self, id, row, col, rig):
-        game = self._getGame(id)
+    def drill(self, gameId, row, col, rig):
+        game = self._getGame(gameId)
         field = game.getOilField()
 
         site = field.getSite(row, col)
         site.setRig(rig)
         return True
 
-    def getPlayerField(self, id):
-        game = self._getGame(id)
+    def getPlayerField(self, gameId):
+        game = self._getGame(gameId)
         field = game.getOilField()
 
         width, height = field.getWidth(), field.getHeight()

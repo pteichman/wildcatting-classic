@@ -30,6 +30,5 @@ class ServerCommand(Command):
         print "%s server listening at %s" % (wildcatting.version.VERSION_STRING, url)
         try:
             s.serve_forever()
-        except KeyboardInterrupt, e:
+        finally:
             self.log.info("Server shutdown")
-            raise e

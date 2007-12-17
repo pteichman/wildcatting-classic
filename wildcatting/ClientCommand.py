@@ -1,6 +1,7 @@
 import logging
 import socket
 import sys
+import os
 
 import wildcatting.util
 
@@ -14,10 +15,20 @@ class ClientCommand(Command):
 
     def __init__(self):
         Command.__init__(self, "client", summary="Run the Wildcatting client")
+
+        user = os.environ.get("USER")
+        if user is None:
+            user = "none"
+        rig = user[0].upper()
+        
         self.add_option("-p", "--port", action="store", type="int",
                         default="7777", help="server port")
         self.add_option("-n", "--hostname", action="store", type="string",
                         default="localhost", help="server hostname")
+        self.add_option("-u", "--username", action="store", type="string",
+                        default=user, help="username")
+        self.add_option("-r", "--rig", action="store", type="string",
+                        default=rig, help="rig")
 
     def run(self, options, args):
         wildcatting.util.startLogger("client.log")
@@ -31,4 +42,5 @@ class ClientCommand(Command):
             print e.args[1]
             sys.exit(0)
 
-        Client().run(server)
+        client = Client(options.username, options.rig)
+        client.run(server)

@@ -8,8 +8,12 @@ from game import Game
 from wildcatting.model import OilField, Site
 
 class Client:
+    def __init__(self, username, rig):
+        self._username = username
+        self._rig = rig
+    
     def _refresh(self):
-        self._playerfield = OilField.deserialize(self._server.game.getPlayerField(self._gameId))
+        self._playerfield = OilField.deserialize(self._server.game.getPlayerField(self._handle))
 
         self._view.setField(self._playerfield)
         self._view.display()
@@ -18,13 +22,13 @@ class Client:
         self.border()
 
     def survey(self, x, y):
-        site = Site.deserialize(self._server.game.survey(self._gameId, y, x))
+        site = Site.deserialize(self._server.game.survey(self._handle, y, x))
 
         report = SurveyorsReport(self._stdscr, site)
         report.display()
         yes = report.input()
         if yes:
-            self._server.game.drill(self._gameId, y, x, "B")
+            self._server.game.drill(self._handle, y, x)
 
         self._refresh()
 
@@ -45,8 +49,9 @@ class Client:
         field_h = border_h - 2
 
         self._gameId = self._server.game.new(field_w, field_h)
+        self._handle = self._server.game.join(self._gameId, self._username, self._rig)
 
-        self._playerfield = OilField.deserialize(self._server.game.getPlayerField(self._gameId))
+        self._playerfield = OilField.deserialize(self._server.game.getPlayerField(self._handle))
 
         self._border_win = stdscr.derwin(border_h, border_w, 2, 3)
         self._field_win = stdscr.derwin(field_h, field_w, 3, 4)

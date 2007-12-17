@@ -1,6 +1,7 @@
 import random
 import math
 
+from wildcatting.exceptions import WildcattingException
 import wildcatting.model
 
 class OilFiller:
@@ -59,10 +60,41 @@ class Game:
     def __init__(self, width, height):
         assert isinstance(width, int)
         assert isinstance(height, int)
+
+        self._players = {}
         
         self._oilField = wildcatting.model.OilField(width, height)
         OilFiller().fill(self._oilField)
         TaxFiller().fill(self._oilField)
+
+    def _generateSecret(self, player):
+        return "".join([random.choice(("0", "1", "2", "3", "4",
+                                       "5", "6", "7", "8", "9",
+                                       "A", "B", "C", "D", "E", "F"))
+                  for i in xrange(0, 16)])
+
+    def addPlayer(self, player):
+        assert isinstance(player, wildcatting.model.Player)
+
+        id = player.getUsername()
+        if self._players.has_key(id):
+            raise WildcattingException("Player has already joined game: " + id)
+
+        secret = self._generateSecret(player)
+
+        self._players[secret] = player
+
+        return secret
+
+    def getPlayer(self, username, secret):
+        assert isinstance(username, str)
+        assert isinstance(secret, str)
+        
+        player = self._players.get(secret)
+        if player is None or player.getUsername() != username:
+            raise WildcattingException("Invalid login")
+
+        return player
 
     def getOilField(self):
         return self._oilField

@@ -2,10 +2,13 @@ import logging
 
 import version
 import inspect
+import base64
+import re
 
 from SimpleXMLRPCServer import SimpleXMLRPCServer
 import xmlrpclib
 
+from wildcatting.exceptions import WildcattingException
 from wildcatting.game import Game
 import wildcatting.model
 
@@ -45,38 +48,95 @@ class BaseService:
         return version.VERSION_STRING
 
 class GameService:
+    HANDLE_SEP = "::"
+    
     def __init__(self):
         self._games = {}
         self._nextGameId = 0
 
     def _getGame(self, gameId):
-        return self._games[gameId]
+        assert isinstance(gameId, str)
+
+        game = self._games.get(gameId)
+        if game is None:
+            raise WildcattingException("Unknown game id: " + gameId)
+        
+        return game
+
+    def _readHandle(self, handle):
+        assert isinstance(handle, str)
+        
+        (gameId, playerName, secret) = self._decodeGameHandle(handle)
+
+        game = self._getGame(gameId)
+        player = game.getPlayer(playerName, secret)
+
+        return (game, player)
+
+    def _getSecret(self, playerId):
+        assert isinstance(playerId, str)
+
+        secret = self._secrets.get(playerId)
+        if secret is None:
+            raise WildcattingException("Unregistered player id: " + gameId)
+        
+        return secret
+
+    def _encodeGameHandle(self, gameId, player, secret):
+        assert isinstance(gameId, str)
+        assert isinstance(player, wildcatting.model.Player)
+        assert isinstance(secret, str)
+        
+        handle = GameService.HANDLE_SEP.join((gameId, player.getUsername(), secret))
+        return base64.b64encode(handle)
+
+    def _decodeGameHandle(self, gameHandle):
+        assert isinstance(gameHandle, str)
+
+        gameHandle = base64.b64decode(gameHandle)
+        assert re.match("\d+::.+", gameHandle) is not None
+
+        return gameHandle.split(GameService.HANDLE_SEP, 2)
 
     def new(self, width, height):
-        gameId = self._nextGameId
+        assert isinstance(width, int)
+        assert isinstance(height, int)
+        
+        gameId = str(self._nextGameId)
         self._nextGameId = self._nextGameId + 1
 
         self._games[gameId] = Game(width, height)
         return gameId
 
-    def survey(self, gameId, row, col):
+    def join(self, gameId, username, rig):
+        assert isinstance(gameId, str)
+        assert isinstance(username, str)
+        
         game = self._getGame(gameId)
+        player = wildcatting.model.Player(username, rig)
+
+        secret = game.addPlayer(player)
+
+        return self._encodeGameHandle(gameId, player, secret)
+
+    def survey(self, handle, row, col):
+        game, player = self._readHandle(handle)
         field = game.getOilField()
 
         site = field.getSite(row, col)
         site.setSurveyed(True)
         return site.serialize()
 
-    def drill(self, gameId, row, col, rig):
-        game = self._getGame(gameId)
+    def drill(self, handle, row, col):
+        game, player = self._readHandle(handle)
         field = game.getOilField()
 
         site = field.getSite(row, col)
-        site.setRig(rig)
+        site.setRig(player.getRig())
         return True
 
-    def getPlayerField(self, gameId):
-        game = self._getGame(gameId)
+    def getPlayerField(self, handle):
+        game, player = self._readHandle(handle)
         field = game.getOilField()
 
         width, height = field.getWidth(), field.getHeight()

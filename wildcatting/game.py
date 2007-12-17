@@ -57,6 +57,9 @@ class TaxFiller:
 
 class Game:
     def __init__(self, width, height):
+        assert isinstance(width, int)
+        assert isinstance(height, int)
+        
         self._oilField = wildcatting.model.OilField(width, height)
         OilFiller().fill(self._oilField)
         TaxFiller().fill(self._oilField)

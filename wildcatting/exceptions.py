@@ -1,0 +1,2 @@
+class WildcattingException(Exception):
+    pass

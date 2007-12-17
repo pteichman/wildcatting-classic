@@ -26,5 +26,10 @@ class ServerCommand(Command):
 
         url = "http://%s:%d/" % (hostname, options.port)
 
+        self.log.info("Server start")
         print "%s server listening at %s" % (wildcatting.version.VERSION_STRING, url)
-        s.serve_forever()
+        try:
+            s.serve_forever()
+        except KeyboardInterrupt, e:
+            self.log.info("Server shutdown")
+            raise e

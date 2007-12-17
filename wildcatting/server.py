@@ -124,6 +124,9 @@ class GameService:
         field = game.getOilField()
 
         site = field.getSite(row, col)
+        if site.isSurveyed():
+            raise WildcattingException("Site is already surveyed")
+
         site.setSurveyed(True)
         return site.serialize()
 

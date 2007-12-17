@@ -7,9 +7,10 @@ import wildcatting.model
 
 class SurveyorsReport:
 
-    def __init__(self, stdscr, site):
+    def __init__(self, stdscr, site, surveyed):
         self._stdscr = stdscr
         self._site = site
+        self._surveyed = surveyed
         (h,w) = self._stdscr.getmaxyx()
         self._win = self._stdscr.derwin(16, 48, (h-16)/2, (w-48)/2)
 
@@ -41,7 +42,11 @@ class SurveyorsReport:
         self._win.addstr(8, 29, cost_str)
         self._win.addstr(10, 12, "TAXES PER WEEK")
         self._win.addstr(10, 29, tax_str)
-        self._win.addstr(15, 13, "DRILL A WELL? (Y-N) ")
+
+        if not self._surveyed:
+            self._win.addstr(15, 13, "DRILL A WELL? (Y-N) ")
+        else:
+            self._win.addstr(15, 16, "PRESS ANY KEY")
 
         self._win.refresh()
 
@@ -57,6 +62,9 @@ class SurveyorsReport:
         curses.curs_set(1)
         while not done:
             c = self._win.getch()
+            if self._surveyed:
+                break
+
             if c == curses.KEY_UP or c == curses.KEY_LEFT:
                 cur = 'y'
             elif c == curses.KEY_DOWN or c == curses.KEY_RIGHT:

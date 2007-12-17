@@ -26,9 +26,10 @@ class Client:
         self._view.display()
 
     def survey(self, x, y):
+        oldsite = self._playerfield.getSite(y, x)
         site = Site.deserialize(self._server.game.survey(self._handle, y, x))
 
-        report = SurveyorsReport(self._stdscr, site)
+        report = SurveyorsReport(self._stdscr, site, oldsite.isSurveyed())
         report.display()
         yes = report.input()
         if yes:

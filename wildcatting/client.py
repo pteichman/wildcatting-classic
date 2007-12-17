@@ -8,7 +8,8 @@ from game import Game
 from wildcatting.model import OilField, Site
 
 class Client:
-    def __init__(self, username, rig):
+    def __init__(self, gameId, username, rig):
+        self._gameId = gameId
         self._username = username
         self._rig = rig
     
@@ -48,7 +49,9 @@ class Client:
         field_w = border_w - 2
         field_h = border_h - 2
 
-        self._gameId = self._server.game.new(field_w, field_h)
+        if self._gameId is None:
+            self._gameId = self._server.game.new(field_w, field_h)
+
         self._handle = self._server.game.join(self._gameId, self._username, self._rig)
 
         self._playerfield = OilField.deserialize(self._server.game.getPlayerField(self._handle))

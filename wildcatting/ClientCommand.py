@@ -29,6 +29,8 @@ class ClientCommand(Command):
                         default=user, help="username")
         self.add_option("-r", "--rig", action="store", type="string",
                         default=rig, help="rig")
+        self.add_option("-g", "--game-id", action="store", type="string",
+                        default=None, help="game id")
 
     def run(self, options, args):
         wildcatting.util.startLogger("client.log")
@@ -42,5 +44,5 @@ class ClientCommand(Command):
             print e.args[1]
             sys.exit(0)
 
-        client = Client(options.username, options.rig)
+        client = Client(options.game_id, options.username, options.rig)
         client.run(server)

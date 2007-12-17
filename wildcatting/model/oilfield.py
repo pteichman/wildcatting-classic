@@ -70,8 +70,9 @@ class Site(Serializable):
         return self._rig
 
     def setRig(self, rig):
-        assert isinstance(rig, str)
-        assert len(rig) == 1
+        if rig is not None:
+            assert isinstance(rig, str)
+            assert len(rig) == 1
         self._rig = rig
 
     def getRow(self):

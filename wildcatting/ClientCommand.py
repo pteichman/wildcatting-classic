@@ -23,7 +23,7 @@ class ClientCommand(Command):
         wildcatting.util.startLogger("client.log")
         
         url = "http://%s:%d/" % (options.hostname, options.port)
-        server = ServerProxy(url)
+        server = ServerProxy(url, allow_none=True)
         try:
             version = server.version()
         except socket.error, e:

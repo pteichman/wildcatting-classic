@@ -10,6 +10,10 @@ from wildcatting.game import Game
 import wildcatting.model
 
 class TieredXMLRPCServer(SimpleXMLRPCServer):
+    def __init__(self, *args, **kwargs):
+        kwargs["allow_none"] = True
+        SimpleXMLRPCServer.__init__(self, *args, **kwargs)
+    
     log = logging.getLogger("XMLRPCServer")
 
     def register_subinstance(self, tier, instance):

@@ -17,10 +17,10 @@ class Client:
         self._playerfield = OilField.deserialize(self._server.game.getPlayerField(self._handle))
 
         self._view.setField(self._playerfield)
-        self._view.display()
 
         self._stdscr.clear()
         self.border()
+        self._view.display()
 
     def survey(self, x, y):
         site = Site.deserialize(self._server.game.survey(self._handle, y, x))
@@ -30,8 +30,6 @@ class Client:
         yes = report.input()
         if yes:
             self._server.game.drill(self._handle, y, x)
-
-        self._refresh()
 
     def border(self):
         (h,w) = self._stdscr.getmaxyx()
@@ -54,14 +52,12 @@ class Client:
 
         self._handle = self._server.game.join(self._gameId, self._username, self._rig)
 
-        self._playerfield = OilField.deserialize(self._server.game.getPlayerField(self._handle))
-
         self._border_win = stdscr.derwin(border_h, border_w, 2, 3)
         self._field_win = stdscr.derwin(field_h, field_w, 3, 4)
         self._field_win.keypad(1)
         self.border()
 
-        self._view = view = OilFieldCursesView(self._field_win, self._playerfield)
+        self._view = view = OilFieldCursesView(self._field_win)
 
         x = 0 ; y = 0
 
@@ -72,6 +68,9 @@ class Client:
             curses.curs_set(0)
             dx = 0 ; dy = 0
             survey = False
+
+            self._refresh()
+            
             c = stdscr.getch()
             if c == curses.KEY_UP: dy = -1
             elif c == curses.KEY_DOWN: dy = 1
@@ -100,7 +99,6 @@ class Client:
                 self.survey(x, y)
 
             putch(self._field_win, y, x, " ", curses.A_REVERSE | curses.A_BLINK)
-            view.display()
 
     def run(self, server):
         self._server = server

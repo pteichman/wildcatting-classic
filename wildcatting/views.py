@@ -53,9 +53,8 @@ class OilFieldTextView:
             print line
 
 class OilFieldCursesView:
-    def __init__(self, win, field):
+    def __init__(self, win):
         self._win = win
-        self.setField(field)
 
         # increasing order of hotness
         self._colors = [

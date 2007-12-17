@@ -45,4 +45,9 @@ class ClientCommand(Command):
             sys.exit(0)
 
         client = Client(options.game_id, options.username, options.rig)
-        client.run(server)
+
+        self.log.info("Wildcatting client start")
+        try:
+            client.run(server)
+        finally:
+            self.log.info("Wildcatting client shutdown")

@@ -1,3 +1,4 @@
+import logging
 import curses
 
 from views import OilFieldCursesView
@@ -8,6 +9,8 @@ from game import Game
 from wildcatting.model import OilField, Site
 
 class Client:
+    log = logging.getLogger("Wildcatting")
+    
     def __init__(self, gameId, username, rig):
         self._gameId = gameId
         self._username = username
@@ -49,6 +52,9 @@ class Client:
 
         if self._gameId is None:
             self._gameId = self._server.game.new(field_w, field_h)
+            self.log.info("Created a new game: ID is " + self._gameId)
+        else:
+            self.log.info("Reconnecting to game ID: " + self._gameId)
 
         self._handle = self._server.game.join(self._gameId, self._username, self._rig)
 

@@ -2,26 +2,29 @@ import new
 import wildcatting.model
 
 class Serializable:
+    CLASS_KEY = "wildcatting.model.Serializable.class"
+    STATE_KEY = "wildcatting.model.Serializable.state"
+    
     def serialize(self):
         return self.__serialize_instance(self)
 
     def deserialize(cls, state):
-        clsname = state.get("class")
+        clsname = state.get(Serializable.CLASS_KEY)
         if clsname != cls.__name__:
             raise Exception("Trying to deserialize a %s as a %s" % (self.__class__.__name__, clsname))
 
         obj = new.instance(cls)
-        obj.__dict__ = obj.__deserialize_item(state.get("state"))
+        obj.__dict__ = obj.__deserialize_item(state.get(Serializable.STATE_KEY))
         return obj
     deserialize = classmethod(deserialize)
 
     def __serialize_instance(self, item):
-        return {"class" : item.__class__.__name__,
-                "state" : item.__serialize_item(item.__dict__)}
+        return {Serializable.CLASS_KEY : item.__class__.__name__,
+                Serializable.STATE_KEY : item.__serialize_item(item.__dict__)}
 
     def __deserialize_subinstance(self, state):
-        if isinstance(state, dict) and state.has_key("class"):
-            clsname = state["class"]
+        if isinstance(state, dict) and state.has_key(Serializable.CLASS_KEY):
+            clsname = state[Serializable.CLASS_KEY]
 
             cls = getattr(wildcatting.model, clsname)
             return cls.deserialize(state)
@@ -40,7 +43,7 @@ class Serializable:
 
     def __deserialize_item(self, item):
         if isinstance(item, dict):
-            if item.has_key("class"):
+            if item.has_key(Serializable.CLASS_KEY):
                 return self.__deserialize_subinstance(item)
             return self.__deserialize_dict(item)
         elif isinstance(item, list):

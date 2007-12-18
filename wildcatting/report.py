@@ -58,7 +58,7 @@ class WeeklyReport:
             
             rig_str = "  %s  %s" % (str(x).rjust(2), str(y).rjust(2))
             rig_str += "  $%s   $%s    $%s  $%s" % (str(cost).rjust(4), str(tax).rjust(4), str(income).rjust(4), str(profitAndLoss).rjust(8))
-            self._win.addstr(3 + turn, 0, rig_str)
+            self._win.addstr(2 + turn, 0, rig_str)
             sumProfitAndLoss += profitAndLoss
         
         self._win.addstr(15, 1, "NEXT PLAYER")

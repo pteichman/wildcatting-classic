@@ -6,7 +6,7 @@ from views import putch
 from report import SurveyorsReport
 from game import Game
 
-from wildcatting.model import OilField, Site
+from wildcatting.model import OilField, Site, Rig
 
 class Client:
     log = logging.getLogger("Wildcatting")

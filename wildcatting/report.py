@@ -5,8 +5,64 @@ from wildcatting.colors import Colors
 
 import wildcatting.model
 
-class SurveyorsReport:
+class WeeklyReport:
+    def __init__(self, stdscr, field, player, turns):
+        self._stdscr = stdscr
+        self._player = player
+        self._turns = turns
+        self._sites = self._buildSiteDict(field, player)
+        (h,w) = self._stdscr.getmaxyx()
+        self._win = self._stdscr.derwin(16, 48, (h-16)/2, (w-48)/2)
 
+    def _buildSiteDict(self, field, player):
+        sites = {}
+        for y in xrange(field.getHeight()):
+            for x in xrange(field.getWidth()):
+                site = field.getSite(x, y)
+                rig = site.getRig()
+                if rig:
+                    if rig.getPlayer().getUsername() == player.getUsername():
+                        sites[rig.getTurn()] = site
+        return sites
+
+    def display(self):
+        self._stdscr.clear()
+        self._stdscr.refresh()
+        (h, w) = self._win.getmaxyx()        
+        bkgd = Colors.get(curses.COLOR_GREEN, curses.COLOR_GREEN)
+        text = Colors.get(curses.COLOR_BLACK, curses.COLOR_GREEN)
+
+        # work around a problem with the MacOS X Terminal - draw the
+        # background explicitly by drawing green on green "." characters
+        self._win.bkgdset(" ", text)
+        for row in xrange(h):
+            self._win.addstr(row, 0, "." * (w-1), bkgd)
+
+        self._win.addstr(0, 0, self._player.getUsername().upper())
+        self._win.addstr(0, 36, "WEEK %s" % self._turns)
+        self._win.addstr(1, 1, "  X   Y   COST     TAX   INCOME        P&L")
+
+        for turn in xrange(self._turns):
+            if turn in self._sites:
+                site = self._sites[turn]
+                x = site.getCol()
+                y = site.getRow()
+                rig = site.getRig()
+                cost = site.getDrillCost()
+                tax = site.getTax()
+                income = random.randint(0, 142)
+                profitAndLoss = random.randint(0, 75000)
+            else:
+                x = y = cost = tax = income = profitAndLoss = 0
+            
+            rig_str = "  %s  %s" % (str(x).rjust(2), str(y).rjust(2))
+            rig_str += "  $%s   $%s    $%s  $%s" % (str(cost).rjust(4), str(tax).rjust(4), str(income).rjust(4), str(profitAndLoss).rjust(8))
+            self._win.addstr(3 + turn, 0, rig_str)
+        
+        self._win.addstr(15, 16, "PRESS ANY KEY")
+        self._win.refresh()
+
+class SurveyorsReport:
     def __init__(self, stdscr, site, surveyed):
         self._stdscr = stdscr
         self._site = site
@@ -101,15 +157,26 @@ class SurveyorsReport:
 
 
 def main(stdscr):
-    (h,w) = stdscr.getmaxyx()
-    win = stdscr.derwin(16, 48, (h-16)/2, (w-48)/2)
+    player = wildcatting.model.Player("bob", "B")
+    field = wildcatting.model.OilField(100, 100)
 
-    site = wildcatting.model.Site(32, 15)
-    site.setProbability(random.randint(0, 100))
-    site.setDrillCost(random.randint(10, 30))
-    site.setTax(random.randint(600, 1000))
+    turns = random.randint(0,12)
+    for turn in xrange(turns):
+        if random.random() > 0.5:
+            continue
+        
+        row = random.randint(0, 99)
+        col = random.randint(0, 99)
+        
+        site = wildcatting.model.Site(row, col)
+        site.setProbability(random.randint(0, 100))
+        site.setDrillCost(random.randint(10, 30))
+        site.setTax(random.randint(600, 1000))
+        rig = wildcatting.model.Rig(player, turn)
+        site.setRig(rig)
+        field.setSite(row, col, site)
 
-    report = SurveyorsReport(win, site)
+    report = WeeklyReport(stdscr, field, player, turns)
     report.display()
     while True:
         pass

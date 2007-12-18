@@ -8,6 +8,7 @@ from wildcatting import ClientCommand
 from wildcatting import ConsoleCommand
 from wildcatting import ScreensaverCommand
 from wildcatting import ServerCommand
+from wildcatting import ReportCommand
 from wildcatting import version
 
 parser = CommandParser()
@@ -20,6 +21,7 @@ parser.add_commands(ClientCommand)
 parser.add_commands(ConsoleCommand)
 parser.add_commands(ScreensaverCommand)
 parser.add_commands(ServerCommand)
+parser.add_commands(ReportCommand)
 
 if __name__ == "__main__":
     (command, options, args) = parser.parse_args()

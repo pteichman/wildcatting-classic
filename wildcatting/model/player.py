@@ -1,16 +1,16 @@
 from serialize import Serializable
 
 class Player(Serializable):
-    def __init__(self, username, rig):
+    def __init__(self, username, symbol):
         assert isinstance(username, str)
-        assert isinstance(rig, str)
-        assert len(rig) == 1
+        assert isinstance(symbol, str)
+        assert len(symbol) == 1
 
         self._username = username
-        self._rig = rig
+        self._symbol = symbol
 
     def getUsername(self):
         return self._username
 
-    def getRig(self):
-        return self._rig
+    def getSymbol(self):
+        return self._symbol

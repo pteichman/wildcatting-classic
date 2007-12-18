@@ -108,12 +108,12 @@ class GameService:
         self._games[gameId] = Game(width, height)
         return gameId
 
-    def join(self, gameId, username, rig):
+    def join(self, gameId, username, symbol):
         assert isinstance(gameId, str)
         assert isinstance(username, str)
         
         game = self._getGame(gameId)
-        player = wildcatting.model.Player(username, rig)
+        player = wildcatting.model.Player(username, symbol)
 
         secret = game.addPlayer(player)
 
@@ -135,7 +135,8 @@ class GameService:
         field = game.getOilField()
 
         site = field.getSite(row, col)
-        site.setRig(player.getRig())
+        rig = Rig(col, row, player, game.getTurn())
+        site.setRig(rig)
         return True
 
     def getPlayerField(self, handle):

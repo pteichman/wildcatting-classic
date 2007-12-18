@@ -23,7 +23,6 @@ class OilField(Serializable):
         return site
 
     def setSite(self, row, col, site):
-        assert False
         assert isinstance(site, Site)
 
         self._rows[row][col] = site
@@ -71,8 +70,7 @@ class Site(Serializable):
 
     def setRig(self, rig):
         if rig is not None:
-            assert isinstance(rig, str)
-            assert len(rig) == 1
+            assert isinstance(rig, Rig)
         self._rig = rig
 
     def getRow(self):
@@ -91,3 +89,17 @@ class Site(Serializable):
     def setTax(self, tax):
         assert isinstance(tax, int)
         self._tax = tax
+
+class Rig(Serializable):
+    def __init__(self, player, turn):
+        self._player = player
+        self._turn = turn
+
+    def __cmp__(self, other):
+        return cmp(self._turn, other._turn)
+
+    def getPlayer(self):
+        return self._player
+
+    def getTurn(self):
+        return self._turn

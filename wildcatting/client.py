@@ -15,18 +15,16 @@ class Client:
         self._gameId = gameId
         self._username = username
         self._rig = rig
-    
-    def _refresh(self):
-        self._playerfield = OilField.deserialize(self._server.game.getPlayerField(self._handle))
 
-        self._view.setField(self._playerfield)
-
+    def _refreshPlayerField(self):
         self._stdscr.clear()
         self.border()
+        self._playerField = OilField.deserialize(self._server.game.getPlayerField(self._handle))
+        self._view.setField(self._playerField)
         self._view.display()
 
     def survey(self, x, y):
-        oldsite = self._playerfield.getSite(y, x)
+        oldsite = self._playerField.getSite(y, x)
         site = Site.deserialize(self._server.game.survey(self._handle, y, x))
 
         report = SurveyorsReport(self._stdscr, site, oldsite.isSurveyed())
@@ -39,8 +37,6 @@ class Client:
         (h,w) = self._stdscr.getmaxyx()
         self._stdscr.addstr(1, 3, "Let's go wildcatting!\n", curses.A_REVERSE)
         self._border_win.box()
-        self._border_win.refresh()
-
 
     def wildcatting(self, stdscr):
         self._stdscr = stdscr
@@ -61,22 +57,20 @@ class Client:
 
         self._border_win = stdscr.derwin(border_h, border_w, 2, 3)
         self._field_win = stdscr.derwin(field_h, field_w, 3, 4)
-        self._field_win.keypad(1)
-        self.border()
 
         self._view = view = OilFieldCursesView(self._field_win)
 
-        x = 0 ; y = 0
-
-        self._field_win.addch(y, x, " ", curses.A_REVERSE | curses.A_BLINK)
-        self._field_win.refresh()
         curses.mousemask(curses.ALL_MOUSE_EVENTS)
+        self._refreshPlayerField()
+        x = 0 ; y = 0
         while True:
+            putch(self._field_win, y, x, " ", curses.A_REVERSE)
+            self._field_win.refresh()
+            self._view.display()
+            
             curses.curs_set(0)
             dx = 0 ; dy = 0
             survey = False
-
-            self._refresh()
             
             c = stdscr.getch()
             if c == curses.KEY_UP: dy = -1
@@ -99,13 +93,10 @@ class Client:
                 putch(self._field_win, y, x, " ", curses.color_pair(0))
                 x += dx ; y += dy
                 putch(self._field_win, y, x, " ")
-                self._field_win.move(y, x)
-                self._field_win.refresh()
 
             if survey:
                 self.survey(x, y)
-
-            putch(self._field_win, y, x, " ", curses.A_REVERSE | curses.A_BLINK)
+                self._refreshPlayerField()
 
     def run(self, server):
         self._server = server

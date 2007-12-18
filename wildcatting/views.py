@@ -113,12 +113,13 @@ class OilFieldCursesView:
                         # work around an MacOS X terminal problem with
                         # displaying blank characters - it doesn't draw
                         # the background if the rig is " "
-                        rig = "."
+                        symbol = "."
                         color = self.blankColor(site)
                     else:
+                        symbol = rig.getPlayer().getSymbol()
                         color = self.siteColor(site)
 
-                    putch(self._win, row, col, ord(rig), color)
+                    putch(self._win, row, col, ord(symbol), color)
 
         self._win.refresh()
 

@@ -62,6 +62,7 @@ class Game:
         assert isinstance(height, int)
 
         self._players = {}
+        self._turn = 0
         
         self._oilField = wildcatting.model.OilField(width, height)
         OilFiller().fill(self._oilField)
@@ -95,6 +96,9 @@ class Game:
             raise WildcattingException("Invalid login")
 
         return player
+
+    def getTurn(self):
+        return self._turn
 
     def getOilField(self):
         return self._oilField

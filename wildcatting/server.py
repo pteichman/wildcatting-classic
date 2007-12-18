@@ -135,7 +135,7 @@ class GameService:
         field = game.getOilField()
 
         site = field.getSite(row, col)
-        rig = Rig(col, row, player, game.getTurn())
+        rig = wildcatting.model.Rig(player, game.getTurn())
         site.setRig(rig)
         return True
 

@@ -52,7 +52,7 @@ class WeeklyReport:
                 cost = site.getDrillCost()
                 tax = site.getTax()
                 income = random.randint(0, 142)
-                profitAndLoss = random.randint(0, 75000)
+                profitAndLoss = random.randint(-75000, 75000)
             else:
                 x = y = cost = tax = income = profitAndLoss = 0
             
@@ -63,6 +63,7 @@ class WeeklyReport:
         
         self._win.addstr(15, 1, "NEXT PLAYER")
         self._win.addstr(15, 35, "$ %s" % str(sumProfitAndLoss).rjust(10))
+        self._win.move(15, 0)
         self._win.refresh()
 
 class SurveyorsReport:

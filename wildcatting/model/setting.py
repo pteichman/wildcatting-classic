@@ -1,11 +1,18 @@
 from serialize import Serializable
 
 class Setting(Serializable):
-    def __init__(self):
-        self._name = None
+    def getLocation(self):
+        return self._location
 
-    def getName(self):
-        return self._name
+    def setLocation(self, location):
+        assert isinstance(location, str)
+        
+        self._location = location
 
-    def setName(self, name):
-        self._name = name
+    def getFacts(self):
+        return self._facts
+
+    def setFacts(self, facts):
+        assert isinstance(facts, list)
+        
+        self._facts = facts

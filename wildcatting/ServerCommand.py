@@ -3,6 +3,7 @@ import logging
 import wildcatting.version
 import wildcatting.server
 import wildcatting.util
+import wildcatting.theme
 from wildcatting.cmdparse import Command
 
 class ServerCommand(Command):
@@ -17,11 +18,16 @@ class ServerCommand(Command):
         wildcatting.util.startLogger("server.log")
 
         hostname = "localhost"
+
+        # this should be a server option
+        theme = wildcatting.theme.Theme("themes/West Texas")
+        
         s = wildcatting.server.TieredXMLRPCServer((hostname, options.port))
 
         s.register_instance(wildcatting.server.BaseService())
         s.register_subinstance("admin", wildcatting.server.AdminService())
         s.register_subinstance("game", wildcatting.server.GameService())
+        s.register_subinstance("setting", wildcatting.server.SettingService(theme))
         s.register_introspection_functions()
 
         url = "http://%s:%d/" % (hostname, options.port)

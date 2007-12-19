@@ -4,6 +4,7 @@ import version
 import inspect
 import base64
 import re
+import random
 
 from SimpleXMLRPCServer import SimpleXMLRPCServer
 import xmlrpclib
@@ -46,6 +47,13 @@ class BaseService:
 
     def version(self):
         return version.VERSION_STRING
+
+class SettingService:
+    def __init__(self, theme):
+        self._setting = theme.getSetting()
+
+    def getSetting(self):
+        return self._setting.serialize()
 
 class GameService:
     HANDLE_SEP = "::"

@@ -1,5 +1,6 @@
 import logging
 import curses
+import random
 
 from views import OilFieldCursesView
 from views import putch
@@ -11,10 +12,11 @@ from wildcatting.model import OilField, Setting, Site, Rig
 class Client:
     log = logging.getLogger("Wildcatting")
     
-    def __init__(self, gameId, username, rig):
+    def __init__(self, gameId, username, symbol):
         self._gameId = gameId
         self._username = username
-        self._rig = rig
+        self._symbol = symbol
+        self._turn = 0
 
     def _refreshPlayerField(self):
         self._stdscr.clear()
@@ -37,7 +39,10 @@ class Client:
 
     def border(self):
         (h,w) = self._stdscr.getmaxyx()
-        self._stdscr.addstr(1, 3, "Let's go wildcatting!\n", curses.A_REVERSE)
+        location = self._setting.getLocation()
+        self._stdscr.addstr(1, 4, "Wildcatting: %s, Week %s" %(location, self._turn+1), curses.A_NORMAL)
+        fact = random.choice(self._setting.getFacts())
+        self._stdscr.addstr(h-2, 4, "%s" % fact[:w-8])
         self._stdscr.addstr(h-2, 3, self._setting.getName())
         self._border_win.box()
 
@@ -56,7 +61,7 @@ class Client:
         else:
             self.log.info("Reconnecting to game ID: " + self._gameId)
 
-        self._handle = self._server.game.join(self._gameId, self._username, self._rig)
+        self._handle = self._server.game.join(self._gameId, self._username, self._symbol)
 
         self._setting = Setting.deserialize(self._server.game.getSetting(self._handle))
 
@@ -105,5 +110,6 @@ class Client:
 
     def run(self, server):
         self._server = server
+        self._setting = Setting.deserialize(self._server.setting.getSetting())
 
         curses.wrapper(self.wildcatting)

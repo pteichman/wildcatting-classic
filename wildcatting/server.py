@@ -169,8 +169,3 @@ class GameService:
                     playerSite.setTax(site.getTax())
 
         return playerField.serialize()
-
-    def getSetting(self, handle):
-        game, player = self._readHandle(handle)
-        setting = game.getSetting()
-        return setting.serialize()

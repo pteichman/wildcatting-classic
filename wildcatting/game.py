@@ -3,7 +3,6 @@ import math
 
 from wildcatting.exceptions import WildcattingException
 import wildcatting.model
-import wildcatting.settings
 
 class PeakedFiller:
     def fill(self, field):
@@ -136,8 +135,6 @@ class Game:
         DrillCostFiller().fill(self._oilField)
         TaxFiller().fill(self._oilField)
 
-        self._setting = wildcatting.settings.WestTexasSetting()
-
     def _generateSecret(self, player):
         return "".join([random.choice(("0", "1", "2", "3", "4",
                                        "5", "6", "7", "8", "9",
@@ -172,6 +169,3 @@ class Game:
 
     def getOilField(self):
         return self._oilField
-
-    def getSetting(self):
-        return self._setting

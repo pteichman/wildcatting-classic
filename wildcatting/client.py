@@ -43,7 +43,6 @@ class Client:
         self._stdscr.addstr(1, 4, "Wildcatting: %s, Week %s" %(location, self._turn+1), curses.A_NORMAL)
         fact = random.choice(self._setting.getFacts())
         self._stdscr.addstr(h-2, 4, "%s" % fact[:w-8])
-        self._stdscr.addstr(h-2, 3, self._setting.getName())
         self._border_win.box()
 
     def wildcatting(self, stdscr):
@@ -62,8 +61,6 @@ class Client:
             self.log.info("Reconnecting to game ID: " + self._gameId)
 
         self._handle = self._server.game.join(self._gameId, self._username, self._symbol)
-
-        self._setting = Setting.deserialize(self._server.game.getSetting(self._handle))
 
         self._border_win = stdscr.derwin(border_h, border_w, 2, 3)
         self._field_win = stdscr.derwin(field_h, field_w, 3, 4)

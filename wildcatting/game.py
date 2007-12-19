@@ -4,16 +4,10 @@ import math
 from wildcatting.exceptions import WildcattingException
 import wildcatting.model
 
-class OilFiller:
-    MIN_DROPOFF = 5
-    MAX_DROPOFF = 20
-    MAX_PEAKS = 5
-    FUDGE = 5
-    LESSER_PEAK_FACTOR = 10
-
+class PeakedFiller:
     def fill(self, field):
         assert isinstance(field, wildcatting.model.OilField)
-        peaks = self.generatePeaks(field)
+        peaks = self._generatePeaks(field)
         self._fillModel(field, peaks)
 
     def _fillModel(self, model, peaks):
@@ -31,19 +25,93 @@ class OilFiller:
                     if c == minc:
                         closest = p
 
-                d = random.randint(self.MIN_DROPOFF, self.MAX_DROPOFF) * minc * minc / math.sqrt(model.getWidth() * model.getHeight())
-                prob = int(100 - closest * random.random() * self.LESSER_PEAK_FACTOR - d) - random.randint(0, self.FUDGE)
-                prob = max(0, prob)
+                minValue, maxValue = self.getValueRange()
+                minDropoff = self.getMinDropoff()
+                maxDropoff = self.getMaxDropoff()
+                lesserPeakFactor = self.getLesserPeakFactor()
+                fudge = self.getFudge()
+                d = random.randint(minDropoff, maxDropoff) * minc * minc / math.sqrt(model.getWidth() * model.getHeight())
+                value = int(maxValue - closest * random.random() * lesserPeakFactor - d) - random.randint(0, fudge)
+                value = max(minValue, value)
 
                 site = model.getSite(row, col)
-                site.setProbability(prob)
+                self.fillSite(site, value)
 
-    def generatePeaks(self, model):
-        peaks = [None]*random.randint(1, self.MAX_PEAKS)
+    def _generatePeaks(self, model):
+        maxPeaks = self.getMaxPeaks()
+        peaks = [None]*random.randint(1, maxPeaks)
         for i in xrange(len(peaks)):
             peaks[i] = (random.randint(0, model.getHeight()),
                         random.randint(0, model.getWidth()))
         return peaks
+
+    def getMinDropoff(self):
+        raise "AbstractMethodNotImplemented"
+
+    def getMaxDropoff(self):
+        raise "AbstractMethodNotImplemented"
+
+    def getMaxPeaks(self):
+        raise "AbstractMethodNotImplemented"
+
+    def getFudge(self):
+        raise "AbstractMethodNotImplemented"
+
+    def getLesserPeakFactor(self):
+        raise "AbstractMethodNotImplemented"
+
+    def getValueRange(self):
+        raise "AbstractMethodNotImplemented"
+
+    def fillSite(self, site):
+        raise "AbstractMethodNotImplemented"
+
+class OilFiller(PeakedFiller):
+    def getValueRange(self):
+        return (0, 100)
+
+    def fillSite(self, site, value):
+        site.setProbability(value)
+
+    def getMinDropoff(self):
+        return 5
+
+    def getMaxDropoff(self):
+        return 20
+
+    def getMaxPeaks(self):
+        return 5
+
+    def getFudge(self):
+        return 5
+
+    def getLesserPeakFactor(self):
+        return 10
+
+class DrillCostFiller(PeakedFiller):
+    MAX_DRILL_COST = 50
+    
+    def getValueRange(self):
+        return (1, self.MAX_DRILL_COST)
+
+    def fillSite(self, site, discount):
+        site.setDrillCost(self.MAX_DRILL_COST - discount)
+
+    def getMinDropoff(self):
+        return 5
+
+    def getMaxDropoff(self):
+        return 5
+
+    def getMaxPeaks(self):
+        return 5
+
+    def getFudge(self):
+        return 0
+
+    def getLesserPeakFactor(self):
+        return 10
+
 
 class TaxFiller:
     def fill(self, field):
@@ -52,8 +120,6 @@ class TaxFiller:
         for row in xrange(field.getHeight()):
             for col in xrange(field.getWidth()):
                 site = field.getSite(row, col)
-
-                site.setDrillCost(random.randint(10, 30))
                 site.setTax(random.randint(600, 1000))
 
 class Game:
@@ -66,6 +132,7 @@ class Game:
         
         self._oilField = wildcatting.model.OilField(width, height)
         OilFiller().fill(self._oilField)
+        DrillCostFiller().fill(self._oilField)
         TaxFiller().fill(self._oilField)
 
     def _generateSecret(self, player):

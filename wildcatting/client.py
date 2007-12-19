@@ -6,7 +6,7 @@ from views import putch
 from report import SurveyorsReport
 from game import Game
 
-from wildcatting.model import OilField, Site, Rig
+from wildcatting.model import OilField, Setting, Site, Rig
 
 class Client:
     log = logging.getLogger("Wildcatting")
@@ -38,6 +38,7 @@ class Client:
     def border(self):
         (h,w) = self._stdscr.getmaxyx()
         self._stdscr.addstr(1, 3, "Let's go wildcatting!\n", curses.A_REVERSE)
+        self._stdscr.addstr(h-2, 3, self._setting.getName())
         self._border_win.box()
 
     def wildcatting(self, stdscr):
@@ -56,6 +57,8 @@ class Client:
             self.log.info("Reconnecting to game ID: " + self._gameId)
 
         self._handle = self._server.game.join(self._gameId, self._username, self._rig)
+
+        self._setting = Setting.deserialize(self._server.game.getSetting(self._handle))
 
         self._border_win = stdscr.derwin(border_h, border_w, 2, 3)
         self._field_win = stdscr.derwin(field_h, field_w, 3, 4)

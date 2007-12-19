@@ -11,7 +11,7 @@ class Serializable:
     def deserialize(cls, state):
         clsname = state.get(Serializable.CLASS_KEY)
         if clsname != cls.__name__:
-            raise Exception("Trying to deserialize a %s as a %s" % (self.__class__.__name__, clsname))
+            raise Exception("Trying to deserialize a %s as a %s" % (cls.__name__, clsname))
 
         obj = new.instance(cls)
         obj.__dict__ = obj.__deserialize_item(state.get(Serializable.STATE_KEY))

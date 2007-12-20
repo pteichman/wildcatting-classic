@@ -9,6 +9,14 @@ class Setting(Serializable):
         
         self._location = location
 
+    def getEra(self):
+        return self._era
+
+    def setEra(self, era):
+        assert isinstance(era, str)
+        
+        self._era = era
+
     def getFacts(self):
         return self._facts
 

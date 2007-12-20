@@ -50,7 +50,7 @@ class BaseService:
 
 class SettingService:
     def __init__(self, theme):
-        self._setting = theme.getSetting()
+        self._setting = theme.generateSetting()
 
     def getSetting(self):
         return self._setting.serialize()

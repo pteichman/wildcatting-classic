@@ -58,7 +58,8 @@ class SettingService:
 class GameService:
     HANDLE_SEP = "::"
     
-    def __init__(self):
+    def __init__(self, theme):
+        self._theme = theme
         self._games = {}
         self._nextGameId = 0
 
@@ -113,7 +114,7 @@ class GameService:
         gameId = str(self._nextGameId)
         self._nextGameId = self._nextGameId + 1
 
-        self._games[gameId] = Game(width, height)
+        self._games[gameId] = Game(width, height, self._theme)
         return gameId
 
     def join(self, gameId, username, symbol):

@@ -67,6 +67,9 @@ class PeakedFiller:
         raise "AbstractMethodNotImplemented"
 
 class OilFiller(PeakedFiller):
+    def __init__(self, theme):
+        self._theme = theme
+    
     def getValueRange(self):
         return (0, 100)
 
@@ -89,13 +92,14 @@ class OilFiller(PeakedFiller):
         return 10
 
 class DrillCostFiller(PeakedFiller):
-    MAX_DRILL_COST = 50
+    def __init__(self, theme):
+        self._theme = theme
     
     def getValueRange(self):
-        return (1, self.MAX_DRILL_COST)
+        return (self._theme.getMinDrillCost(), self._theme.getMaxDrillCost())
 
     def fillSite(self, site, discount):
-        site.setDrillCost(self.MAX_DRILL_COST - discount)
+        site.setDrillCost(self._theme.getMaxDrillCost() - discount)
 
     def getMinDropoff(self):
         return 5
@@ -114,26 +118,30 @@ class DrillCostFiller(PeakedFiller):
 
 
 class TaxFiller:
+    def __init__(self, theme):
+        self._theme = theme
+    
     def fill(self, field):
         assert isinstance(field, wildcatting.model.OilField)
 
         for row in xrange(field.getHeight()):
             for col in xrange(field.getWidth()):
                 site = field.getSite(row, col)
-                site.setTax(random.randint(600, 1000))
+                site.setTax(random.randint(self._theme.getMinTax(), self._theme.getMaxTax()))
 
 class Game:
-    def __init__(self, width, height):
+    def __init__(self, width, height, theme):
         assert isinstance(width, int)
         assert isinstance(height, int)
 
+        self._theme = theme
         self._players = {}
         self._turn = 0
         
         self._oilField = wildcatting.model.OilField(width, height)
-        OilFiller().fill(self._oilField)
-        DrillCostFiller().fill(self._oilField)
-        TaxFiller().fill(self._oilField)
+        OilFiller(theme).fill(self._oilField)
+        DrillCostFiller(theme).fill(self._oilField)
+        TaxFiller(theme).fill(self._oilField)
 
     def _generateSecret(self, player):
         return "".join([random.choice(("0", "1", "2", "3", "4",

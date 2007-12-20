@@ -12,8 +12,19 @@ class Theme:
         path, self._location = os.path.split(themeDir)
         
         f = open("%s/facts" % themeDir)
-        lines = f.readlines()
-        self._facts = [line[:-1] for line in lines]
+
+        facts = []
+        for line in f.xreadlines():
+            fact = line.strip()
+            if fact == "":
+                continue
+            
+            if fact[0] == "#":
+                continue
+
+            facts.append(fact)
+
+        self._facts = facts
         self.log.info(self._facts)
 
     def getSetting(self):

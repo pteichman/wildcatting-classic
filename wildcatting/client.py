@@ -42,7 +42,12 @@ class Client:
         """Wrap a fact across two lines"""
         lines = textwrap.wrap(fact, width, initial_indent=indent,
                               subsequent_indent=indent)
-        return "\n".join(lines[:2])
+
+        # we only have space for two lines
+        if len(lines) > 2:
+            lines = lines[:2]
+        
+        return "\n".join(lines)
 
     def border(self):
         (h,w) = self._stdscr.getmaxyx()

@@ -39,24 +39,24 @@ class Client:
             self._server.game.drill(self._handle, y, x)
 
     def _wrap_fact(self, fact, indent, width):
-        """Wrap a fact across two lines"""
+        """Wrap a fact across three lines"""
         lines = textwrap.wrap(fact, width, initial_indent=indent,
                               subsequent_indent=indent, break_long_words=True,
                               fix_sentence_endings=True)
 
-        # we only have space for two lines
-        if len(lines) > 2:
-            lines = lines[:2]
+        # we only have space for three lines
+        if len(lines) > 3:
+            lines = lines[:3]
         
         return "\n".join(lines)
 
     def border(self):
         (h,w) = self._stdscr.getmaxyx()
         location = self._setting.getLocation()
-        self._stdscr.addstr(1, 4, "Wildcatting: %s, Week %s" %(location, self._turn+1), curses.A_NORMAL)
+        self._stdscr.addstr(0, 4, "Wildcatting: %s, Week %s" %(location, self._turn+1), curses.A_NORMAL)
         fact = random.choice(self._setting.getFacts())
         wrapped = self._wrap_fact(fact, " "*4, w-8)
-        self._stdscr.addstr(h-2, 0, wrapped)
+        self._stdscr.addstr(h-3, 0, wrapped)
         self._border_win.box()
 
     def wildcatting(self, stdscr):
@@ -76,8 +76,8 @@ class Client:
 
         self._handle = self._server.game.join(self._gameId, self._username, self._symbol)
 
-        self._border_win = stdscr.derwin(border_h, border_w, 2, 3)
-        self._field_win = stdscr.derwin(field_h, field_w, 3, 4)
+        self._border_win = stdscr.derwin(border_h, border_w, 1, 3)
+        self._field_win = stdscr.derwin(field_h, field_w, 2, 4)
 
         self._view = view = OilFieldCursesView(self._field_win)
 

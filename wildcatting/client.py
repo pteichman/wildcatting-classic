@@ -101,7 +101,7 @@ class Client:
             elif c == curses.KEY_MOUSE:
                 mid, mx, my, mz, bstate = curses.getmouse()
                 dx = mx - x - 4
-                dy = my - y - 3
+                dy = my - y - 2
                 survey = True
             elif c == ord(' '):
                 survey = True

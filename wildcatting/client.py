@@ -1,6 +1,7 @@
 import logging
 import curses
 import random
+import textwrap
 
 from views import OilFieldCursesView
 from views import putch
@@ -37,12 +38,19 @@ class Client:
         if yes:
             self._server.game.drill(self._handle, y, x)
 
+    def _wrap_fact(self, fact, indent, width):
+        """Wrap a fact across two lines"""
+        lines = textwrap.wrap(fact, width, initial_indent=indent,
+                              subsequent_indent=indent)
+        return "\n".join(lines[:2])
+
     def border(self):
         (h,w) = self._stdscr.getmaxyx()
         location = self._setting.getLocation()
         self._stdscr.addstr(1, 4, "Wildcatting: %s, Week %s" %(location, self._turn+1), curses.A_NORMAL)
         fact = random.choice(self._setting.getFacts())
-        self._stdscr.addstr(h-2, 4, "%s" % fact[:w-8])
+        wrapped = self._wrap_fact(fact, " "*4, w-8)
+        self._stdscr.addstr(h-2, 0, wrapped)
         self._border_win.box()
 
     def wildcatting(self, stdscr):

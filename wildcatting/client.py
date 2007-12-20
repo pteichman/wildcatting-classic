@@ -103,7 +103,7 @@ class Client:
                 dx = mx - x - 4
                 dy = my - y - 2
                 survey = True
-            elif c == ord(' '):
+            elif c == ord(' ') or c == ord('\n'):
                 survey = True
 
             if dx != 0 or dy != 0:

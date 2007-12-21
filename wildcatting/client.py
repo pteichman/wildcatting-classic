@@ -42,8 +42,7 @@ class Client:
     def _wrap_fact(self, fact, indent, width):
         """Wrap a fact across three lines"""
         lines = textwrap.wrap(fact, width, initial_indent=indent,
-                              subsequent_indent=indent, break_long_words=True,
-                              fix_sentence_endings=True)
+                              subsequent_indent=indent, break_long_words=True)
 
         # we only have space for three lines
         if len(lines) > 3:

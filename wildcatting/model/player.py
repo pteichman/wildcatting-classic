@@ -8,9 +8,17 @@ class Player(Serializable):
 
         self._username = username
         self._symbol = symbol
+        self._secret = None
 
     def getUsername(self):
         return self._username
 
     def getSymbol(self):
         return self._symbol
+
+    def getSecret(self):
+        return self._secret
+
+    def setSecret(self, secret):
+        assert isinstance(secret, str)
+        self._secret = secret

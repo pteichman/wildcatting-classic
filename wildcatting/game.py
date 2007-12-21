@@ -1,3 +1,4 @@
+import logging
 import random
 import math
 
@@ -122,6 +123,8 @@ class TaxFiller:
                 site.setTax(random.randint(self._theme.getMinTax(), self._theme.getMaxTax()))
 
 class Game:
+    log = logging.getLogger("Wildcatting")
+
     def __init__(self, width, height, theme):
         assert isinstance(width, int)
         assert isinstance(height, int)
@@ -152,8 +155,9 @@ class Game:
             raise WildcattingException("Player has already joined game: " + id)
 
         secret = self._generateSecret(player)
+        player.setSecret(secret)
 
-        self._players[secret] = player
+        self._players[id] = player
 
         return secret
 
@@ -161,8 +165,9 @@ class Game:
         assert isinstance(username, str)
         assert isinstance(secret, str)
         
-        player = self._players.get(secret)
-        if player is None or player.getUsername() != username:
+        player = self._players.get(username)
+        
+        if player is None or player.getSecret() != secret:
             raise WildcattingException("Invalid login")
 
         return player

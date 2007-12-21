@@ -131,6 +131,7 @@ class Game:
 
         self._theme = theme
         self._players = {}
+        self._playerOrder = []
         self._turn = wildcatting.turn.Turn()
         
         self._oilField = wildcatting.model.OilField(width, height)
@@ -151,13 +152,14 @@ class Game:
         self._turn.setPlayer(player)
 
         id = player.getUsername()
-        if self._players.has_key(id):
+        if self._players.has_key(player.getSecret()):
             raise WildcattingException("Player has already joined game: " + id)
 
         secret = self._generateSecret(player)
         player.setSecret(secret)
 
         self._players[id] = player
+        self._playerOrder.append(player)
 
         return secret
 
@@ -175,7 +177,11 @@ class Game:
     def endTurn(self, player):
         week = self._turn.getWeek()
         self._turn = wildcatting.turn.Turn()
-        self._turn.setPlayer(player)
+
+        curIndex = self._playerOrder.index(player)
+        nextPlayer = self._playerOrder[(curIndex + 1) % len(self._playerOrder)]
+        
+        self._turn.setPlayer(nextPlayer)
         self._turn.setWeek(week)
 
     def getTurn(self):

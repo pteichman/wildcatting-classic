@@ -167,6 +167,12 @@ class Game:
 
         return player
 
+    def endTurn(self, player):
+        week = self._turn.getWeek()
+        self._turn = wildcatting.turn.Turn()
+        self._turn.setPlayer(player)
+        self._turn.setWeek(week)
+
     def getTurn(self):
         return self._turn
 

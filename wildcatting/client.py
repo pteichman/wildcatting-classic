@@ -37,6 +37,7 @@ class Client:
         yes = report.input()
         if yes:
             self._server.game.erect(self._handle, y, x)
+        self._server.game.endTurn(self._handle)
 
     def _wrap_fact(self, fact, indent, width):
         """Wrap a fact across three lines"""

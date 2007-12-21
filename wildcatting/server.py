@@ -186,6 +186,18 @@ class GameService:
         rig = site.getRig()
         return rig.drill(site)
 
+    def endTurn(self, handle):
+        game, player = self._readHandle(handle)
+        turn = game.getTurn()
+
+        if turn.getPlayer() != player:
+            raise WildcattingException("Not player's turn")
+
+        game.endTurn(player)
+
+        return True
+
+
     def getPlayerField(self, handle):
         game, player = self._readHandle(handle)
         field = game.getOilField()

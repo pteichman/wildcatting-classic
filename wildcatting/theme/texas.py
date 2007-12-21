@@ -1,7 +1,6 @@
 from wildcatting.theme import Theme
 
-class TexasTheme(Theme):
-    rawFacts = """
+raw_facts = """
 Anadarko will rule the world as we know it. They don't like partners, they now own the UPR strip, much of which is now looking like the biggest gas basins in the US, and they like to drill... and drill... and drill. Everywhere. East Texas Bossier. Cotton Valley. James Lime. Austin Chalk. Just heard of a new hot play? Anadarko probably started it and owns it.
 Bud Brigham is a geophysicist who believed in technology. He rode high and he fell hard.  He was hammered for exporing, but now he has SIGNIFICANT wells drilling in Matagorda County and Wheeler County.
 Climate Scientists are currently Neutral as to whether anthropogenic causes are the the major drivers of Global Warming.
@@ -39,16 +38,52 @@ Dr Pepper was invented in Waco in 1885. The Dublin Dr Pepper, 85 miles west of W
 More species of bats live in Texas than in any other part of the United States.
 Amarillo, Texas has the world's largest helium well.
 Texas is more than an area. Texas is an idea and an experience that transcends present geographical boundaries!
-    """
+"""
 
-    def __init__(self):
-        Theme.__init__(self)
-        
-        self.setLocation("Texas")
-        self.setEra("Turn of the century")
-        self.setMinDrillCost(1)
-        self.setMaxDrillCost(10)
-        self.setMinTax(100)
-        self.setMaxTax(1000)
-        self.setMaxOutput(16000)
-        self.setInflationAdjustment(0.125)
+
+class TexasTheme(Theme):
+    ## literary setting
+    def getLocation(self):
+        return "Texas"
+    def getEra(self):
+        return "Turn of The Century"
+    def getRawFacts(self):
+        return raw_facts
+
+    ## economics
+    def getMinDrillCost(self):
+        return 1
+    def getMaxDrillCost(self):
+        return 10
+    def getMinTax(self):
+        return 100
+    def getMaxTax(self):
+        return 1000
+    def getMaxOutput(self):
+        return 16000
+    def getInflationAdjustment(self):
+        return 0.125
+
+    ## oil probability distribution
+    def getOilMinDropoff(self):
+        return 5
+    def getOilMaxDropoff(self):
+        return 20
+    def getOilMaxPeaks(self):
+        return 5
+    def getOilFudge(self):
+        return 5
+    def getOilLesserPeakFactor(self):
+        return 10
+
+    ## drill cost distribution
+    def getDrillCostMinDropoff(self):
+        return 5
+    def getDrillCostMaxDropoff(self):
+        return 5
+    def getDrillCostMaxPeaks(self):
+        return 5
+    def getDrillCostFudge(self):
+        return 0
+    def getDrillCostLesserPeakFactor(self):
+        return 10

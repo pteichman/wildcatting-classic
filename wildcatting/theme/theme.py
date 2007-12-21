@@ -12,7 +12,7 @@ class Theme:
 
     def _processFacts(self):
         facts = []
-        factLines = self.rawFacts.split("\n")
+        factLines = self.getRawFacts().split("\n")
         for line in factLines:
             fact = line.strip()
             if fact == "":
@@ -27,56 +27,64 @@ class Theme:
     
     def generateSetting(self):
         setting = wildcatting.model.Setting()
-        setting.setLocation(self._location)
-        setting.setEra(self._era)
-        setting.setFacts(self._facts)
+        setting.setLocation(self.getLocation())
+        setting.setEra(self.getEra())
+        setting.setFacts(self.getFacts())
         return setting
 
-    def getMinDrillCost(self):
-        return self._minDrillCost
+    def getFacts(self):
+        return self._facts
 
+    def setFacts(self, facts):
+        self._facts = facts
+
+    ## themes must implement the following abstract methods
+
+    ## literary setting
     def getLocation(self):
-        return self._location
-
-    def setLocation(self, location):
-        self._location = location
-
+        raise "UnimplementedAbstractMethod"
     def getEra(self):
-        return self._era
+        raise "UnimplementedAbstractMethod"
+    def getRawFacts(self):
+        raise "UnimplementedAbstractMethod"
 
-    def setEra(self, era):
-        self._era = era
-
-    def setMinDrillCost(self, minDrillCost):
-        self._minDrillCost = minDrillCost
-
+    ## economics
+    def getMinDrillCost(self):
+        raise "UnimplementedAbstractMethod"
     def getMaxDrillCost(self):
-        return self._maxDrillCost
-
-    def setMaxDrillCost(self, maxDrillCost):
-        self._maxDrillCost = maxDrillCost
-
+        raise "UnimplementedAbstractMethod"
     def getMinTax(self):
-        return self._minTax
-
-    def setMinTax(self, minTax):
-        self._minTax = minTax
-
+        raise "UnimplementedAbstractMethod"
     def getMaxTax(self):
-        return self._maxTax
-
-    def setMaxTax(self, maxTax):
-        self._maxTax = maxTax
-
+        raise "UnimplementedAbstractMethod"
     def getMaxOutput(self):
-        return self._maxOutput
-
-    def setMaxOutput(self, maxOutput):
-        self._maxOutput = maxOutput
-
+        raise "UnimplementedAbstractMethod"
     def getInflationAdjustment(self):
-        return self._inflationAdjustment
+        raise "UnimplementedAbstractMethod"
 
-    def setInflationAdjustment(self, inflationAdjustment):
-        self._inflationAdjustment = inflationAdjustment
+    ## oil probability distribution
+    def getOilMinDropoff(self):
+        raise "AbstractMethodNotImplemented"
+    def getOilMaxDropoff(self):
+        raise "AbstractMethodNotImplemented"
+    def getOilMaxPeaks(self):
+        raise "AbstractMethodNotImplemented"
+    def getOilFudge(self):
+        raise "AbstractMethodNotImplemented"
+    def getOilLesserPeakFactor(self):
+        raise "AbstractMethodNotImplemented"
+
+    ## drill cost distribution
+    def getDrillCostMinDropoff(self):
+        raise "AbstractMethodNotImplemented"
+    def getDrillCostMaxDropoff(self):
+        raise "AbstractMethodNotImplemented"
+    def getDrillCostMaxPeaks(self):
+        raise "AbstractMethodNotImplemented"
+    def getDrillCostFudge(self):
+        raise "AbstractMethodNotImplemented"
+    def getDrillCostLesserPeakFactor(self):
+        raise "AbstractMethodNotImplemented"
+
+
         

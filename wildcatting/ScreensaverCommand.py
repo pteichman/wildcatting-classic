@@ -6,6 +6,7 @@ import curses
 from wildcatting.cmdparse import Command
 from wildcatting.views import OilFieldTextView, OilFieldCursesView
 from wildcatting.game import Game
+from wildcatting.theme import TexasTheme
 
 class ScreensaverCommand(Command):
     log = logging.getLogger("Wildcatting")
@@ -27,7 +28,7 @@ class ScreensaverCommand(Command):
 
     def asciiScreensaver(self):
         while True:
-            game = Game(80, 23)
+            game = Game(80, 23, TexasTheme())
             field = game.getOilField()
             OilFieldTextView(field).ascii()
             time.sleep(.25)
@@ -35,7 +36,7 @@ class ScreensaverCommand(Command):
     def ansiScreensaver(self):
         try:
             while True:
-                game = Game(80, 23)
+                game = Game(80, 23, TexasTheme())
                 field = game.getOilField()
                 OilFieldTextView(field).ansi()
                 time.sleep(.25)
@@ -93,10 +94,11 @@ class ScreensaverCommand(Command):
         win_h, win_w = win.getmaxyx()
 
         while True:
-            game = Game(win_w, win_h)
+            game = Game(win_w, win_h, TexasTheme())
             field = game.getOilField()
 
-            view = OilFieldCursesView(win, field)
+            view = OilFieldCursesView(win)
+            view.setField(field)
 
             for row in xrange(field.getHeight()):
                 for col in xrange(field.getWidth()):

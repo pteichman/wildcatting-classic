@@ -45,21 +45,6 @@ class PeakedFiller:
                         random.randint(0, model.getWidth()))
         return peaks
 
-    def getMinDropoff(self):
-        raise "AbstractMethodNotImplemented"
-
-    def getMaxDropoff(self):
-        raise "AbstractMethodNotImplemented"
-
-    def getMaxPeaks(self):
-        raise "AbstractMethodNotImplemented"
-
-    def getFudge(self):
-        raise "AbstractMethodNotImplemented"
-
-    def getLesserPeakFactor(self):
-        raise "AbstractMethodNotImplemented"
-
     def getValueRange(self):
         raise "AbstractMethodNotImplemented"
 
@@ -77,19 +62,19 @@ class OilFiller(PeakedFiller):
         site.setProbability(value)
 
     def getMinDropoff(self):
-        return 5
-
+        return self._theme.getOilMinDropoff()
+    
     def getMaxDropoff(self):
-        return 20
-
+        return self._theme.getOilMaxDropoff()
+    
     def getMaxPeaks(self):
-        return 5
-
+        return self._theme.getOilMaxPeaks()
+    
     def getFudge(self):
-        return 5
-
+        return self._theme.getOilFudge()
+    
     def getLesserPeakFactor(self):
-        return 10
+        return self._theme.getOilLesserPeakFactor()
 
 class DrillCostFiller(PeakedFiller):
     def __init__(self, theme):
@@ -102,19 +87,19 @@ class DrillCostFiller(PeakedFiller):
         site.setDrillCost(self._theme.getMaxDrillCost() - discount)
 
     def getMinDropoff(self):
-        return 5
-
+        return self._theme.getDrillCostMinDropoff()
+    
     def getMaxDropoff(self):
-        return 5
-
+        return self._theme.getDrillCostMaxDropoff()
+    
     def getMaxPeaks(self):
-        return 5
-
+        return self._theme.getDrillCostMaxPeaks()
+    
     def getFudge(self):
-        return 0
-
+        return self._theme.getDrillCostFudge()
+    
     def getLesserPeakFactor(self):
-        return 10
+        return self._theme.getDrillCostLesserPeakFactor()
 
 
 class TaxFiller:

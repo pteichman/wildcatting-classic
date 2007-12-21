@@ -42,6 +42,7 @@ class Site(Serializable):
         self._col = col
 
         self._prob = 0
+        self._oilDepth = None
         self._rig = None
         self._drillCost = 0
         self._tax = 0
@@ -64,6 +65,13 @@ class Site(Serializable):
     def setProbability(self, prob):
         assert 0 <= prob <= 100
         self._prob = prob
+
+    def getOilDepth(self):
+        return self._oilDepth
+
+    def setOilDepth(self, oilDepth):
+        assert 1 <= oilDepth <= 10
+        self._oilDepth = oilDepth
 
     def getRig(self):
         return self._rig
@@ -91,15 +99,51 @@ class Site(Serializable):
         self._tax = tax
 
 class Rig(Serializable):
-    def __init__(self, player, turn):
-        self._player = player
-        self._turn = turn
+    def __init__(self):
+        self._drillDepth = 0
+        self._output = None
 
     def __cmp__(self, other):
         return cmp(self._turn, other._turn)
 
+    def _generateOutput(self):
+        self._output = 100
+
     def getPlayer(self):
         return self._player
 
-    def getTurn(self):
-        return self._turn
+    def setPlayer(self, player):
+        self._player = player
+
+    def getWeek(self):
+        return self._week
+
+    def setWeek(self, week):
+        self._week = week
+
+    def getDrillDepth(self):
+        return self._drillDepth
+
+    def setDrillDepth(self, drillDepth):
+        self._drillDepth = drillDepth
+
+    def getOutput(self):
+        return self._output
+
+    def setOutput(self, output):
+        self._output = output
+
+    def drill(self, site):
+        assert 0 <= self._drillDepth <= 9
+
+        oilDepth = site.getOilDepth()
+        
+        assert oilDepth == None or self._drillDepth < oilDepth
+        
+        self._drillDepth += 1
+
+        foundOil = (self._drillDepth == oilDepth)
+        if foundOil:
+            self._generateOutput()
+            
+        return foundOil

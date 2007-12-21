@@ -22,7 +22,7 @@ class WeeklyReport:
                 rig = site.getRig()
                 if rig:
                     if rig.getPlayer().getUsername() == player.getUsername():
-                        sites[rig.getTurn()] = site
+                        sites[rig.getTurn().getWeek()] = site
         return sites
 
     def display(self):
@@ -164,8 +164,8 @@ def main(stdscr):
     player = wildcatting.model.Player("bob", "B")
     field = wildcatting.model.OilField(100, 100)
 
-    turns = random.randint(0,12)
-    for turn in xrange(turns):
+    weeks = random.randint(0,12)
+    for week in xrange(weeks):
         if random.random() > 0.5:
             continue
         
@@ -176,11 +176,13 @@ def main(stdscr):
         site.setProbability(random.randint(0, 100))
         site.setDrillCost(random.randint(10, 30))
         site.setTax(random.randint(600, 1000))
-        rig = wildcatting.model.Rig(player, turn)
+        rig = wildcatting.model.Rig()
+        rig.setPlayer(player)
+        rig.setWeek(week)
         site.setRig(rig)
         field.setSite(row, col, site)
 
-    report = WeeklyReport(stdscr, field, player, turns)
+    report = WeeklyReport(stdscr, field, player, weeks)
     report.display()
     while True:
         pass

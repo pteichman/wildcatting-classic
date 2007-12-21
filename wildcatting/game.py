@@ -2,7 +2,9 @@ import random
 import math
 
 from wildcatting.exceptions import WildcattingException
+
 import wildcatting.model
+import wildcatting.turn
 
 class PeakedFiller:
     def fill(self, field):
@@ -60,6 +62,11 @@ class OilFiller(PeakedFiller):
 
     def fillSite(self, site, value):
         site.setProbability(value)
+
+        for i in xrange(10):
+            if(random.randint(0,100) < value/10):
+                site.setOilDepth(i + 1)
+                break
 
     def getMinDropoff(self):
         return self._theme.getOilMinDropoff()
@@ -121,7 +128,7 @@ class Game:
 
         self._theme = theme
         self._players = {}
-        self._turn = 0
+        self._turn = wildcatting.turn.Turn()
         
         self._oilField = wildcatting.model.OilField(width, height)
         OilFiller(theme).fill(self._oilField)
@@ -136,6 +143,9 @@ class Game:
 
     def addPlayer(self, player):
         assert isinstance(player, wildcatting.model.Player)
+
+        # FIXME populate this in some sane way
+        self._turn.setPlayer(player)
 
         id = player.getUsername()
         if self._players.has_key(id):

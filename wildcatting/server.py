@@ -130,6 +130,14 @@ class GameService:
 
     def survey(self, handle, row, col):
         game, player = self._readHandle(handle)
+        turn = game.getTurn()
+
+        if turn.getPlayer() != player:
+            raise WildcattingException("Not player's turn")
+
+        if turn.getSurveyedSite():
+            raise WildcattingException("Already surveyed this turn")
+        
         field = game.getOilField()
 
         site = field.getSite(row, col)
@@ -137,16 +145,46 @@ class GameService:
             raise WildcattingException("Site is already surveyed")
 
         site.setSurveyed(True)
+        turn.setSurveyedSite(site)
+        
         return site.serialize()
 
-    def drill(self, handle, row, col):
+    def erect(self, handle, row, col):
         game, player = self._readHandle(handle)
+        turn = game.getTurn()
+
+        if turn.getPlayer() != player:
+            raise WildcattingException("Not player's turn")
+
+        if turn.getDrilledSite():
+            raise WildcattingException("Already drilled this turn")
+        
         field = game.getOilField()
 
         site = field.getSite(row, col)
-        rig = wildcatting.model.Rig(player, game.getTurn())
+        rig = wildcatting.model.Rig()
+        rig.setPlayer(player)
+        rig.setWeek(game.getTurn().getWeek())
         site.setRig(rig)
+        turn.setDrilledSite(site)
+        
         return True
+        
+    def drill(self, handle, row, col):
+        game, player = self._readHandle(handle)
+        turn = game.getTurn()
+
+        if turn.getPlayer() != player:
+            raise WildcattingException("Not player's turn")
+        
+        drilledSite = turn.getDrilledSite()
+        if drilledSite and not (drilledSite.getRow() == row and drilledSite.getCol() == col):
+            raise WildcattingException("Already drilled somewhere else this turn")
+        
+        field = game.getOilField()
+        site = field.getSite(row, col)
+        rig = site.getRig()
+        return rig.drill(site)
 
     def getPlayerField(self, handle):
         game, player = self._readHandle(handle)
@@ -170,3 +208,4 @@ class GameService:
                     playerSite.setTax(site.getTax())
 
         return playerField.serialize()
+        

@@ -3,9 +3,9 @@ from wildcatting.theme import Theme
 raw_facts = """
 Anadarko will rule the world as we know it. They don't like partners, they now own the UPR strip, much of which is now looking like the biggest gas basins in the US, and they like to drill... and drill... and drill. Everywhere. East Texas Bossier. Cotton Valley. James Lime. Austin Chalk. Just heard of a new hot play? Anadarko probably started it and owns it.
 Bud Brigham is a geophysicist who believed in technology. He rode high and he fell hard.  He was hammered for exporing, but now he has SIGNIFICANT wells drilling in Matagorda County and Wheeler County.
-Climate Scientists are currently Neutral as to whether anthropogenic causes are the the major drivers of Global Warming.
-Climate Scientists have little faith in their climate models, the major tool used to "predict" climate change and anthropomorphic forcings.  The consensus is that these models are likely wrong, and there has been little movement from that position in the last decade.
-El Paso knocked it out of the park by showing us what the Vicksburg play COULD be in its Tom East Field in Brooks Co., Texas! Wells making 60-70 million cubic feet of gas per day can make you healthy real quick.
+Climate Scientists are currently Neutral as to whether human causes are the the major drivers of Global Warming.
+Climate Scientists have little faith in their models, the major tool used to "predict" climate change.  The consensus is that these models are likely wrong, and there has been little movement from that position in the last decade.
+El Paso knocked it out of the park by showing us what the Vicksburg play COULD be in its Tom East Field in Brooks County. Wells making 60-70 million cubic feet of gas per day can make you healthy real quick.
 In 1916, Dr. Johan A. Udden believed there an oil-supporting underground fold of rock running under the University of Texas. Though erroneous, Udden's theory led to the first major oil discovery in the West Texas Permian Basin.
 Like 'em or hate 'em, Aubry McClendon and the folks at Chesapeake believe in the drillbit. They have won big, and lost bigger, but they are still around and kicking... drilling some of the most exciting wells around!
 Luis de Moscoso, a survivor of the DeSoto expedition, recorded the first sighting of oil in Texas.
@@ -16,7 +16,7 @@ The Corsicana oilfield developed gradually and peaked in 1900, when it produced 
 The first economically significant discovery of oil in Texas came in 1894 in Navarro County near Corsicana.
 The legendary D. Harold (Dry Hole) Byrd was born in Detroit, Texas, on April 24, 1900, the youngest of five sons and three daughters of Edward and Mary (Easley) Byrd.
 Thousands of Texans have been touched by Texas' black gold through the philanthropy of people who have made fortunes from its discovery, production and processing.
-West Texas Crude is a full-tilt trio from Australia who are reviving the traditional rockabilly sounds of the 1950s.  Formed in the country town of Toowoomba, Queensland, the trio have packed dance floors across Australia with their catchy, high octane rockabilly.
+West Texas Crude is a full-tilt trio from Toowoomba, Queensland who are reviving the traditional rockabilly sounds of the 1950s.  The trio have packed dance floors across Australia with their catchy, high octane rockabilly.
 West Texas Intermediate (WTI) is a light crude, lighter than Brent Crude. It contains about 0.24% sulfur, rating it a sweet crude.
 
 # Texas facts

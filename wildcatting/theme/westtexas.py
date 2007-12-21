@@ -10,7 +10,7 @@ In 1916, Dr. Johan A. Udden believed there an oil-supporting underground fold of
 Like 'em or hate 'em, Aubry McClendon and the folks at Chesapeake believe in the drillbit. They have won big, and lost bigger, but they are still around and kicking... drilling some of the most exciting wells around!
 Luis de Moscoso, a survivor of the DeSoto expedition, recorded the first sighting of oil in Texas.
 Prices for WTI are quoted at Cushing, Oklahoma, which is a major crude oil shipment point that has extensive pipeline connections to oil producing areas and Southwest and Gulf Coast-based refining centers.
-Texas Light Sweet Crude is more formally known as West Texas Intermediate (WTI)!
+Texas Light Sweet Crude is more formally known as West Texas Intermediate (WTI).
 Texas Light Sweet is a type of crude oil used as a benchmark in oil pricing and is the underlying commodity of oil futures contracts.
 The Corsicana oilfield developed gradually and peaked in 1900, when it produced more than 839,000 barrels of oil.
 The first economically significant discovery of oil in Texas came in 1894 in Navarro County near Corsicana.
@@ -37,7 +37,7 @@ The Hertzberg Circus Museum in San Antonio contains one of the largest assortmen
 Dr Pepper was invented in Waco in 1885. The Dublin Dr Pepper, 85 miles west of Waco, still uses pure imperial cane sugar in its product. There is no period after the Dr in Dr Pepper.
 More species of bats live in Texas than in any other part of the United States.
 Amarillo, Texas has the world's largest helium well.
-Texas is more than an area. Texas is an idea and an experience that transcends present geographical boundaries!
+Texas is more than an area. Texas is an idea and an experience that transcends present geographical boundaries.
 """
 
 

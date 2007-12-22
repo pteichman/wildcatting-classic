@@ -3,17 +3,17 @@ import socket
 import sys
 import os
 
-from . import client
-from . import cmdparse
-from . import util
+from .client import Client
+from .cmdparse import Command
+from .util import startLogger
 
 from xmlrpclib import ServerProxy
 
-class ClientCommand(cmdparse.Command):
+class ClientCommand(Command):
     log = logging.getLogger("Wildcatting")
 
     def __init__(self):
-        cmdparse.Command.__init__(self, "client", summary="Run the Wildcatting client")
+        Command.__init__(self, "client", summary="Run the Wildcatting client")
 
         user = os.environ.get("USER")
         if user is None:
@@ -33,12 +33,13 @@ class ClientCommand(cmdparse.Command):
                         default=None, help="game id")
 
     def run(self, options, args):
-        util.startLogger("client.log")
+        startLogger("client.log")
         
         url = "http://%s:%d/" % (options.hostname, options.port)
         if options.no_network:
-            from . import theme, server
-            s = server.StandaloneServer(theme.WestTexasTheme())
+            from .theme import WestTexasTheme
+            from .server import StandaloneServer
+            s = StandaloneServer(WestTexasTheme())
         else:
             s = ServerProxy(url, allow_none=True)
 
@@ -49,7 +50,7 @@ class ClientCommand(cmdparse.Command):
             print e.args[1]
             sys.exit(0)
 
-        c = client.Client(options.game_id, options.username, options.rig)
+        c = Client(options.game_id, options.username, options.rig)
 
         self.log.info("Wildcatting client start")
         try:

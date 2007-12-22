@@ -3,7 +3,7 @@ import socket
 import sys
 import os
 
-import wildcatting.util
+import wildcatting
 
 from wildcatting.cmdparse import Command
 from wildcatting.client import Client
@@ -38,7 +38,6 @@ class ClientCommand(Command):
         
         url = "http://%s:%d/" % (options.hostname, options.port)
         if options.no_network:
-            import wildcatting.server, wildcatting.theme
             theme = wildcatting.theme.WestTexasTheme()
             server = wildcatting.server.StandaloneServer(theme)
         else:

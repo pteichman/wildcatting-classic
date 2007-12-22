@@ -79,6 +79,9 @@ class OilFieldCursesView:
         assert isinstance(field, wildcatting.model.OilField)
         self._field = field
 
+    def getColors(self):
+        return self._colors
+
     def siteColor(self, site):
         if site is None:
             return Colors.get(curses.COLOR_WHITE, curses.COLOR_BLACK)

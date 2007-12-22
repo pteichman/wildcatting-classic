@@ -7,6 +7,7 @@ from views import OilFieldCursesView
 from views import putch
 from report import SurveyorsReport
 from game import Game
+from colors import Colors
 
 from wildcatting.model import OilField, Setting, Site, Rig
 
@@ -21,7 +22,7 @@ class Client:
 
     def _refreshPlayerField(self):
         self._stdscr.clear()
-        self.border()
+        self._drawBorder()
         self._playerField = OilField.deserialize(self._server.game.getPlayerField(self._handle))
         self._view.setField(self._playerField)
         self._view.display()
@@ -50,16 +51,31 @@ class Client:
         
         return "\n".join(lines)
 
-    def border(self):
-        (h,w) = self._stdscr.getmaxyx()
+    def _drawBorder(self):
+        (h, w) = self._stdscr.getmaxyx()
         location = self._setting.getLocation()
         era = self._setting.getEra()
         self._stdscr.addstr(0, 4, "%s, %s." %(location, era), curses.A_BOLD)
-        self._stdscr.addstr(0, w - 10, "Week %s" % str(self._turn + 1))
+        self._stdscr.addstr(0, w - 10, "Week %s" % str(self._turn + 1), curses.A_BOLD)
         fact = random.choice(self._setting.getFacts())
         wrapped = self._wrap_fact(fact, " "*4, w-8)
         self._stdscr.addstr(h-3, 0, wrapped)
         self._border_win.box()
+
+    def _drawKeyBar(self, x, y):
+        border_h, border_w = self._border_win.getmaxyx()
+        colors = self._view.getColors()
+        keyStr = " " * (border_w - 2)
+        bkgd = Colors.get(curses.COLOR_WHITE, curses.COLOR_WHITE)
+        self._border_win.addstr(border_h - 2, 1, keyStr, bkgd)
+        for i in xrange(len(colors)-1, -1, -1):
+            color = colors[i]
+            self._border_win.addstr(border_h - 2, 1 + i, " ", color)
+
+        coordStr = "X=%s   Y=%s" % (str(x).rjust(2), str(y).rjust(2))
+        foreground = Colors.get(curses.COLOR_BLACK, curses.COLOR_WHITE)
+        self._border_win.addstr(border_h - 2, border_w / 2 - len(coordStr) / 2, coordStr, foreground)
+        self._border_win.refresh()
 
     def wildcatting(self, stdscr):
         self._stdscr = stdscr
@@ -68,7 +84,7 @@ class Client:
         border_h = h - 4
         border_w = w - 6
         field_w = border_w - 2
-        field_h = border_h - 2
+        field_h = border_h - 3
 
         if self._gameId is None:
             self._gameId = self._server.game.new(field_w, field_h)
@@ -90,6 +106,7 @@ class Client:
             putch(self._field_win, y, x, " ", curses.A_REVERSE)
             self._field_win.refresh()
             self._view.display()
+            self._drawKeyBar(x, y)
             
             curses.curs_set(0)
             dx = 0 ; dy = 0

@@ -1,7 +1,7 @@
 from theme import Theme
-from westtexas import WestTexasTheme
+from westtexas import WestTexas
 
-DefaultTheme = WestTexasTheme
+DefaultTheme = WestTexas
 
-__all__ = [Theme, WestTexasTheme]
+__all__ = [Theme, WestTexas]
 

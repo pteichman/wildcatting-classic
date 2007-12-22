@@ -41,7 +41,7 @@ Texas is more than an area. Texas is an idea and an experience that transcends p
 """
 
 
-class WestTexasTheme(Theme):
+class WestTexas(Theme):
     ## literary setting
     def getLocation(self):
         return "West Texas"

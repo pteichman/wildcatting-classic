@@ -68,6 +68,9 @@ class ThemeInfo(Command):
         rows = []
         for (name, theme) in themes:
             obj = theme()
+            if theme == wildcatting.theme.DefaultTheme:
+                name = "%s (default)" % name
+            
             rows.append((name, obj.getLocation(), obj.getEra(), str(len(obj.getFacts()))))
 
         print wildcatting.table.format_table(cols, rows)

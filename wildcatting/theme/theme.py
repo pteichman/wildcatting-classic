@@ -85,6 +85,3 @@ class Theme:
         raise "AbstractMethodNotImplemented"
     def getDrillCostLesserPeakFactor(self):
         raise "AbstractMethodNotImplemented"
-
-
-        

@@ -22,7 +22,7 @@ class WeeklyReport:
                 well = site.getWell()
                 if well:
                     if well.getPlayer().getUsername() == player.getUsername():
-                        sites[well.getTurn().getWeek()] = site
+                        sites[well.getWeek()] = site
         return sites
 
     def display(self):

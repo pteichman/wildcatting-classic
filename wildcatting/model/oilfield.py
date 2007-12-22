@@ -43,7 +43,7 @@ class Site(Serializable):
 
         self._prob = 0
         self._oilDepth = None
-        self._rig = None
+        self._well = None
         self._drillCost = 0
         self._tax = 0
 
@@ -73,13 +73,13 @@ class Site(Serializable):
         assert 1 <= oilDepth <= 10
         self._oilDepth = oilDepth
 
-    def getRig(self):
-        return self._rig
+    def getWell(self):
+        return self._well
 
-    def setRig(self, rig):
-        if rig is not None:
-            assert isinstance(rig, Rig)
-        self._rig = rig
+    def setWell(self, well):
+        if well is not None:
+            assert isinstance(well, Well)
+        self._well = well
 
     def getRow(self):
         return self._row
@@ -98,7 +98,7 @@ class Site(Serializable):
         assert isinstance(tax, int)
         self._tax = tax
 
-class Rig(Serializable):
+class Well(Serializable):
     def __init__(self):
         self._drillDepth = 0
         self._output = None

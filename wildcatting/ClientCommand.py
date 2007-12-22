@@ -18,7 +18,7 @@ class ClientCommand(Command):
         user = os.environ.get("USER")
         if user is None:
             user = "none"
-        rig = user[0].upper()
+        well = user[0].upper()
 
         self.add_option("", "--no-network", action="store_true") 
         self.add_option("-p", "--port", type="int",
@@ -27,8 +27,8 @@ class ClientCommand(Command):
                         default="localhost", help="server hostname")
         self.add_option("-u", "--username", type="string",
                         default=user, help="username")
-        self.add_option("-r", "--rig", type="string",
-                        default=rig, help="rig")
+        self.add_option("-r", "--well", type="string",
+                        default=well, help="well")
         self.add_option("-g", "--game-id", type="string",
                         default=None, help="game id")
 
@@ -50,7 +50,7 @@ class ClientCommand(Command):
             print e.args[1]
             sys.exit(0)
 
-        c = Client(options.game_id, options.username, options.rig)
+        c = Client(options.game_id, options.username, options.well)
 
         self.log.info("Wildcatting client start")
         try:

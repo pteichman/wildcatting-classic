@@ -111,15 +111,15 @@ class OilFieldCursesView:
             for col in xrange(field.getWidth()):
                 site = field.getSite(row, col)
                 if site.isSurveyed():
-                    rig = site.getRig()
-                    if rig is None:
+                    well = site.getWell()
+                    if well is None:
                         # work around an MacOS X terminal problem with
                         # displaying blank characters - it doesn't draw
-                        # the background if the rig is " "
+                        # the background if the well is " "
                         symbol = "."
                         color = self.blankColor(site)
                     else:
-                        symbol = rig.getPlayer().getSymbol()
+                        symbol = well.getPlayer().getSymbol()
                         color = self.siteColor(site)
 
                     putch(self._win, row, col, ord(symbol), color)
@@ -152,7 +152,7 @@ def main(stdscr):
         row = random.choice(range(0,h))
         site = field.getSite(row, col)
         site.setSurveyed(True)
-        site.setRig("B")
+        site.setWell("B")
         view.display()
 
 if __name__ == "__main__":

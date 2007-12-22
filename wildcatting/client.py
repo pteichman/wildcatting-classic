@@ -9,7 +9,7 @@ from report import SurveyorsReport
 from game import Game
 from colors import Colors
 
-from wildcatting.model import OilField, Setting, Site, Rig
+from wildcatting.model import OilField, Setting, Site, Well
 
 class Client:
     log = logging.getLogger("Wildcatting")

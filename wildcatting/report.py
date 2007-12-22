@@ -19,10 +19,10 @@ class WeeklyReport:
         for y in xrange(field.getHeight()):
             for x in xrange(field.getWidth()):
                 site = field.getSite(x, y)
-                rig = site.getRig()
-                if rig:
-                    if rig.getPlayer().getUsername() == player.getUsername():
-                        sites[rig.getTurn().getWeek()] = site
+                well = site.getWell()
+                if well:
+                    if well.getPlayer().getUsername() == player.getUsername():
+                        sites[well.getTurn().getWeek()] = site
         return sites
 
     def display(self):
@@ -48,7 +48,7 @@ class WeeklyReport:
                 site = self._sites[turn]
                 x = site.getCol()
                 y = site.getRow()
-                rig = site.getRig()
+                well = site.getWell()
                 cost = site.getDrillCost()
                 tax = site.getTax()
                 income = random.randint(0, 142)
@@ -56,9 +56,9 @@ class WeeklyReport:
             else:
                 x = y = cost = tax = income = profitAndLoss = 0
             
-            rig_str = "  %s  %s" % (str(x).rjust(2), str(y).rjust(2))
-            rig_str += "  $%s   $%s    $%s  $%s" % (str(cost).rjust(4), str(tax).rjust(4), str(income).rjust(4), str(profitAndLoss).rjust(8))
-            self._win.addstr(2 + turn, 0, rig_str)
+            well_str = "  %s  %s" % (str(x).rjust(2), str(y).rjust(2))
+            well_str += "  $%s   $%s    $%s  $%s" % (str(cost).rjust(4), str(tax).rjust(4), str(income).rjust(4), str(profitAndLoss).rjust(8))
+            self._win.addstr(2 + turn, 0, well_str)
             sumProfitAndLoss += profitAndLoss
         
         self._win.addstr(15, 1, "NEXT PLAYER")
@@ -176,10 +176,10 @@ def main(stdscr):
         site.setProbability(random.randint(0, 100))
         site.setDrillCost(random.randint(10, 30))
         site.setTax(random.randint(600, 1000))
-        rig = wildcatting.model.Rig()
-        rig.setPlayer(player)
-        rig.setWeek(week)
-        site.setRig(rig)
+        well = wildcatting.model.Well()
+        well.setPlayer(player)
+        well.setWeek(week)
+        site.setWell(well)
         field.setSite(row, col, site)
 
     report = WeeklyReport(stdscr, field, player, weeks)

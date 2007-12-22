@@ -162,10 +162,10 @@ class GameService:
         field = game.getOilField()
 
         site = field.getSite(row, col)
-        rig = wildcatting.model.Rig()
-        rig.setPlayer(player)
-        rig.setWeek(game.getTurn().getWeek())
-        site.setRig(rig)
+        well = wildcatting.model.Well()
+        well.setPlayer(player)
+        well.setWeek(game.getTurn().getWeek())
+        site.setWell(well)
         turn.setDrilledSite(site)
         
         return True
@@ -183,8 +183,8 @@ class GameService:
         
         field = game.getOilField()
         site = field.getSite(row, col)
-        rig = site.getRig()
-        return rig.drill(site)
+        well = site.getWell()
+        return well.drill(site)
 
     def endTurn(self, handle):
         game, player = self._readHandle(handle)
@@ -216,7 +216,7 @@ class GameService:
                 if surveyed:
                     playerSite.setDrillCost(site.getDrillCost())
                     playerSite.setProbability(site.getProbability())
-                    playerSite.setRig(site.getRig())
+                    playerSite.setWell(site.getWell())
                     playerSite.setTax(site.getTax())
 
         return playerField.serialize()

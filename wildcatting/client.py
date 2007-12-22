@@ -64,11 +64,12 @@ class Client:
 
     def _drawKeyBar(self, x, y):
         border_h, border_w = self._border_win.getmaxyx()
-        colors = self._view.getColors()
-        keyStr = " " * (border_w - 2)
+        colors = list(self._view.getColors())
+        colors.reverse()
+        keyStr = "." * (border_w - 2)
         bkgd = Colors.get(curses.COLOR_WHITE, curses.COLOR_WHITE)
         self._border_win.addstr(border_h - 2, 1, keyStr, bkgd)
-        for i in xrange(len(colors)-1, -1, -1):
+        for i in xrange(len(colors)):
             color = colors[i]
             self._border_win.addstr(border_h - 2, 1 + i, " ", color)
 

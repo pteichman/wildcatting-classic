@@ -54,7 +54,7 @@ class WestTexasTheme(Theme):
     def getMinDrillCost(self):
         return 1
     def getMaxDrillCost(self):
-        return 10
+        return 25
     def getMinTax(self):
         return 100
     def getMaxTax(self):
@@ -82,8 +82,8 @@ class WestTexasTheme(Theme):
     def getDrillCostMaxDropoff(self):
         return 5
     def getDrillCostMaxPeaks(self):
-        return 5
-    def getDrillCostFudge(self):
-        return 0
-    def getDrillCostLesserPeakFactor(self):
         return 10
+    def getDrillCostFudge(self):
+        return 1
+    def getDrillCostLesserPeakFactor(self):
+        return 1

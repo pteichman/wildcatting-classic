@@ -3,18 +3,17 @@ import socket
 import sys
 import os
 
-import wildcatting
-
-from wildcatting.cmdparse import Command
-from wildcatting.client import Client
+from . import client
+from . import cmdparse
+from . import util
 
 from xmlrpclib import ServerProxy
 
-class ClientCommand(Command):
+class ClientCommand(cmdparse.Command):
     log = logging.getLogger("Wildcatting")
 
     def __init__(self):
-        Command.__init__(self, "client", summary="Run the Wildcatting client")
+        cmdparse.Command.__init__(self, "client", summary="Run the Wildcatting client")
 
         user = os.environ.get("USER")
         if user is None:
@@ -34,26 +33,26 @@ class ClientCommand(Command):
                         default=None, help="game id")
 
     def run(self, options, args):
-        wildcatting.util.startLogger("client.log")
+        util.startLogger("client.log")
         
         url = "http://%s:%d/" % (options.hostname, options.port)
         if options.no_network:
-            theme = wildcatting.theme.WestTexasTheme()
-            server = wildcatting.server.StandaloneServer(theme)
+            from . import theme, server
+            s = server.StandaloneServer(theme.WestTexasTheme())
         else:
-            server = ServerProxy(url, allow_none=True)
+            s = ServerProxy(url, allow_none=True)
 
         try:
-            version = server.version()
+            version = s.version()
         except socket.error, e:
             print "Socket error contacting %s" % url
             print e.args[1]
             sys.exit(0)
 
-        client = Client(options.game_id, options.username, options.rig)
+        c = client.Client(options.game_id, options.username, options.rig)
 
         self.log.info("Wildcatting client start")
         try:
-            client.run(server)
+            c.run(s)
         finally:
             self.log.info("Wildcatting client shutdown")

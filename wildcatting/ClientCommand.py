@@ -3,9 +3,9 @@ import socket
 import sys
 import os
 
-from .client import Client
-from .cmdparse import Command
-from .util import startLogger
+from client import Client
+from cmdparse import Command
+from util import startLogger
 
 from xmlrpclib import ServerProxy
 
@@ -37,8 +37,8 @@ class ClientCommand(Command):
         
         url = "http://%s:%d/" % (options.hostname, options.port)
         if options.no_network:
-            from .theme import WestTexasTheme
-            from .server import StandaloneServer
+            from theme import WestTexasTheme
+            from server import StandaloneServer
             s = StandaloneServer(WestTexasTheme())
         else:
             s = ServerProxy(url, allow_none=True)

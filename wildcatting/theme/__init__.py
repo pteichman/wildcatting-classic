@@ -3,5 +3,5 @@ from westtexas import WestTexas
 
 DefaultTheme = WestTexas
 
-__all__ = [Theme, WestTexas]
+__all__ = ["Theme", "WestTexas"]
 

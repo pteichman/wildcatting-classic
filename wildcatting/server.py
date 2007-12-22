@@ -13,6 +13,8 @@ from wildcatting.exceptions import WildcattingException
 from wildcatting.game import Game
 import wildcatting.model
 
+from theme import DefaultTheme
+
 class TieredXMLRPCServer(SimpleXMLRPCServer):
     def __init__(self, *args, **kwargs):
         kwargs["allow_none"] = True
@@ -58,7 +60,10 @@ class SettingService:
 class GameService:
     HANDLE_SEP = "::"
     
-    def __init__(self, theme):
+    def __init__(self, theme=None):
+        if theme is None:
+            theme = DefaultTheme()
+        
         self._theme = theme
         self._games = {}
         self._nextGameId = 0

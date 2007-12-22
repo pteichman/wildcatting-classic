@@ -7,6 +7,8 @@ from wildcatting.exceptions import WildcattingException
 import wildcatting.model
 import wildcatting.turn
 
+from theme import DefaultTheme
+
 class PeakedFiller:
     def fill(self, field):
         assert isinstance(field, wildcatting.model.OilField)
@@ -55,7 +57,10 @@ class PeakedFiller:
         raise "AbstractMethodNotImplemented"
 
 class OilFiller(PeakedFiller):
-    def __init__(self, theme):
+    def __init__(self, theme=None):
+        if theme is None:
+            theme = DefaultTheme()
+
         self._theme = theme
     
     def getValueRange(self):
@@ -111,7 +116,10 @@ class DrillCostFiller(PeakedFiller):
 
 
 class TaxFiller:
-    def __init__(self, theme):
+    def __init__(self, theme=None):
+        if theme is None:
+            theme = DefaultTheme()
+
         self._theme = theme
     
     def fill(self, field):
@@ -125,9 +133,12 @@ class TaxFiller:
 class Game:
     log = logging.getLogger("Wildcatting")
 
-    def __init__(self, width, height, theme):
+    def __init__(self, width, height, theme=None):
         assert isinstance(width, int)
         assert isinstance(height, int)
+
+        if theme is None:
+            theme = DefaultTheme()
 
         self._theme = theme
         self._players = {}
@@ -153,12 +164,13 @@ class Game:
 
         id = player.getUsername()
         if self._players.has_key(player.getSecret()):
-            raise WildcattingException("Player has already joined game: " + id)
+            # player has already joined this game
+            return player.getSecret()
 
         secret = self._generateSecret(player)
         player.setSecret(secret)
 
-        self._players[id] = player
+        self._players[secret] = player
         self._playerOrder.append(player)
 
         return secret
@@ -173,6 +185,11 @@ class Game:
             raise WildcattingException("Invalid login")
 
         return player
+
+    def getPlayers(self):
+        # return a copy, since we don't want outside callers to be able
+        # to modify the order
+        return self._playerOrder[:]
 
     def endTurn(self, player):
         week = self._turn.getWeek()

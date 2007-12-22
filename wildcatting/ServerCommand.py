@@ -20,7 +20,7 @@ class ServerCommand(Command):
         hostname = "localhost"
 
         # this should be a server option
-        theme = wildcatting.theme.WestTexasTheme()
+        theme = wildcatting.theme.DefaultTheme()
         
         s = wildcatting.server.TieredXMLRPCServer((hostname, options.port))
 

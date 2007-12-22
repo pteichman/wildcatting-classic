@@ -37,9 +37,9 @@ class ClientCommand(Command):
         
         url = "http://%s:%d/" % (options.hostname, options.port)
         if options.no_network:
-            from theme import WestTexasTheme
+            from theme import DefaultTheme
             from server import StandaloneServer
-            s = StandaloneServer(WestTexasTheme())
+            s = StandaloneServer(DefaultTheme())
         else:
             s = ServerProxy(url, allow_none=True)
 

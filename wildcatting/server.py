@@ -221,3 +221,15 @@ class GameService:
 
         return playerField.serialize()
         
+class StandaloneServer:
+    def __init__(self, theme):
+        import inspect
+
+        base = BaseService()
+        funcs = inspect.getmembers(base, inspect.ismethod)
+        for name, method in funcs:
+            setattr(self, name, method)
+
+        self.admin = AdminService()
+        self.game = GameService(theme)
+        self.setting = SettingService(theme)

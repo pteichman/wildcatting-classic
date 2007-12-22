@@ -20,23 +20,30 @@ class ClientCommand(Command):
         if user is None:
             user = "none"
         rig = user[0].upper()
-        
-        self.add_option("-p", "--port", action="store", type="int",
+
+        self.add_option("", "--no-network", action="store_true") 
+        self.add_option("-p", "--port", type="int",
                         default="7777", help="server port")
-        self.add_option("-n", "--hostname", action="store", type="string",
+        self.add_option("-n", "--hostname", type="string",
                         default="localhost", help="server hostname")
-        self.add_option("-u", "--username", action="store", type="string",
+        self.add_option("-u", "--username", type="string",
                         default=user, help="username")
-        self.add_option("-r", "--rig", action="store", type="string",
+        self.add_option("-r", "--rig", type="string",
                         default=rig, help="rig")
-        self.add_option("-g", "--game-id", action="store", type="string",
+        self.add_option("-g", "--game-id", type="string",
                         default=None, help="game id")
 
     def run(self, options, args):
         wildcatting.util.startLogger("client.log")
         
         url = "http://%s:%d/" % (options.hostname, options.port)
-        server = ServerProxy(url, allow_none=True)
+        if options.no_network:
+            import wildcatting.server, wildcatting.theme
+            theme = wildcatting.theme.WestTexasTheme()
+            server = wildcatting.server.StandaloneServer(theme)
+        else:
+            server = ServerProxy(url, allow_none=True)
+
         try:
             version = server.version()
         except socket.error, e:

@@ -26,7 +26,7 @@ if __name__ == "__main__":
 
     for dir in (wildcatdir, testdir):
         if dir not in sys.path:
-            sys.path[-1] = cwd
+            sys.path.append(dir)
 
     modules = get_tests(testdir)
     

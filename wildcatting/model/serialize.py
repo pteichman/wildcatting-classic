@@ -1,9 +1,19 @@
 import new
 import wildcatting.model
+from pprint import PrettyPrinter
+
+# pretty-printer for getting a single line (but sorted nicely)
+# representation of objects
+_pp = PrettyPrinter(width=100000)
 
 class Serializable:
     CLASS_KEY = "wildcatting.model.Serializable.class"
     STATE_KEY = "wildcatting.model.Serializable.state"
+
+    def __repr__(self):
+        return "<%s instance at 0x%s> %s" % (self.__class__.__name__,
+                                             id(self),
+                                             _pp.pformat(self.__dict__))
     
     def serialize(self):
         return self.__serialize_instance(self)

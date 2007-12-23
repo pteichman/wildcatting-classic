@@ -174,6 +174,24 @@ class GameService:
         turn.setDrilledSite(site)
         
         return True
+
+    def start(self, handle):
+        game, player = self._readHandle(handle)
+
+        if player != game.getMaster():
+            raise WildcattingException("Player is not game master")
+        game.start()
+
+    def isStarted(self, handle):
+        game, player = self._readHandle(handle)
+        return game.isStarted()
+
+    def listPlayers(self, handle):
+        game, player = self._readHandle(handle)
+
+        players = game.getPlayers()
+        ret = [player.getUsername() for player in players]
+        return ret
         
     def drill(self, handle, row, col):
         game, player = self._readHandle(handle)

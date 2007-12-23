@@ -2,10 +2,11 @@ import logging
 import curses
 import random
 import textwrap
+import time
 
 from views import OilFieldCursesView
 from views import putch
-from report import SurveyorsReport
+from report import SurveyorsReport, PregameReport
 from game import Game
 from colors import Colors
 
@@ -78,6 +79,21 @@ class Client:
         self._border_win.addstr(border_h - 2, border_w / 2 - len(coordStr) / 2, coordStr, foreground)
         self._border_win.refresh()
 
+    def _runPreGame(self, gameId, username):
+        while not self._server.game.isStarted(self._handle):
+            players = self._server.game.listPlayers(self._handle)
+
+            isMaster = False
+            if players[0] == username:
+                isMaster = True
+
+            report = PregameReport(self._stdscr, gameId, isMaster, players)
+            report.display()
+
+            start = report.input()
+            if start and isMaster:
+                self._server.game.start(self._handle)
+
     def wildcatting(self, stdscr):
         self._stdscr = stdscr
 
@@ -97,6 +113,8 @@ class Client:
 
         self._border_win = stdscr.derwin(border_h, border_w, 1, 3)
         self._field_win = stdscr.derwin(field_h, field_w, 2, 4)
+
+        self._runPreGame(self._gameId, self._username)
 
         self._view = view = OilFieldCursesView(self._field_win)
 

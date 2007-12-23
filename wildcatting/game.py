@@ -144,6 +144,7 @@ class Game:
         self._players = {}
         self._playerOrder = []
         self._turn = wildcatting.turn.Turn()
+        self._isStarted = False
         
         self._oilField = wildcatting.model.OilField(width, height)
         OilFiller(theme).fill(self._oilField)
@@ -175,6 +176,11 @@ class Game:
 
         return secret
 
+    def getMaster(self):
+        if len(self._playerOrder) > 0:
+            return self._playerOrder[0]
+        return None
+
     def getPlayer(self, username, secret):
         assert isinstance(username, str)
         assert isinstance(secret, str)
@@ -190,6 +196,12 @@ class Game:
         # return a copy, since we don't want outside callers to be able
         # to modify the order
         return self._playerOrder[:]
+
+    def start(self):
+        self._isStarted = True
+
+    def isStarted(self):
+        return self._isStarted
 
     def endTurn(self, player):
         week = self._turn.getWeek()

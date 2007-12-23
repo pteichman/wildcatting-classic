@@ -178,10 +178,10 @@ class Game:
     def getPlayer(self, username, secret):
         assert isinstance(username, str)
         assert isinstance(secret, str)
+
+        player = self._players.get(secret)
         
-        player = self._players.get(username)
-        
-        if player is None or player.getSecret() != secret:
+        if player is None or player.getUsername() != username:
             raise WildcattingException("Invalid login")
 
         return player

@@ -175,6 +175,10 @@ class GameService:
         
         return True
 
+    def getGameId(self, handle):
+        gameId, playerName, secret = self._decodeGameHandle(handle)
+        return gameId
+
     def start(self, handle):
         game, player = self._readHandle(handle)
 

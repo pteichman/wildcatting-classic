@@ -27,10 +27,12 @@ class ClientCommand(Command):
                         default="localhost", help="server hostname")
         self.add_option("-u", "--username", type="string",
                         default=user, help="username")
-        self.add_option("-r", "--well", type="string",
+        self.add_option("-w", "--well", type="string",
                         default=well, help="well")
         self.add_option("-g", "--game-id", type="string",
                         default=None, help="game id")
+        self.add_option("-r", "--handle", type="string",
+                        default=None, help="game handle")
 
     def run(self, options, args):
         startLogger("client.log")
@@ -50,7 +52,7 @@ class ClientCommand(Command):
             print e.args[1]
             sys.exit(0)
 
-        c = Client(options.game_id, options.username, options.well)
+        c = Client(options.game_id, options.handle, options.username, options.well)
 
         self.log.info("Wildcatting client start")
         try:

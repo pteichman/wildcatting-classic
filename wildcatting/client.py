@@ -15,8 +15,9 @@ from wildcatting.model import OilField, Setting, Site, Well
 class Client:
     log = logging.getLogger("Wildcatting")
     
-    def __init__(self, gameId, username, symbol):
+    def __init__(self, gameId, handle, username, symbol):
         self._gameId = gameId
+        self._handle = handle
         self._username = username
         self._symbol = symbol
         self._turn = 0
@@ -103,13 +104,13 @@ class Client:
         field_w = border_w - 2
         field_h = border_h - 3
 
-        if self._gameId is None:
+        if self._handle is None:
             self._gameId = self._server.game.new(field_w, field_h)
             self.log.info("Created a new game: ID is " + self._gameId)
+            self._handle = self._server.game.join(self._gameId, self._username, self._symbol)
         else:
-            self.log.info("Reconnecting to game ID: " + self._gameId)
-
-        self._handle = self._server.game.join(self._gameId, self._username, self._symbol)
+            self.log.info("Reconnecting with game handle: " + self._handle)
+            self._gameId = self._server.game.getGameId(self._handle)
 
         self._border_win = stdscr.derwin(border_h, border_w, 1, 3)
         self._field_win = stdscr.derwin(field_h, field_w, 2, 4)
@@ -161,4 +162,8 @@ class Client:
         self._server = server
         self._setting = Setting.deserialize(self._server.setting.getSetting())
 
-        curses.wrapper(self.wildcatting)
+        try:
+            curses.wrapper(self.wildcatting)
+        except KeyboardInterrupt:
+            print "To reconnect, your game handle is", self._handle
+            raise

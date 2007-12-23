@@ -29,7 +29,7 @@ class ClientCommand(Command):
                         default=user, help="username")
         self.add_option("-w", "--well", type="string",
                         default=well, help="well")
-        self.add_option("-g", "--game-id", type="string",
+        self.add_option("-g", "--game", type="string",
                         default=None, help="game id")
         self.add_option("-r", "--handle", type="string",
                         default=None, help="game handle")
@@ -52,7 +52,7 @@ class ClientCommand(Command):
             print e.args[1]
             sys.exit(0)
 
-        c = Client(options.game_id, options.handle, options.username, options.well)
+        c = Client(options.game, options.handle, options.username, options.well)
 
         self.log.info("Wildcatting client start")
         try:

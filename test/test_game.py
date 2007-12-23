@@ -1,5 +1,6 @@
 import unittest
 
+from wildcatting.exceptions import WildcattingException
 from wildcatting.model import OilField, Player
 from wildcatting.game import OilFiller, TaxFiller, Game
 
@@ -78,10 +79,7 @@ class TestGame(unittest.TestCase):
         secret1 = game.addPlayer(player1)
         self.assert_(player1 in game.getPlayers())
 
-        secret2 = game.addPlayer(player1)
-        self.assert_(player1 in game.getPlayers())
-
-        self.assertEquals(secret1, secret2)
+        self.assertRaises(WildcattingException, game.addPlayer, player1)
 
 if __name__ == "__main__":
     unittest.main()

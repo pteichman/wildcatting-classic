@@ -163,10 +163,9 @@ class Game:
         # FIXME populate this in some sane way
         self._turn.setPlayer(player)
 
-        id = player.getUsername()
-        if self._players.has_key(player.getSecret()):
-            # player has already joined this game
-            return player.getSecret()
+        playerNames = [p.getUsername() for p in self._players.values()]
+        if player.getUsername() in playerNames:
+            raise WildcattingException("A user named %s has already joined this game" % player.getUsername())
 
         secret = self._generateSecret(player)
         player.setSecret(secret)

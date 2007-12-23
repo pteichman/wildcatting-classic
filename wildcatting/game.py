@@ -7,7 +7,7 @@ from wildcatting.exceptions import WildcattingException
 import wildcatting.model
 import wildcatting.turn
 
-from theme import DefaultTheme
+from theme import DefaultTheme, Theme
 
 class PeakedFiller:
     def fill(self, field):
@@ -133,17 +133,21 @@ class TaxFiller:
 class Game:
     log = logging.getLogger("Wildcatting")
 
-    def __init__(self, width, height, theme=None):
+    def __init__(self, width, height, turnCount=13, theme=None):
         assert isinstance(width, int)
         assert isinstance(height, int)
+        assert isinstance(turnCount, int)
 
         if theme is None:
             theme = DefaultTheme()
 
+        assert isinstance(theme, Theme)
+
+        self._turnCount = turnCount
         self._theme = theme
         self._players = {}
         self._playerOrder = []
-        self._turn = wildcatting.turn.Turn()
+        self._turn = None
         self._isStarted = False
         
         self._oilField = wildcatting.model.OilField(width, height)
@@ -159,9 +163,6 @@ class Game:
 
     def addPlayer(self, player):
         assert isinstance(player, wildcatting.model.Player)
-
-        # FIXME populate this in some sane way
-        self._turn.setPlayer(player)
 
         playerNames = [p.getUsername() for p in self._players.values()]
         if player.getUsername() in playerNames:
@@ -199,16 +200,20 @@ class Game:
     def start(self):
         self._isStarted = True
 
+        self._turn = wildcatting.turn.Turn()
+        self._turn.setPlayer(self._playerOrder[0])
+        self._turn.setWeek(1)
+
     def isStarted(self):
         return self._isStarted
 
     def endTurn(self, player):
         week = self._turn.getWeek()
-        self._turn = wildcatting.turn.Turn()
 
         curIndex = self._playerOrder.index(player)
         nextPlayer = self._playerOrder[(curIndex + 1) % len(self._playerOrder)]
         
+        self._turn = wildcatting.turn.Turn()
         self._turn.setPlayer(nextPlayer)
         self._turn.setWeek(week)
 

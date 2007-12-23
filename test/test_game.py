@@ -81,5 +81,15 @@ class TestGame(unittest.TestCase):
 
         self.assertRaises(WildcattingException, game.addPlayer, player1)
 
+    def testStartGame(self):
+        game = Game(10, 10)
+
+        player1 = Player("alice", "A")
+        game.addPlayer(player1)
+
+        self.assertEquals(False, game.isStarted())
+        game.start()
+        self.assertEquals(True, game.isStarted())
+
 if __name__ == "__main__":
     unittest.main()

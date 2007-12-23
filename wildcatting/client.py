@@ -114,7 +114,7 @@ class Client:
             self.log.info("Joined game: %s" % self._gameId)
         else:
             # creating a new game
-            self._gameId = self._server.game.new(field_w, field_h)
+            self._gameId = self._server.game.new(field_w, field_h, 13)
             self._handle = self._server.game.join(self._gameId, self._username, self._symbol)
             self.log.info("Created a new game: ID is %s" + self._gameId)
 

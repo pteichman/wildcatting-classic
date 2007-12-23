@@ -112,14 +112,15 @@ class GameService:
 
         return gameHandle.split(GameService.HANDLE_SEP, 2)
 
-    def new(self, width, height):
+    def new(self, width, height, turnCount):
         assert isinstance(width, int)
         assert isinstance(height, int)
+        assert isinstance(turnCount, int)
         
         gameId = str(self._nextGameId)
         self._nextGameId = self._nextGameId + 1
 
-        self._games[gameId] = Game(width, height, self._theme)
+        self._games[gameId] = Game(width, height, turnCount, self._theme)
         return gameId
 
     def join(self, gameId, username, symbol):

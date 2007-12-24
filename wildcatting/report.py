@@ -227,7 +227,7 @@ class PregameReport(Report):
         except:
             return False
         finally:
-            curses.nocbreak()
+            curses.cbreak()
 
         return True
 

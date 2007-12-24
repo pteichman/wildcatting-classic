@@ -147,6 +147,7 @@ class Game:
         self._theme = theme
         self._players = {}
         self._playerOrder = []
+        self._playerUpdates = {}
         self._turn = None
         self._isStarted = False
         
@@ -173,6 +174,7 @@ class Game:
 
         self._players[secret] = player
         self._playerOrder.append(player)
+        self._playerUpdates[player.getUsername()] = False
 
         return secret
 
@@ -216,6 +218,18 @@ class Game:
         self._turn = wildcatting.turn.Turn()
         self._turn.setPlayer(nextPlayer)
         self._turn.setWeek(week)
+
+    def markUpdate(self, player):
+        playerUpdates = dict([(p.getUsername(), True) for p in self._players.values()])
+        username = player.getUsername()
+        playerUpdates[username] = self._playerUpdates[username]
+        self._playerUpdates = playerUpdates
+
+    def needsUpdate(self, player):
+        username = player.getUsername()
+        update = self._playerUpdates[username]
+        self._playerUpdates[username] = False
+        return update
 
     def getTurn(self):
         return self._turn

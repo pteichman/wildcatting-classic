@@ -126,6 +126,7 @@ class Client:
         self._view = view = OilFieldCursesView(self._field_win)
 
         curses.mousemask(curses.ALL_MOUSE_EVENTS)
+        curses.halfdelay(50)
         self._refreshPlayerField()
         x = 0 ; y = 0
         while True:
@@ -137,9 +138,12 @@ class Client:
             curses.curs_set(0)
             dx = 0 ; dy = 0
             survey = False
+            checkForUpdates = False
             
             c = stdscr.getch()
-            if c == curses.KEY_UP: dy = -1
+            if c == -1:
+                checkForUpdates = True
+            elif c == curses.KEY_UP: dy = -1
             elif c == curses.KEY_DOWN: dy = 1
             elif c == curses.KEY_LEFT: dx = -1
             elif c == curses.KEY_RIGHT: dx = 1
@@ -162,6 +166,8 @@ class Client:
 
             if survey:
                 self.survey(x, y)
+                self._refreshPlayerField()
+            elif checkForUpdates and self._server.game.needsUpdate(self._handle):
                 self._refreshPlayerField()
 
     def run(self, server):

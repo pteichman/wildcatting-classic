@@ -152,6 +152,8 @@ class GameService:
 
         site.setSurveyed(True)
         turn.setSurveyedSite(site)
+
+        game.markUpdate(player)
         
         return site.serialize()
 
@@ -173,6 +175,8 @@ class GameService:
         well.setWeek(game.getTurn().getWeek())
         site.setWell(well)
         turn.setDrilledSite(site)
+
+        game.markUpdate(player)
         
         return True
 
@@ -225,6 +229,10 @@ class GameService:
 
         return True
 
+    def needsUpdate(self, handle):
+        game, player = self._readHandle(handle)
+
+        return game.needsUpdate(player)
 
     def getPlayerField(self, handle):
         game, player = self._readHandle(handle)

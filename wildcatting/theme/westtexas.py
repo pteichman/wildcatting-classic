@@ -6,11 +6,12 @@ __all__ = ["WestTexas"]
 raw_facts = """
 Anadarko will rule the world as we know it. They don't like partners, they now own the UPR strip, much of which is now looking like the biggest gas basins in the US, and they like to drill... and drill... and drill. Everywhere. East Texas Bossier. Cotton Valley. James Lime. Austin Chalk. Just heard of a new hot play? Anadarko probably started it and owns it.
 Bud Brigham is a geophysicist who believed in technology. He rode high and he fell hard.  He was hammered for exporing, but now he has SIGNIFICANT wells drilling in Matagorda County and Wheeler County.
-Climate Scientists are currently Neutral as to whether human causes are the the major drivers of Global Warming.
-Climate Scientists have little faith in their models, the major tool used to "predict" climate change.  The consensus is that these models are likely wrong, and there has been little movement from that position in the last decade.
-El Paso knocked it out of the park by showing us what the Vicksburg play COULD be in its Tom East Field in Brooks County. Wells making 60-70 million cubic feet of gas per day can make you healthy real quick.
-In 1916, Dr. Johan A. Udden believed there an oil-supporting underground fold of rock running under the University of Texas. Though erroneous, Udden's theory led to the first major oil discovery in the West Texas Permian Basin.
-Like 'em or hate 'em, Aubry McClendon and the folks at Chesapeake believe in the drillbit. They have won big, and lost bigger, but they are still around and kicking... drilling some of the most exciting wells around!
+Climate scientists are currently neutral as to whether human causes are the the major drivers of Global Warming.
+Climate scientists have little faith in their models, the major tool used to "predict" climate change.
+The consensus is that climate scientists' models are likely wrong, and there has been little movement from that position in the last decade.
+El Paso knocked it out of the park by showing us what the Vicksburg play COULD be in its Tom East Field in Brooks County.
+Wells making 60-70 million cubic feet of gas per day can make you healthy real quick.
+Like 'em or hate 'em, Aubry McClendon and the folks at Chesapeake believe in the drillbit. They have won big, and lost bigger, but they are still around and kicking... drilling some of the most exciting wells around.
 Luis de Moscoso, a survivor of the DeSoto expedition, recorded the first sighting of oil in Texas.
 Prices for WTI are quoted at Cushing, Oklahoma, which is a major crude oil shipment point that has extensive pipeline connections to oil producing areas and Southwest and Gulf Coast-based refining centers.
 Texas Light Sweet Crude is more formally known as West Texas Intermediate (WTI).
@@ -21,6 +22,17 @@ The legendary D. Harold (Dry Hole) Byrd was born in Detroit, Texas, on April 24,
 Thousands of Texans have been touched by Texas' black gold through the philanthropy of people who have made fortunes from its discovery, production and processing.
 West Texas Crude is a full-tilt trio from Toowoomba, Queensland who are reviving the traditional rockabilly sounds of the 1950s.  The trio have packed dance floors across Australia with their catchy, high octane rockabilly.
 West Texas Intermediate (WTI) is a light crude, lighter than Brent Crude. It contains about 0.24% sulfur, rating it a sweet crude.
+The legendary wildcatter Sid Richardson started the family oil business when his mother lent him $40 for train fare to West Texas to "put some deals together."
+Perry Richardson Bass became a favorite nephew of his uncle, legendary wildcatter Sid Richardson, and decided to make his living drilling for oil.
+Perry Richardson Bass, an avid fisherman, never said goodbye. His parting words were always, 'Tight lines and screaming reels.'"
+Perry Richardson Bass called his business a "game," adding, "We'll do anything honest to make a living."
+In 1935, Perry Bass, a student at Yale University, and his uncle form Richardson & Bass, an oil venture.  After two dry holes, Richardson hits with the discovery well of the fabulously rich Keystone Field in West Texas' Winkler County.
+Sid Williams Richardson was a Texas oilman, cattleman and philanthropist known for his association with the city of Fort Worth.
+Sid Williams Richardson was born on 25th April, 1891, in Athens, Texas.
+In 1919 Sid Richardson established his own oil company in Fort Worth.  In 1921 the oil market collapsed and he lost most of his fortune.
+Sid Richardson had originally been a supporter of the Democratic Party and was associated with a group of right-wing politicians that included Dwight Eisenhower and Lyndon B. Johnson.
+Sid Richardson began ranching in the 1930s and developed a love of Western art, particularly that of Frederic Remington and Charles M. Russell. 
+Before the big oil companies gained control of the business it was open to any white man who could hustle up the money for a rig, talk a farmer into leasing the mineral rights to his land, and then maintain enough optimism or pigheadedness to drill up his leasehold until he either found oil or convinced himself that he had made a mistake.
 
 # Texas facts
 The population of Texas is 21 million, not including the 16 million cattle.

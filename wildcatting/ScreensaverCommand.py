@@ -4,7 +4,7 @@ import random
 import curses
 
 from wildcatting.cmdparse import Command
-from wildcatting.views import OilFieldTextView, OilFieldCursesView
+from wildcatting.view import OilFieldTextView, OilFieldCursesView
 from wildcatting.game import Game
 from wildcatting.theme import DefaultTheme
 

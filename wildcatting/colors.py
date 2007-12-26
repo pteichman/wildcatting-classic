@@ -1,5 +1,6 @@
 import curses
 
+
 class _Colors:
     """Semi-singleton for curses color setup"""
     _colors = {(curses.COLOR_WHITE, curses.COLOR_BLACK) : 0}

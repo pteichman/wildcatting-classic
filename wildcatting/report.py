@@ -3,9 +3,9 @@ import random
 import curses
 
 from wildcatting.colors import Colors
-from wildcatting.views import CursesColorChooser
 
 import wildcatting.model
+import wildcatting.view
 
 class Report:
     log = logging.getLogger("Wildcatting")
@@ -63,7 +63,7 @@ class WeeklyReport(Report):
         self._win.addstr(0, 36, "WEEK %s" % self._turns)
         self._win.addstr(1, 1, "  X   Y   COST     TAX   INCOME        P&L")
 
-        colorChooser = CursesColorChooser()
+        colorChooser = wildcatting.view.ColorChooser()
         sumProfitAndLoss = 0
         for turn in xrange(1, self._turns + 1):
             if turn in self._sites:

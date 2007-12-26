@@ -3,8 +3,8 @@ import curses
 import random
 import time
 
-from views import OilFieldCursesView, CursesColorChooser, WildcattingView
-from views import putch
+from view import OilFieldCursesView, WildcattingView
+from view import putch
 from report import SurveyorsReport, PregameReport, WeeklyReport
 from game import Game
 from colors import Colors

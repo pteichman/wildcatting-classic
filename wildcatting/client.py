@@ -31,7 +31,7 @@ class Client:
         self._turn += 1
         self._wildcatting.updateTurn(self._turn)
         
-    def survey(self, x, y):
+    def _survey(self, x, y):
         site = self._playerField.getSite(y, x)
         surveyed = site.isSurveyed()
         if not surveyed:
@@ -95,7 +95,7 @@ class Client:
 
             if survey is not None:
                 row, col = survey
-                self.survey(col, row)
+                self._survey(col, row)
                 self._refreshPlayerField()
                 wildcatting.display()
             elif checkForUpdates and self._server.game.needsUpdate(self._handle):

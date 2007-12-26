@@ -88,9 +88,6 @@ class Client:
         wildcatting.display()
         while True:
             actions = wildcatting.input()
-
-            self.log.info(actions)
-            
             checkForUpdates = actions["checkForUpdates"]
             survey = actions["survey"]
 

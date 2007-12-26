@@ -62,6 +62,9 @@ class Client:
     def wildcatting(self, stdscr):
         self._stdscr = stdscr
 
+        (h, w) = stdscr.getmaxyx()
+        field_w, field_h = w - (WildcattingView.SIDE_BORDER * 2) - 2, h - (WildcattingView.TOP_BORDER * 2) - 3
+
         if self._handle is not None:
             # connecting to a game already in progress
             self._gameId = self._server.game.getGameId(self._handle)
@@ -72,8 +75,6 @@ class Client:
             self.log.info("Joined game: %s" % self._gameId)
         else:
             # creating a new game
-            (h, w) = stdscr.getmaxyx()
-            field_w, field_h = w - (WildcattingView.SIDE_BORDER * 2) - 2, h - (WildcattingView.TOP_BORDER * 2) - 3
             self._gameId = self._server.game.new(field_w, field_h, 13)
             self._handle = self._server.game.join(self._gameId, self._username, self._symbol)
             self.log.info("Created a new game: ID is %s" + self._gameId)

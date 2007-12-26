@@ -1,16 +1,16 @@
 import logging
 import curses
 import random
-import textwrap
 import time
 
-from views import OilFieldCursesView
+from views import OilFieldCursesView, CursesColorChooser, WildcattingView
 from views import putch
-from report import SurveyorsReport, PregameReport
+from report import SurveyorsReport, PregameReport, WeeklyReport
 from game import Game
 from colors import Colors
 
 from wildcatting.model import OilField, Setting, Site, Well
+
 
 class Client:
     log = logging.getLogger("Wildcatting")
@@ -23,12 +23,14 @@ class Client:
         self._turn = 0
 
     def _refreshPlayerField(self):
-        self._stdscr.clear()
-        self._drawBorder()
         self._playerField = OilField.deserialize(self._server.game.getPlayerField(self._handle))
-        self._view.setField(self._playerField)
-        self._view.display()
+        self._wildcatting.updateField(self._playerField)
 
+    def _endTurn(self):
+        self._server.game.endTurn(self._handle)
+        self._turn += 1
+        self._wildcatting.updateTurn(self._turn)
+        
     def survey(self, x, y):
         site = self._playerField.getSite(y, x)
         surveyed = site.isSurveyed()
@@ -40,45 +42,7 @@ class Client:
         yes = report.input()
         if yes:
             self._server.game.erect(self._handle, y, x)
-        self._server.game.endTurn(self._handle)
-
-    def _wrap_fact(self, fact, indent, width):
-        """Wrap a fact across three lines"""
-        lines = textwrap.wrap(fact, width, initial_indent=indent,
-                              subsequent_indent=indent, break_long_words=True)
-
-        # we only have space for three lines
-        if len(lines) > 3:
-            lines = lines[:3]
-        
-        return "\n".join(lines)
-
-    def _drawBorder(self):
-        (h, w) = self._stdscr.getmaxyx()
-        location = self._setting.getLocation()
-        era = self._setting.getEra()
-        self._stdscr.addstr(0, 4, "%s, %s." %(location, era), curses.A_BOLD)
-        self._stdscr.addstr(0, w - 10, "Week %s" % str(self._turn + 1), curses.A_BOLD)
-        fact = random.choice(self._setting.getFacts())
-        wrapped = self._wrap_fact(fact, " "*4, w-8)
-        self._stdscr.addstr(h-3, 0, wrapped)
-        self._border_win.box()
-
-    def _drawKeyBar(self, x, y):
-        border_h, border_w = self._border_win.getmaxyx()
-        colors = list(self._view.getColors())
-        colors.reverse()
-        keyStr = "." * (border_w - 2)
-        bkgd = Colors.get(curses.COLOR_WHITE, curses.COLOR_WHITE)
-        self._border_win.addstr(border_h - 2, 1, keyStr, bkgd)
-        for i in xrange(len(colors)):
-            color = colors[i]
-            self._border_win.addstr(border_h - 2, 1 + i, " ", color)
-
-        coordStr = "X=%s   Y=%s" % (str(x).rjust(2), str(y).rjust(2))
-        foreground = Colors.get(curses.COLOR_BLACK, curses.COLOR_WHITE)
-        self._border_win.addstr(border_h - 2, border_w / 2 - len(coordStr) / 2, coordStr, foreground)
-        self._border_win.refresh()
+        self._endTurn()
 
     def _runPreGame(self, gameId, username):
         while not self._server.game.isStarted(self._handle):
@@ -118,57 +82,29 @@ class Client:
             self._handle = self._server.game.join(self._gameId, self._username, self._symbol)
             self.log.info("Created a new game: ID is %s" + self._gameId)
 
-        self._border_win = stdscr.derwin(border_h, border_w, 1, 3)
-        self._field_win = stdscr.derwin(field_h, field_w, 2, 4)
-
         self._runPreGame(self._gameId, self._username)
 
-        self._view = view = OilFieldCursesView(self._field_win)
+        self._wildcatting = wildcatting = WildcattingView(self._stdscr, field_h, field_w, self._setting)
 
-        curses.mousemask(curses.ALL_MOUSE_EVENTS)
-        curses.halfdelay(50)
         self._refreshPlayerField()
-        x = 0 ; y = 0
+
+        wildcatting.display()
         while True:
-            putch(self._field_win, y, x, " ", curses.A_REVERSE)
-            self._field_win.refresh()
-            self._view.display()
-            self._drawKeyBar(x, y)
+            actions = wildcatting.input()
+
+            self.log.info(actions)
             
-            curses.curs_set(0)
-            dx = 0 ; dy = 0
-            survey = False
-            checkForUpdates = False
-            
-            c = stdscr.getch()
-            if c == -1:
-                checkForUpdates = True
-            elif c == curses.KEY_UP: dy = -1
-            elif c == curses.KEY_DOWN: dy = 1
-            elif c == curses.KEY_LEFT: dx = -1
-            elif c == curses.KEY_RIGHT: dx = 1
-            elif c == curses.KEY_MOUSE:
-                mid, mx, my, mz, bstate = curses.getmouse()
-                dx = mx - x - 4
-                dy = my - y - 2
-                survey = True
-            elif c == ord(' ') or c == ord('\n'):
-                survey = True
+            checkForUpdates = actions["checkForUpdates"]
+            survey = actions["survey"]
 
-            if dx != 0 or dy != 0:
-                if (x + dx) > field_w-1 or (y + dy) > field_h-1 or \
-                    (x + dx) < 0 or (y + dy) < 0:
-                    continue
-
-                putch(self._field_win, y, x, " ", curses.color_pair(0))
-                x += dx ; y += dy
-                putch(self._field_win, y, x, " ")
-
-            if survey:
-                self.survey(x, y)
+            if survey is not None:
+                row, col = survey
+                self.survey(col, row)
                 self._refreshPlayerField()
+                wildcatting.display()
             elif checkForUpdates and self._server.game.needsUpdate(self._handle):
                 self._refreshPlayerField()
+                wildcatting.display()
 
     def run(self, server):
         self._server = server

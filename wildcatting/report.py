@@ -3,6 +3,7 @@ import random
 import curses
 
 from wildcatting.colors import Colors
+from wildcatting.views import CursesColorChooser
 
 import wildcatting.model
 
@@ -28,23 +29,24 @@ class Report:
             win.addstr(row, 0, "." * (w-1), bg)
 
 class WeeklyReport(Report):
-    def __init__(self, stdscr, field, player, turns):
+    def __init__(self, stdscr, field, username, symbol, turns):
         Report.__init__(self, stdscr)
 
-        self._player = player
+        self._username = username
+        self._symbol = symbol
         self._turns = turns
-        self._sites = self._buildSiteDict(field, player)
+        self._sites = self._buildSiteDict(field, username)
         (h,w) = self._stdscr.getmaxyx()
         self._win = self._stdscr.derwin(16, 48, (h-16)/2, (w-48)/2)
 
-    def _buildSiteDict(self, field, player):
+    def _buildSiteDict(self, field, username):
         sites = {}
-        for y in xrange(field.getHeight()):
-            for x in xrange(field.getWidth()):
-                site = field.getSite(x, y)
+        for row in xrange(field.getHeight()):
+            for col in xrange(field.getWidth()):
+                site = field.getSite(row, col)
                 well = site.getWell()
                 if well:
-                    if well.getPlayer().getUsername() == player.getUsername():
+                    if well.getPlayer().getUsername() == username:
                         sites[well.getWeek()] = site
         return sites
 
@@ -57,12 +59,13 @@ class WeeklyReport(Report):
 
         self.setFGBG(self._win, text, bkgd)
 
-        self._win.addstr(0, 0, self._player.getUsername().upper())
+        self._win.addstr(0, 0, self._username.upper())
         self._win.addstr(0, 36, "WEEK %s" % self._turns)
         self._win.addstr(1, 1, "  X   Y   COST     TAX   INCOME        P&L")
 
+        colorChooser = CursesColorChooser()
         sumProfitAndLoss = 0
-        for turn in xrange(self._turns):
+        for turn in xrange(1, self._turns + 1):
             if turn in self._sites:
                 site = self._sites[turn]
                 x = site.getCol()
@@ -72,18 +75,50 @@ class WeeklyReport(Report):
                 tax = site.getTax()
                 income = random.randint(0, 142)
                 profitAndLoss = random.randint(-75000, 75000)
+                marker = self._symbol
+                self._win.addstr(1 + turn, 0, marker, colorChooser.siteColor(site))
             else:
                 x = y = cost = tax = income = profitAndLoss = 0
+                marker = " "
             
             well_str = "  %s  %s" % (str(x).rjust(2), str(y).rjust(2))
             well_str += "  $%s   $%s    $%s  $%s" % (str(cost).rjust(4), str(tax).rjust(4), str(income).rjust(4), str(profitAndLoss).rjust(8))
-            self._win.addstr(2 + turn, 0, well_str)
+            self._win.addstr(1 + turn, 1, well_str)
             sumProfitAndLoss += profitAndLoss
         
         self._win.addstr(15, 1, "NEXT PLAYER")
         self._win.addstr(15, 35, "$ %s" % str(sumProfitAndLoss).rjust(10))
         self._win.move(15, 0)
         self._win.refresh()
+
+    def _input(self):
+        curses.cbreak()
+
+        done = False
+        cursorRow = 15
+        while not done:
+            white = Colors.get(curses.COLOR_WHITE, curses.COLOR_WHITE)
+            self._win.addstr(cursorRow, 0, " ", white)
+            
+            c = self._win.getch()
+            dy = 0
+            if c == curses.KEY_UP: dy = -1
+            if c == curses.KEY_DOWN: dy = 1
+
+            if dy != 0:
+                self._win.addstr(cursorRow, 0, " ", colorChooser.siteColor(site))
+                cursorRow += dy
+                self._win.addstr(cursorRow, 0, " ", white)
+                self._win.refresh()
+            
+            #done = True
+
+    def input(self):
+        curses.cbreak()
+        try:
+            self._input()
+        finally:
+            curses.halfdelay(50)
 
 class SurveyorsReport(Report):
     def __init__(self, stdscr, site, surveyed):
@@ -253,7 +288,7 @@ def main(stdscr):
         site.setWell(well)
         field.setSite(row, col, site)
 
-    report = WeeklyReport(stdscr, field, player, weeks)
+    report = WeeklyReport(stdscr, field, viewplayer, weeks)
     report.display()
     while True:
         pass

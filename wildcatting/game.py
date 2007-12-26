@@ -217,7 +217,7 @@ class Game:
         
         self._turn = wildcatting.turn.Turn()
         self._turn.setPlayer(nextPlayer)
-        self._turn.setWeek(week)
+        self._turn.setWeek(week + 1)
 
     def markUpdate(self, player):
         playerUpdates = dict([(p.getUsername(), True) for p in self._players.values()])

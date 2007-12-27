@@ -3,9 +3,9 @@ import curses
 import random
 import time
 
-from view import OilFieldCursesView, WildcattingView
+from view import OilFieldCursesView, WildcattingView, SurveyorsReportView, PregameReportView, WeeklyReportView
 from view import putch
-from report import SurveyorsReport, PregameReport, WeeklyReport
+from report import WeeklyReport
 from game import Game
 from colors import Colors
 
@@ -37,7 +37,7 @@ class Client:
         if not surveyed:
             site = Site.deserialize(self._server.game.survey(self._handle, y, x))
 
-        report = SurveyorsReport(self._stdscr, site, surveyed)
+        report = SurveyorsReportView(self._stdscr, site, surveyed)
         report.display()
         yes = report.input()
         if yes:
@@ -52,7 +52,7 @@ class Client:
             if players[0] == username:
                 isMaster = True
 
-            report = PregameReport(self._stdscr, gameId, isMaster, players)
+            report = PregameReportView(self._stdscr, gameId, isMaster, players)
             report.display()
 
             start = report.input()
@@ -60,11 +60,13 @@ class Client:
                 self._server.game.start(self._handle)
 
     def _runWeeklyReport(self):
-        report = WeeklyReport(self._stdscr, self._playerField, self._username, self._symbol, self._turn)
-        report.display()
+        # TODO perhaps we should be retrieving this report from the server
+        report = WeeklyReport(self._playerField, self._username, self._symbol, self._turn)
+        reportView = WeeklyReportView(self._stdscr, report)
+        reportView.display()
         reportActions = {}
         while not "endTurn" in reportActions:
-            reportActions = report.input()
+            reportActions = reportView.input()
         self._endTurn()
         
     def wildcatting(self, stdscr):

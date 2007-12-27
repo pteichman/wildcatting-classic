@@ -68,6 +68,8 @@ class ColorChooser:
             Colors.get(curses.COLOR_WHITE, curses.COLOR_RED),
             ]
 
+        # FIXME not currently using these, but we may yet need them
+        # depending on how we solve the osx terminal problem
         self._blankColors = [
             Colors.get(curses.COLOR_BLUE, curses.COLOR_BLUE),
             Colors.get(curses.COLOR_CYAN, curses.COLOR_CYAN),

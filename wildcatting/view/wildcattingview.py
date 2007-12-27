@@ -25,6 +25,8 @@ class WildcattingView:
 
         self._border_win = stdscr.derwin(bwh, bww, 1, 3)
         self._field_win = stdscr.derwin(rows, cols, 2, 4)
+        bkgd = Colors.get(curses.COLOR_WHITE, curses.COLOR_BLACK)
+        self._field_win.bkgdset(" ", bkgd)
         self._oilView = oilView = wildcatting.view.OilFieldCursesView(self._field_win)
 
         self._fh, self._fw = self._field_win.getmaxyx()
@@ -79,6 +81,7 @@ class WildcattingView:
     def display(self):
         self._stdscr.clear()
         self._drawBorder()
+        self._oilView.display()
 
     def input(self):
         actions = {}
@@ -86,12 +89,10 @@ class WildcattingView:
         curses.mousemask(curses.ALL_MOUSE_EVENTS)
         curses.halfdelay(50)
 
-        self._oilView.display()
-        wildcatting.view.putch(self._field_win, self._y, self._x, " ", curses.A_REVERSE)
+        self._stdscr.move(self._y + 2, self._x + 4)
         self._field_win.refresh()
         self._drawKeyBar()
             
-        curses.curs_set(0)
         dx = 0 ; dy = 0
         survey = False
             
@@ -117,10 +118,7 @@ class WildcattingView:
                 (self._x + dx) < 0 or (self._y + dy) < 0:
                 return actions
 
-            wildcatting.view.putch(self._field_win, self._y, self._x, " ", curses.color_pair(0))
             self._x += dx ; self._y += dy
-            wildcatting.view.putch(self._field_win, self._y, self._x, " ")
-                
 
         if survey:
             actions["survey"] = (self._y, self._x)

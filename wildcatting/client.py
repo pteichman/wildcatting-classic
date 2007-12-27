@@ -69,7 +69,8 @@ class Client:
         
     def wildcatting(self, stdscr):
         self._stdscr = stdscr
-
+        
+        curses.curs_set(1)
         (h, w) = stdscr.getmaxyx()
         field_w, field_h = w - (WildcattingView.SIDE_BORDER * 2) - 2, h - (WildcattingView.TOP_BORDER * 2) - 3
 

@@ -96,11 +96,11 @@ class ColorChooser:
 
     def blankColor(self, site):
         if site is None:
-            return Colors.get(curses.COLOR_BLACK, curses.COLOR_BLACK)
+            return Colors.get(curses.COLOR_WHITE, curses.COLOR_BLACK)
 
         assert isinstance(site, wildcatting.model.Site)
 
-        return self._chooseColor(site, self._blankColors)
+        return self._chooseColor(site, self._colors)
 
 
 class OilFieldCursesView:
@@ -124,7 +124,7 @@ class OilFieldCursesView:
                         # work around an MacOS X terminal problem with
                         # displaying blank characters - it doesn't draw
                         # the background if the well is " "
-                        symbol = "."
+                        symbol = " "
                         color = colorChooser.blankColor(site)
                     else:
                         symbol = well.getPlayer().getSymbol()

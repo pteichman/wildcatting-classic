@@ -7,6 +7,7 @@ from wildcatting.colors import Colors
 import wildcatting.model
 import wildcatting.view
 
+
 class Report:
     log = logging.getLogger("Wildcatting")
 
@@ -26,7 +27,8 @@ class Report:
         # background explicitly by drawing BG on BG "." characters
         win.bkgdset(" ", fg)
         for row in xrange(h):
-            win.addstr(row, 0, "." * (w-1), bg)
+            win.addstr(row, 0, " " * (w-1), bg)
+
 
 class WeeklyReport(Report):
     def __init__(self, stdscr, field, username, symbol, turns):
@@ -38,6 +40,11 @@ class WeeklyReport(Report):
         self._sites = self._buildSiteDict(field, username)
         (h,w) = self._stdscr.getmaxyx()
         self._win = self._stdscr.derwin(16, 48, (h-16)/2, (w-48)/2)
+
+        self._colorChooser = wildcatting.view.ColorChooser()
+
+        # start cursor on nextPlayer prompt
+        self._cursorTurn = None
 
     def _buildSiteDict(self, field, username):
         sites = {}
@@ -54,7 +61,7 @@ class WeeklyReport(Report):
         self._stdscr.clear()
         self._stdscr.refresh()
         (h, w) = self._win.getmaxyx()        
-        bkgd = Colors.get(curses.COLOR_GREEN, curses.COLOR_GREEN)
+        bkgd = Colors.get(curses.COLOR_BLACK, curses.COLOR_GREEN)
         text = Colors.get(curses.COLOR_BLACK, curses.COLOR_GREEN)
 
         self.setFGBG(self._win, text, bkgd)
@@ -63,7 +70,6 @@ class WeeklyReport(Report):
         self._win.addstr(0, 36, "WEEK %s" % self._turns)
         self._win.addstr(1, 1, "  X   Y   COST     TAX   INCOME        P&L")
 
-        colorChooser = wildcatting.view.ColorChooser()
         sumProfitAndLoss = 0
         for turn in xrange(1, self._turns + 1):
             if turn in self._sites:
@@ -76,49 +82,66 @@ class WeeklyReport(Report):
                 income = random.randint(0, 142)
                 profitAndLoss = random.randint(-75000, 75000)
                 marker = self._symbol
-                self._win.addstr(1 + turn, 0, marker, colorChooser.siteColor(site))
+                self._win.addstr(turn + 1, 0, marker, self._colorChooser.siteColor(site))
             else:
                 x = y = cost = tax = income = profitAndLoss = 0
                 marker = " "
             
             well_str = "  %s  %s" % (str(x).rjust(2), str(y).rjust(2))
             well_str += "  $%s   $%s    $%s  $%s" % (str(cost).rjust(4), str(tax).rjust(4), str(income).rjust(4), str(profitAndLoss).rjust(8))
-            self._win.addstr(1 + turn, 1, well_str)
+            self._win.addstr(turn + 1, 1, well_str)
             sumProfitAndLoss += profitAndLoss
-        
-        self._win.addstr(15, 1, "NEXT PLAYER")
+
+        self._win.addstr(15, 0, " NEXT PLAYER")
         self._win.addstr(15, 35, "$ %s" % str(sumProfitAndLoss).rjust(10))
         self._win.move(15, 0)
         self._win.refresh()
 
+    def _moveCursor(self):
+        if self._cursorTurn is None:
+            row = 15
+        else:
+            row = self._cursorTurn + 1
+        self._win.move(row, 0)
+
     def _input(self):
-        curses.cbreak()
+        actions = {}
 
-        done = False
-        cursorRow = 15
-        while not done:
-            white = Colors.get(curses.COLOR_WHITE, curses.COLOR_WHITE)
-            self._win.addstr(cursorRow, 0, " ", white)
-            
-            c = self._win.getch()
-            dy = 0
-            if c == curses.KEY_UP: dy = -1
-            if c == curses.KEY_DOWN: dy = 1
+        self._moveCursor()
+        c = self._stdscr.getch()
+        if c == curses.KEY_UP:
+            if self._cursorTurn is None:
+                self._cursorTurn = self._turns
+                self._moveCursor()
+            elif self._cursorTurn == 1:
+                pass
+            else:
+                self._cursorTurn -= 1
+                self._moveCursor()
+        elif c == curses.KEY_DOWN:
+            if self._cursorTurn is None:
+                pass
+            elif self._cursorTurn == self._turns:
+                self._cursorTurn = None
+                self._moveCursor()
+            else:
+                self._cursorTurn += 1
+                self._moveCursor()
+        elif c == ord(" ") or c == ord("\n"):
+            if self._cursorTurn == None:
+                actions["endTurn"] = True
+           
+        self._win.refresh()
 
-            if dy != 0:
-                self._win.addstr(cursorRow, 0, " ", colorChooser.siteColor(site))
-                cursorRow += dy
-                self._win.addstr(cursorRow, 0, " ", white)
-                self._win.refresh()
-            
-            #done = True
+        return actions
 
     def input(self):
         curses.cbreak()
         try:
-            self._input()
+            return self._input()
         finally:
             curses.halfdelay(50)
+
 
 class SurveyorsReport(Report):
     def __init__(self, stdscr, site, surveyed):
@@ -139,7 +162,7 @@ class SurveyorsReport(Report):
         cost_str = "$" + str(self._site.getDrillCost()).rjust(4)
         tax_str = "$" + str(self._site.getTax()).rjust(4)
 
-        bkgd = Colors.get(curses.COLOR_GREEN, curses.COLOR_GREEN)
+        bkgd = Colors.get(curses.COLOR_BLACK, curses.COLOR_GREEN)
         text = Colors.get(curses.COLOR_BLACK, curses.COLOR_GREEN)
 
         self.setFGBG(self._win, text, bkgd)
@@ -208,6 +231,7 @@ class SurveyorsReport(Report):
             self._win.refresh()
 
         return cur == 'y'
+
 
 class PregameReport(Report):
     def __init__(self, stdscr, gameId, isMaster, players):

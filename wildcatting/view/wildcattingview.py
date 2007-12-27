@@ -81,44 +81,45 @@ class WildcattingView:
         self._drawBorder()
 
     def input(self):
-        actions = {"survey": None, "checkForUpdates": False}
+        actions = {}
         
         curses.mousemask(curses.ALL_MOUSE_EVENTS)
         curses.halfdelay(50)
-        if True:
-            self._oilView.display()
-            wildcatting.view.putch(self._field_win, self._y, self._x, " ", curses.A_REVERSE)
-            self._field_win.refresh()
-            
-            self._drawKeyBar()
-            
-            curses.curs_set(0)
-            dx = 0 ; dy = 0
-            survey = False
-            
-            c = self._stdscr.getch()
-            if c == -1:
-                actions["checkForUpdates"] = True
-            elif c == curses.KEY_UP: dy = -1
-            elif c == curses.KEY_DOWN: dy = 1
-            elif c == curses.KEY_LEFT: dx = -1
-            elif c == curses.KEY_RIGHT: dx = 1
-            elif c == curses.KEY_MOUSE:
-                mid, mx, my, mz, bstate = curses.getmouse()
-                dx = mx - self._x - 4
-                dy = my - self._y - 2
-                survey = True
-            elif c == ord(' ') or c == ord('\n'):
-                survey = True
 
-            if dx != 0 or dy != 0:
-                if (self._x + dx) > self._fw - 1 or (self._y + dy) > self._fh - 1 or \
-                    (self._x + dx) < 0 or (self._y + dy) < 0:
-                    return actions
+        self._oilView.display()
+        wildcatting.view.putch(self._field_win, self._y, self._x, " ", curses.A_REVERSE)
+        self._field_win.refresh()
+        self._drawKeyBar()
+            
+        curses.curs_set(0)
+        dx = 0 ; dy = 0
+        survey = False
+            
+        c = self._stdscr.getch()
+        if c == -1:
+            actions["checkForUpdates"] = True
+        elif c == curses.KEY_UP: dy = -1
+        elif c == curses.KEY_DOWN: dy = 1
+        elif c == curses.KEY_LEFT: dx = -1
+        elif c == curses.KEY_RIGHT: dx = 1
+        elif c == curses.KEY_MOUSE:
+            mid, mx, my, mz, bstate = curses.getmouse()
+            dx = mx - self._x - 4
+            dy = my - self._y - 2
+            survey = True
+        elif c == ord(' ') or c == ord('\n'):
+            survey = True
+        elif c == ord('w'):
+            actions["weeklyReport"] = True
 
-                wildcatting.view.putch(self._field_win, self._y, self._x, " ", curses.color_pair(0))
-                self._x += dx ; self._y += dy
-                wildcatting.view.putch(self._field_win, self._y, self._x, " ")
+        if dx != 0 or dy != 0:
+            if (self._x + dx) > self._fw - 1 or (self._y + dy) > self._fh - 1 or \
+                (self._x + dx) < 0 or (self._y + dy) < 0:
+                return actions
+
+            wildcatting.view.putch(self._field_win, self._y, self._x, " ", curses.color_pair(0))
+            self._x += dx ; self._y += dy
+            wildcatting.view.putch(self._field_win, self._y, self._x, " ")
                 
 
         if survey:

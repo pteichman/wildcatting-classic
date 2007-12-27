@@ -20,7 +20,7 @@ class Client:
         self._handle = handle
         self._username = username
         self._symbol = symbol
-        self._turn = 0
+        self._turn = 1
 
     def _refreshPlayerField(self):
         self._playerField = OilField.deserialize(self._server.game.getPlayerField(self._handle))
@@ -42,7 +42,7 @@ class Client:
         yes = report.input()
         if yes:
             self._server.game.erect(self._handle, y, x)
-        self._endTurn()
+
 
     def _runPreGame(self, gameId, username):
         while not self._server.game.isStarted(self._handle):
@@ -59,6 +59,14 @@ class Client:
             if start and isMaster:
                 self._server.game.start(self._handle)
 
+    def _runWeeklyReport(self):
+        report = WeeklyReport(self._stdscr, self._playerField, self._username, self._symbol, self._turn)
+        report.display()
+        reportActions = {}
+        while not "endTurn" in reportActions:
+            reportActions = report.input()
+        self._endTurn()
+        
     def wildcatting(self, stdscr):
         self._stdscr = stdscr
 
@@ -80,25 +88,27 @@ class Client:
             self.log.info("Created a new game: ID is %s" + self._gameId)
 
         self._runPreGame(self._gameId, self._username)
-
+        
         self._wildcatting = wildcatting = WildcattingView(self._stdscr, field_h, field_w, self._setting)
 
         self._refreshPlayerField()
 
         wildcatting.display()
         while True:
+            turnOver = False
             actions = wildcatting.input()
-            checkForUpdates = actions["checkForUpdates"]
-            survey = actions["survey"]
-
-            if survey is not None:
-                row, col = survey
+            if "survey" in actions:
+                row, col = actions["survey"]
                 self._survey(col, row)
                 self._refreshPlayerField()
                 wildcatting.display()
-            elif checkForUpdates and self._server.game.needsUpdate(self._handle):
+                self._runWeeklyReport()
+                wildcatting.display()
+            elif "checkForUpdates" in actions and self._server.game.needsUpdate(self._handle):
                 self._refreshPlayerField()
                 wildcatting.display()
+            elif "weeklyReport" in actions:
+                self._runWeeklyReport()
 
     def run(self, server):
         self._server = server

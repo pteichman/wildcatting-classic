@@ -61,16 +61,24 @@ class Client:
         actions = {}
         site = self._playerField.getSite(row, col)
         drillView = DrillView(self._stdscr, site, self._setting)
-        while site.getWell().getDrillDepth() < 10 and site.getWell().getOutput() is None:
-            drillView.display()            
+        while site.getWell().getDrillDepth() < 10:
+            drillView.display()
             actions = drillView.input()
             if "drill" in actions:
                 self._server.game.drill(self._handle, site.getRow(), site.getCol())
                 site = Site.deserialize(self._server.game.getPlayerSite(self._handle, site.getRow(), site.getCol()))
                 drillView.updateSite(site)
                 drillView.display()
+
+                if site.getWell().getOutput() is not None:
+                    break
             if "stop" in actions:
                 break
+
+        if site.getWell().getOutput() is None:
+            drillView.setMessage("DRY HOLE!")
+            drillView.display()
+            time.sleep(3)
 
     def _runWeeklyReport(self):
         # TODO perhaps we should be retrieving this report from the server

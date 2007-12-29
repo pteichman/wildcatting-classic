@@ -50,11 +50,12 @@ class DrillView(View):
         cost = drillDepth * drillCost
         
         height, width = self._stdscr.getmaxyx()
-        row = height / 2
+        row = (height - 5) / 2
 
         self.addCentered(self._stdscr, row, "PRESS ANY KEY TO DRILL")
-        self.addCentered(self._stdscr, row + 2, "DEPTH: %s" % drillDepth)
-        self.addCentered(self._stdscr, row + 3, " COST: %s" % cost)
+        self.addCentered(self._stdscr, row + 1, "PRESS Q TO STOP")
+        self.addCentered(self._stdscr, row + 3, "DEPTH: %s" % drillDepth)
+        self.addCentered(self._stdscr, row + 4, " COST: %s" % cost)
 
     def input(self):
         actions = {}

@@ -38,9 +38,13 @@ class DrillView(View):
         self._stdscr = stdscr
         self._site = site
         self._setting = setting
+        self._msg = None
 
     def updateSite(self, site):
         self._site = site
+
+    def setMessage(self, msg):
+        self._msg = msg
 
     def display(self):
         self._stdscr.clear()
@@ -52,10 +56,14 @@ class DrillView(View):
         height, width = self._stdscr.getmaxyx()
         row = (height - 5) / 2
 
+        if self._msg is not None:
+            self.addCentered(self._stdscr, row-2, self._msg)
+
         self.addCentered(self._stdscr, row, "PRESS ANY KEY TO DRILL")
         self.addCentered(self._stdscr, row + 1, "PRESS Q TO STOP")
         self.addCentered(self._stdscr, row + 3, "DEPTH: %s" % drillDepth)
         self.addCentered(self._stdscr, row + 4, " COST: %s" % cost)
+        self._stdscr.refresh()
 
     def input(self):
         actions = {}

@@ -65,6 +65,10 @@ class WestTexas(Theme):
     def getRawFacts(self):
         return raw_facts
 
+    ## units
+    def getDrillIncrement(self):
+        return 10
+
     ## economics
     def getMinDrillCost(self):
         return 1

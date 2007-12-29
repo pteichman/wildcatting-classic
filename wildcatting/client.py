@@ -3,7 +3,7 @@ import curses
 import random
 import time
 
-from view import OilFieldCursesView, WildcattingView, SurveyorsReportView, PregameReportView, WeeklyReportView
+from view import OilFieldCursesView, WildcattingView, SurveyorsReportView, PregameReportView, WeeklyReportView, DrillView
 from view import putch
 from report import WeeklyReport
 from game import Game
@@ -31,18 +31,16 @@ class Client:
         self._turn += 1
         self._wildcatting.updateTurn(self._turn)
         
-    def _survey(self, x, y):
-        site = self._playerField.getSite(y, x)
+    def _survey(self, row, col):
+        site = self._playerField.getSite(row, col)
         surveyed = site.isSurveyed()
         if not surveyed:
-            site = Site.deserialize(self._server.game.survey(self._handle, y, x))
+            site = Site.deserialize(self._server.game.survey(self._handle, row, col))
 
         report = SurveyorsReportView(self._stdscr, site, surveyed)
         report.display()
         yes = report.input()
-        if yes:
-            self._server.game.erect(self._handle, y, x)
-
+        return yes
 
     def _runPreGame(self, gameId, username):
         while not self._server.game.isStarted(self._handle):
@@ -59,9 +57,24 @@ class Client:
             if start and isMaster:
                 self._server.game.start(self._handle)
 
+    def _runDrill(self, row, col):
+        actions = {}
+        site = self._playerField.getSite(row, col)
+        drillView = DrillView(self._stdscr, site, self._setting)
+        while site.getWell().getDrillDepth() < 10 and site.getWell().getOutput() is None:
+            drillView.display()            
+            actions = drillView.input()
+            if "drill" in actions:
+                self._server.game.drill(self._handle, site.getRow(), site.getCol())
+                site = Site.deserialize(self._server.game.getPlayerSite(self._handle, site.getRow(), site.getCol()))
+                drillView.updateSite(site)
+                drillView.display()
+            if "stop" in actions:
+                break
+
     def _runWeeklyReport(self):
         # TODO perhaps we should be retrieving this report from the server
-        report = WeeklyReport(self._playerField, self._username, self._symbol, self._turn)
+        report = WeeklyReport(self._playerField, self._username, self._symbol, self._turn, self._setting)
         reportView = WeeklyReportView(self._stdscr, report)
         reportView.display()
         reportActions = {}
@@ -102,9 +115,13 @@ class Client:
             actions = wildcatting.input()
             if "survey" in actions:
                 row, col = actions["survey"]
-                self._survey(col, row)
+                drillAWell = self._survey(row, col)
                 self._refreshPlayerField()
-                wildcatting.display()
+                if drillAWell:
+                    self._server.game.erect(self._handle, row, col)
+                    self._refreshPlayerField()
+                    self._runDrill(row, col)
+                    self._refreshPlayerField()                    
                 self._runWeeklyReport()
                 wildcatting.display()
             elif "checkForUpdates" in actions and self._server.game.needsUpdate(self._handle):

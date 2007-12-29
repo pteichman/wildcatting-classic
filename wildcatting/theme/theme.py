@@ -30,6 +30,7 @@ class Theme:
         setting.setLocation(self.getLocation())
         setting.setEra(self.getEra())
         setting.setFacts(self.getFacts())
+        setting.setDrillIncrement(self.getDrillIncrement())
         return setting
 
     def getFacts(self):
@@ -46,6 +47,10 @@ class Theme:
     def getEra(self):
         raise "UnimplementedAbstractMethod"
     def getRawFacts(self):
+        raise "UnimplementedAbstractMethod"
+
+    # units
+    def getDrillIncrement(self):
         raise "UnimplementedAbstractMethod"
 
     ## economics

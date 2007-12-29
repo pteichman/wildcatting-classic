@@ -234,6 +234,22 @@ class GameService:
 
         return game.needsUpdate(player)
 
+    def _updatePlayerSite(self, playerSite, site):
+        playerSite.setDrillCost(site.getDrillCost())
+        playerSite.setProbability(site.getProbability())
+        playerSite.setWell(site.getWell())
+        playerSite.setTax(site.getTax())
+
+    def getPlayerSite(self, handle, row, col):
+        game, player = self._readHandle(handle)
+        field = game.getOilField()
+        site = field.getSite(row, col)
+        playerSite = wildcatting.model.Site(row, col)
+        if site.isSurveyed():
+            self._updatePlayerSite(playerSite, site)
+
+        return playerSite.serialize()
+
     def getPlayerField(self, handle):
         game, player = self._readHandle(handle)
         field = game.getOilField()
@@ -250,13 +266,10 @@ class GameService:
                 playerSite.setSurveyed(surveyed)
 
                 if surveyed:
-                    playerSite.setDrillCost(site.getDrillCost())
-                    playerSite.setProbability(site.getProbability())
-                    playerSite.setWell(site.getWell())
-                    playerSite.setTax(site.getTax())
+                    self._updatePlayerSite(playerSite, site)
 
         return playerField.serialize()
-        
+
 class StandaloneServer:
     def __init__(self, theme):
         import inspect

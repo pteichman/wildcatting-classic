@@ -1,5 +1,8 @@
 from serialize import Serializable
 
+import random
+
+
 class OilField(Serializable):
     def __init__(self, width, height):
         assert isinstance(width, int)
@@ -32,6 +35,7 @@ class OilField(Serializable):
 
     def getWidth(self):
         return self._width
+
 
 class Site(Serializable):
     def __init__(self, row, col):
@@ -98,16 +102,17 @@ class Site(Serializable):
         assert isinstance(tax, int)
         self._tax = tax
 
+
 class Well(Serializable):
     def __init__(self):
-        self._drillDepth = 0
+        self._drillDepth = 1
         self._output = None
 
     def __cmp__(self, other):
         return cmp(self._turn, other._turn)
 
     def _generateOutput(self):
-        self._output = 100
+        self._output = random.randint(1,100)
 
     def getPlayer(self):
         return self._player
@@ -134,7 +139,7 @@ class Well(Serializable):
         self._output = output
 
     def drill(self, site):
-        assert 0 <= self._drillDepth <= 9
+        assert 1 <= self._drillDepth <= 12
 
         oilDepth = site.getOilDepth()
         

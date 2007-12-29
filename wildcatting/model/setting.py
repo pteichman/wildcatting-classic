@@ -24,3 +24,11 @@ class Setting(Serializable):
         assert isinstance(facts, list)
         
         self._facts = facts
+
+    def getDrillIncrement(self):
+        return self._increment
+
+    def setDrillIncrement(self, increment):
+        assert isinstance(increment, int)
+    
+        self._increment = increment

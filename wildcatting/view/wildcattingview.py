@@ -9,6 +9,67 @@ import wildcatting.game
 import wildcatting.model
 
 
+class View:
+    log = logging.getLogger("Wildcatting")
+
+    def __init__(self, stdscr):
+        self._stdscr = stdscr
+
+    def addCentered(self, win, row, text):
+        (h, w) = win.getmaxyx()
+
+        col = (w - len(text))/2
+        win.addstr(row, col, text)
+
+    def setFGBG(self, win, fg, bg):
+        (h, w) = self._win.getmaxyx()
+        
+        # work around a problem with the MacOS X Terminal - draw the
+        # background explicitly by drawing BG on BG "." characters
+        win.bkgdset(" ", fg)
+        for row in xrange(h):
+            win.addstr(row, 0, " " * (w-1), bg)
+
+
+class DrillView(View):
+    log = logging.getLogger("Wildcatting")
+
+    def __init__(self, stdscr, site, setting):
+        self._stdscr = stdscr
+        self._site = site
+        self._setting = setting
+
+    def updateSite(self, site):
+        self._site = site
+
+    def display(self):
+        self._stdscr.clear()
+
+        drillDepth = self._site.getWell().getDrillDepth() * self._setting.getDrillIncrement()
+        drillCost = self._site.getDrillCost()
+        cost = drillDepth * drillCost
+        
+        height, width = self._stdscr.getmaxyx()
+        row = height / 2
+
+        self.addCentered(self._stdscr, row, "PRESS ANY KEY TO DRILL")
+        self.addCentered(self._stdscr, row + 2, "DEPTH: %s" % drillDepth)
+        self.addCentered(self._stdscr, row + 3, " COST: %s" % cost)
+
+    def input(self):
+        actions = {}
+
+        c = self._stdscr.getch()
+        if c == -1:
+            pass
+        elif c == ord('q') or c == ord('Q'):
+            actions["stop"] = True
+        else:
+            actions["drill"] = True
+
+        return actions
+
+
 class WildcattingView:
     log = logging.getLogger("Wildcatting")
 

@@ -33,7 +33,7 @@ class TestGameService(unittest.TestCase):
         well2 = name2[0].upper()
 
         # create the game, join it
-        gameId = service.new(10, 10, 13)
+        gameId = service.new(10, 10, 1)
         handle1 = service.join(gameId, name1, well1)
         handle2 = service.join(gameId, name2, well2)
 
@@ -76,6 +76,11 @@ class TestGameService(unittest.TestCase):
 
         # make sure player 2 can't survey anymore
         self.assertRaises(WildcattingException, service.survey, handle2, 0, 0)
+
+        # make sure both players see the game ended
+        # make sure both players see the game started
+        self.assertEquals(True, service.isFinished(handle1))
+        self.assertEquals(True, service.isFinished(handle2))
 
 if __name__ == "__main__":
     unittest.main()

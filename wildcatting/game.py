@@ -219,10 +219,17 @@ class Game:
 
         curIndex = self._playerOrder.index(player)
         nextPlayer = self._playerOrder[(curIndex + 1) % len(self._playerOrder)]
-        
+
         self._turn = wildcatting.turn.Turn()
+
+        if curIndex < len(self._playerOrder) - 1:
+            nextPlayer = self._playerOrder[curIndex + 1]
+        else:
+            nextPlayer = self._playerOrder[0]
+            week = week + 1
+
         self._turn.setPlayer(nextPlayer)
-        self._turn.setWeek(week + 1)
+        self._turn.setWeek(week)
 
     def markUpdate(self, player):
         playerUpdates = dict([(p.getUsername(), True) for p in self._players.values()])

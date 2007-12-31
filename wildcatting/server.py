@@ -199,6 +199,10 @@ class GameService:
         game, player = self._readHandle(handle)
         return game.isStarted()
 
+    def isFinished(self, handle):
+        game, player = self._readHandle(handle)
+        return game.isFinished()
+
     def listPlayers(self, handle):
         game, player = self._readHandle(handle)
 

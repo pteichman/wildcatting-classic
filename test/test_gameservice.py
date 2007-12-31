@@ -53,6 +53,10 @@ class TestGameService(unittest.TestCase):
         self.assertEquals(True, service.isStarted(handle1))
         self.assertEquals(True, service.isStarted(handle2))
 
+        # make sure it's week 1
+        game, player = service._readHandle(handle1)
+        self.assertEquals(1, game._turn.getWeek())
+
         # it's player 1's turn - make sure player 2 can't survey
         self.assertRaises(WildcattingException, service.survey, handle2, 0, 0)
 
@@ -68,6 +72,10 @@ class TestGameService(unittest.TestCase):
         # make sure player 1 can't survey anymore
         self.assertRaises(WildcattingException, service.survey, handle1, 0, 0)
 
+        # make sure it's still week 1
+        game, player = service._readHandle(handle1)
+        self.assertEquals(1, game._turn.getWeek())
+
         # survey as player 2
         site2 = Site.deserialize(service.survey(handle2, 0, 1))
 
@@ -76,6 +84,10 @@ class TestGameService(unittest.TestCase):
 
         # make sure player 2 can't survey anymore
         self.assertRaises(WildcattingException, service.survey, handle2, 0, 0)
+
+        # make sure it's week 2
+        game, player = service._readHandle(handle1)
+        self.assertEquals(2, game._turn.getWeek())
 
         # make sure both players see the game ended
         self.assertEquals(True, service.isFinished(handle1))

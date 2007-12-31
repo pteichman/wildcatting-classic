@@ -96,6 +96,16 @@ class GameService:
         
         return secret
 
+    def _ensureTurn(self, game, player):
+        if game.isFinished():
+            raise WildcattingException("Game is over")
+        
+        turn = game.getTurn()
+        if turn.getPlayer() != player:
+            raise WildcattingException("Not player's turn")
+
+        return turn
+
     def _encodeGameHandle(self, gameId, player, secret):
         assert isinstance(gameId, str)
         assert isinstance(player, wildcatting.model.Player)
@@ -136,10 +146,7 @@ class GameService:
 
     def survey(self, handle, row, col):
         game, player = self._readHandle(handle)
-        turn = game.getTurn()
-
-        if turn.getPlayer() != player:
-            raise WildcattingException("Not player's turn")
+        turn = self._ensureTurn(game, player)
 
         if turn.getSurveyedSite():
             raise WildcattingException("Already surveyed this turn")
@@ -159,10 +166,7 @@ class GameService:
 
     def erect(self, handle, row, col):
         game, player = self._readHandle(handle)
-        turn = game.getTurn()
-
-        if turn.getPlayer() != player:
-            raise WildcattingException("Not player's turn")
+        turn = self._ensureTurn(game, player)
 
         if turn.getDrilledSite():
             raise WildcattingException("Already drilled this turn")
@@ -204,10 +208,7 @@ class GameService:
         
     def drill(self, handle, row, col):
         game, player = self._readHandle(handle)
-        turn = game.getTurn()
-
-        if turn.getPlayer() != player:
-            raise WildcattingException("Not player's turn")
+        turn = self._ensureTurn(game, player)
         
         drilledSite = turn.getDrilledSite()
         if drilledSite and not (drilledSite.getRow() == row and drilledSite.getCol() == col):
@@ -220,10 +221,7 @@ class GameService:
 
     def endTurn(self, handle):
         game, player = self._readHandle(handle)
-        turn = game.getTurn()
-
-        if turn.getPlayer() != player:
-            raise WildcattingException("Not player's turn")
+        turn = self._ensureTurn(game, player)
 
         game.endTurn(player)
 

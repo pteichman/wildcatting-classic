@@ -209,6 +209,11 @@ class Game:
     def isStarted(self):
         return self._isStarted
 
+    def isFinished(self):
+        if self._turn.getWeek() > self._turnCount:
+            return True
+        return False
+
     def endTurn(self, player):
         week = self._turn.getWeek()
 

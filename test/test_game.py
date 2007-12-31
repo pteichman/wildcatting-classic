@@ -91,5 +91,19 @@ class TestGame(unittest.TestCase):
         game.start()
         self.assertEquals(True, game.isStarted())
 
+    def testFinishGame(self):
+        game = Game(10, 10, turnCount=1)
+
+        player1 = Player("alice", "A")
+        game.addPlayer(player1)
+
+        self.assertEquals(False, game.isStarted())
+        game.start()
+        self.assertEquals(True, game.isStarted())
+
+        self.assertEquals(False, game.isFinished())
+        game.endTurn(player1)
+        self.assertEquals(True, game.isFinished())
+
 if __name__ == "__main__":
     unittest.main()

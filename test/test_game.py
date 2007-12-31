@@ -105,5 +105,37 @@ class TestGame(unittest.TestCase):
         game.endTurn(player1)
         self.assertEquals(True, game.isFinished())
 
+    def testWeekIncrement(self):
+        game = Game(10, 10)
+
+        player1 = Player("alice", "A")
+        player2 = Player("bob", "B")
+
+        secret1 = game.addPlayer(player1)
+        self.assert_(player1 in game.getPlayers())
+        secret2 = game.addPlayer(player2)
+        self.assert_(player2 in game.getPlayers())
+
+        game.start()
+        self.assertTrue(game.isStarted())
+
+        # Week 1
+        self.assertEquals(1, game._turn.getWeek())
+        game.endTurn(player1)
+        self.assertEquals(1, game._turn.getWeek())
+        game.endTurn(player2)
+
+        # Week 2
+        self.assertEquals(2, game._turn.getWeek())
+        game.endTurn(player1)
+        self.assertEquals(2, game._turn.getWeek())
+        game.endTurn(player2)
+
+        # Week 3
+        self.assertEquals(3, game._turn.getWeek())
+        game.endTurn(player1)
+        self.assertEquals(3, game._turn.getWeek())
+        game.endTurn(player2)
+
 if __name__ == "__main__":
     unittest.main()

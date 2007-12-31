@@ -102,14 +102,14 @@ class WildcattingView:
         self._fh, self._fw = self._field_win.getmaxyx()
         self._colorChooser = wildcatting.view.ColorChooser()
         self._x, self._y = 0, 0
-        self._turn = 0
+        self._turn = 1
 
     def _drawBorder(self):
         (h, w) = self._stdscr.getmaxyx()
         location = self._setting.getLocation()
         era = self._setting.getEra()
         self._stdscr.addstr(0, 4, "%s, %s." %(location, era), curses.A_BOLD)
-        self._stdscr.addstr(0, w - 10, "Week %s" % str(self._turn + 1), curses.A_BOLD)
+        self._stdscr.addstr(0, w - 10, "Week %s" % str(self._turn), curses.A_BOLD)
         fact = random.choice(self._setting.getFacts())
         wrapped = self._wrap_fact(fact, " "*4, w-8)
         self._stdscr.addstr(h-3, 0, wrapped)

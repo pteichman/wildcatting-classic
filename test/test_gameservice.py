@@ -78,7 +78,6 @@ class TestGameService(unittest.TestCase):
         self.assertRaises(WildcattingException, service.survey, handle2, 0, 0)
 
         # make sure both players see the game ended
-        # make sure both players see the game started
         self.assertEquals(True, service.isFinished(handle1))
         self.assertEquals(True, service.isFinished(handle2))
 

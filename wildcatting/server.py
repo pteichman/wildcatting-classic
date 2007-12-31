@@ -255,6 +255,12 @@ class GameService:
         width, height = field.getWidth(), field.getHeight()
         playerField = wildcatting.model.OilField(width, height)
 
+        if game.isFinished():
+            for row in xrange(height):
+                for col in xrange(width):
+                    field.getSite(row, col).setSurveyed(True)
+            return field.serialize()
+
         for row in xrange(height):
             for col in xrange(width):
                 site = field.getSite(row, col)

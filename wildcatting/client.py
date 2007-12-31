@@ -124,19 +124,20 @@ class Client:
             if "survey" in actions:
                 row, col = actions["survey"]
                 drillAWell = self._survey(row, col)
-                self._refreshPlayerField()
                 if drillAWell:
                     self._server.game.erect(self._handle, row, col)
                     self._refreshPlayerField()
                     self._runDrill(row, col)
-                    self._refreshPlayerField()                    
                 self._runWeeklyReport()
+                self._refreshPlayerField()
                 wildcatting.display()
             elif "checkForUpdates" in actions and self._server.game.needsUpdate(self._handle):
                 self._refreshPlayerField()
                 wildcatting.display()
             elif "weeklyReport" in actions:
                 self._runWeeklyReport()
+                self._refreshPlayerField()
+                wildcatting.display()
 
     def run(self, server):
         self._server = server

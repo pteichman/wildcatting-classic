@@ -69,10 +69,9 @@ class OilFiller(PeakedFiller):
     def fillSite(self, site, value):
         site.setProbability(value)
 
-        for i in xrange(10):
-            if(random.randint(0,100) < value/10):
-                site.setOilDepth(i + 1)
-                break
+        r = random.randint(0, 100)
+        if (r < value):
+            site.setOilDepth(int((1.0 - (r / 100.0)) * 9 + 1))
 
     def getMinDropoff(self):
         return self._theme.getOilMinDropoff()

@@ -21,7 +21,7 @@ class PeakedFiller:
                 # calculate sum of distances from peak
                 minc = 99999
                 for p in xrange(len(peaks)):
-                    (y, x) = peaks[p]
+                    (y, x, peakHeight) = peaks[p]
 
                     a = row - y
                     b = col - x
@@ -36,18 +36,22 @@ class PeakedFiller:
                 lesserPeakFactor = self.getLesserPeakFactor()
                 fudge = self.getFudge()
                 d = random.randint(minDropoff, maxDropoff) * minc * minc / math.sqrt(model.getWidth() * model.getHeight())
-                value = int(maxValue - closest * random.random() * lesserPeakFactor - d) - random.randint(0, fudge)
-                value = max(minValue, value)
+                peakHeight = peaks[closest][2]
+                value = int(peakHeight - (closest) * random.random() * lesserPeakFactor - d)
+                value = max(minValue + random.randint(0, fudge), value)
+                value = min(maxValue - random.randint(0, fudge), value)
 
                 site = model.getSite(row, col)
                 self.fillSite(site, value)
 
     def _generatePeaks(self, model):
+        minValue, maxValue = self.getValueRange()        
         maxPeaks = self.getMaxPeaks()
         peaks = [None]*random.randint(1, maxPeaks)
         for i in xrange(len(peaks)):
             peaks[i] = (random.randint(0, model.getHeight()),
-                        random.randint(0, model.getWidth()))
+                        random.randint(0, model.getWidth()),
+                        random.randint((maxValue - minValue)*3/4, maxValue))
         return peaks
 
     def getValueRange(self):
@@ -64,7 +68,7 @@ class OilFiller(PeakedFiller):
         self._theme = theme
     
     def getValueRange(self):
-        return (0, 100)
+        return (10, 100)
 
     def fillSite(self, site, value):
         site.setProbability(value)
@@ -149,6 +153,9 @@ class Game:
         self._playerUpdates = {}
         self._turn = None
         self._isStarted = False
+
+        ## FIXME populate this from the oilprices module
+        self._oilPrice = 100 * theme.getInflationAdjustment()
         
         self._oilField = wildcatting.model.OilField(width, height)
         OilFiller(theme).fill(self._oilField)
@@ -213,6 +220,16 @@ class Game:
             return True
         return False
 
+    def sell(self, row, col):
+        site = self._oilField.getSite(row, col)
+        well = site.getWell()
+
+        cost = site.getDrillCost() * well.getDrillDepth() * self._theme.getDrillIncrement
+
+        well.setSold(True)
+
+        return cost / 2
+
     def endTurn(self, player):
         week = self._turn.getWeek()
 
@@ -226,6 +243,9 @@ class Game:
         else:
             nextPlayer = self._playerOrder[0]
             week = week + 1
+            
+            ## TODO update oilPrice everyweek
+            self._oilField.week(self._oilPrice)
 
         self._turn.setPlayer(nextPlayer)
         self._turn.setWeek(week)

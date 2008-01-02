@@ -14,6 +14,11 @@ class OilField(Serializable):
         self._rows = [ [ Site(row, col) for col in xrange(width) ]
                        for row in xrange(height) ]
 
+    def week(self, oilPrice):
+        for row in self._rows:
+            for site in row:
+                site.week(oilPrice)
+
     def getSite(self, row, col):
         assert row < self._height
         assert col < self._width
@@ -102,11 +107,19 @@ class Site(Serializable):
         assert isinstance(tax, int)
         self._tax = tax
 
+    def week(self, oilPrice):
+        if self._well is not None:
+            self._well.week(self, oilPrice)
+
 
 class Well(Serializable):
     def __init__(self):
         self._drillDepth = 1
         self._output = None
+        self._sold = False
+        
+        self._initialCost = 0
+        self._profitAndLoss = 0
 
     def __cmp__(self, other):
         return cmp(self._turn, other._turn)
@@ -138,17 +151,48 @@ class Well(Serializable):
     def setOutput(self, output):
         self._output = output
 
-    def drill(self, site):
+    def isSold(self):
+        return self._sold
+
+    def getInitialCost(self):
+        return self._initialCost
+
+    def getProfitAndLoss(self):
+        return self._profitAndLoss
+
+    def sell(self):
+        self._sold = True
+        price = self._initialCost / 2
+        self._profitAndLoss += price
+        return price
+
+    def drill(self, site, drillIncrement):
         assert 1 <= self._drillDepth <= 12
 
         oilDepth = site.getOilDepth()
+        drillCost = site.getDrillCost()
         
         assert oilDepth == None or self._drillDepth < oilDepth
         
         self._drillDepth += 1
+
+        cost = drillCost * drillIncrement
+        self._initialCost += cost
+        self._profitAndLoss -= cost
 
         foundOil = (self._drillDepth == oilDepth)
         if foundOil:
             self._generateOutput()
             
         return foundOil
+
+    def week(self, site, oilPrice):
+        if not self._sold:
+
+            if self._output is None:
+                output = 0
+            else:
+                output = self._output
+            
+            self._profitAndLoss -= site.getTax()
+            self._profitAndLoss += int(output * oilPrice)

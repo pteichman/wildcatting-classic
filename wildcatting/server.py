@@ -221,7 +221,25 @@ class GameService:
         field = game.getOilField()
         site = field.getSite(row, col)
         well = site.getWell()
-        return well.drill(site)
+        return well.drill(site, self._theme.getDrillIncrement())
+
+    def sell(self, handle, row, col):
+        game, player = self._readHandle(handle)
+
+        field = game.getOilField()
+        site = field.getSite(row, col)
+        well = site.getWell()
+
+        if well is None:
+            raise WildcattingException("There is no well at this location")
+
+        if well.isSold():
+            raise WildcattingException("Well has already been sold")
+
+        if well.getPlayer().getUsername() != player.getUsername():
+            raise WildcattingException("Player does not own well")
+
+        return well.sell()
 
     def endTurn(self, handle):
         game, player = self._readHandle(handle)

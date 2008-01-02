@@ -87,13 +87,13 @@ class WestTexas(Theme):
     def getOilMinDropoff(self):
         return 5
     def getOilMaxDropoff(self):
-        return 20
+        return 10
     def getOilMaxPeaks(self):
         return 5
     def getOilFudge(self):
-        return 5
-    def getOilLesserPeakFactor(self):
         return 10
+    def getOilLesserPeakFactor(self):
+        return 5
 
     ## drill cost distribution
     def getDrillCostMinDropoff(self):

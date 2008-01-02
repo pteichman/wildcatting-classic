@@ -31,10 +31,11 @@ class ReportView:
 
 
 class WeeklyReportView(ReportView):
-    def __init__(self, stdscr, report):
+    def __init__(self, stdscr, report, field):
         ReportView.__init__(self, stdscr)
 
         self._report = report
+        self._field = field
 
         (h,w) = self._stdscr.getmaxyx()
         self._win = self._stdscr.derwin(16, 48, (h-16)/2, (w-48)/2)
@@ -42,6 +43,12 @@ class WeeklyReportView(ReportView):
 
         # start cursor on nextPlayer prompt
         self._cursorTurn = None
+
+    def setReport(self, report):
+        self._report = report
+
+    def setField(self, field):
+        self._field = field
 
     def display(self):
         self._stdscr.clear()
@@ -62,8 +69,14 @@ class WeeklyReportView(ReportView):
         for turn in xrange(1, week + 1):
             if turn in reportDict:
                 rowDict = reportDict[turn]
-                site = rowDict["site"]
-                self._win.addstr(turn + 1, 0, self._report.getSymbol(), self._colorChooser.siteColor(site))
+                row = rowDict["row"]
+                col = rowDict["col"]
+                site = self._field.getSite(row, col)
+                if site.getWell().isSold():
+                    symbol = " "
+                else:
+                    symbol = self._report.getSymbol()
+                self._win.addstr(turn + 1, 0, symbol, self._colorChooser.siteColor(site))
             else:
                 rowDict = {"row": 0, "col":0, "cost":0, "tax":0, "income":0, "profitAndLoss":0}
 
@@ -73,7 +86,7 @@ class WeeklyReportView(ReportView):
 
         self._win.addstr(15, 0, " NEXT PLAYER")
         self._win.addstr(15, 35, "$ %s" % str(sumProfitAndLoss).rjust(10))
-        self._win.move(15, 0)
+        self._moveCursor()
         self._win.refresh()
 
     def _moveCursor(self):
@@ -106,6 +119,12 @@ class WeeklyReportView(ReportView):
             else:
                 self._cursorTurn += 1
                 self._moveCursor()
+        elif c == ord("s") or c == ord("S"):
+            if self._cursorTurn is not None:
+                rowDict = self._report.getReportDict()[self._cursorTurn]
+                row = rowDict["row"]
+                col = rowDict["col"]
+                actions["sell"] = row, col
         elif c == ord(" ") or c == ord("\n"):
             if self._cursorTurn == None:
                 actions["endTurn"] = True

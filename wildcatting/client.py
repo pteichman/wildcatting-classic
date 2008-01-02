@@ -86,13 +86,26 @@ class Client:
             time.sleep(3)
 
     def _runWeeklyReport(self):
-        # TODO perhaps we should be retrieving this report from the server
-        report = WeeklyReport(self._playerField, self._username, self._symbol, self._turn, self._setting)
-        reportView = WeeklyReportView(self._stdscr, report)
+        ## FIXME we want to move WeeklyReport generation to the server side.
+        ## oil prices and other economic details live there
+        report = WeeklyReport(self._playerField, self._username, self._symbol, self._turn, self._setting, 100 * 0.125)
+        reportView = WeeklyReportView(self._stdscr, report, self._playerField)
         reportView.display()
-        reportActions = {}
-        while not "endTurn" in reportActions:
-            reportActions = reportView.input()
+        actions = {}
+        while not "endTurn" in actions:
+            actions = reportView.input()
+            if "sell" in actions:
+                row, col = actions["sell"]
+                self._server.game.sell(self._handle, row, col)
+                site = Site.deserialize(self._server.game.getPlayerSite(self._handle, row, col))
+                self._updatePlayerField(site)
+                ## FIXME we want to move WeeklyReport generation to the server side
+                ## oil prices and other economic details live there
+                report = WeeklyReport(self._playerField, self._username, self._symbol, self._turn, self._setting, 100 * 0.125)
+                reportView.setField(self._playerField)
+                reportView.setReport(report)
+                reportView.display()
+            
         self._endTurn()
         
     def wildcatting(self, stdscr):

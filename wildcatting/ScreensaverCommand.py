@@ -94,7 +94,7 @@ class ScreensaverCommand(Command):
         win_h, win_w = win.getmaxyx()
 
         while True:
-            game = Game(win_w, win_h, DefaultTheme())
+            game = Game(win_w, win_h)
             field = game.getOilField()
 
             view = OilFieldCursesView(win)

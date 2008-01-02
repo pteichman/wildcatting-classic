@@ -2,37 +2,15 @@ import logging
 import random
 import curses
 
+from view import View
+
 from wildcatting.colors import Colors
-
 import wildcatting.model
-import wildcatting.view
 
 
-class ReportView:
-    log = logging.getLogger("Wildcatting")
-
-    def __init__(self, stdscr):
-        self._stdscr = stdscr
-
-    def addCentered(self, win, row, text):
-        (h, w) = win.getmaxyx()
-
-        col = (w - len(text))/2
-        win.addstr(row, col, text)
-
-    def setFGBG(self, win, fg, bg):
-        (h, w) = self._win.getmaxyx()
-        
-        # work around a problem with the MacOS X Terminal - draw the
-        # background explicitly by drawing BG on BG "." characters
-        win.bkgdset(" ", fg)
-        for row in xrange(h):
-            win.addstr(row, 0, " " * (w-1), bg)
-
-
-class WeeklyReportView(ReportView):
+class WeeklyReportView(View):
     def __init__(self, stdscr, report, field):
-        ReportView.__init__(self, stdscr)
+        View.__init__(self, stdscr)
 
         self._report = report
         self._field = field
@@ -141,9 +119,9 @@ class WeeklyReportView(ReportView):
             curses.halfdelay(50)
 
 
-class SurveyorsReportView(ReportView):
+class SurveyorsReportView(View):
     def __init__(self, stdscr, site, surveyed):
-        ReportView.__init__(self, stdscr)
+        View.__init__(self, stdscr)
 
         self._site = site
         self._surveyed = surveyed
@@ -231,9 +209,9 @@ class SurveyorsReportView(ReportView):
         return cur == 'y'
 
 
-class PregameReportView(ReportView):
+class PregameReportView(View):
     def __init__(self, stdscr, gameId, isMaster, players):
-        ReportView.__init__(self, stdscr)
+        View.__init__(self, stdscr)
 
         self._gameId = gameId
         self._isMaster = isMaster

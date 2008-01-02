@@ -3,32 +3,11 @@ import random
 import logging
 import textwrap
 
+from view import View
+
 from wildcatting.colors import Colors
-import wildcatting.view
 import wildcatting.game
 import wildcatting.model
-
-
-class View:
-    log = logging.getLogger("Wildcatting")
-
-    def __init__(self, stdscr):
-        self._stdscr = stdscr
-
-    def addCentered(self, win, row, text):
-        (h, w) = win.getmaxyx()
-
-        col = (w - len(text))/2
-        win.addstr(row, col, text)
-
-    def setFGBG(self, win, fg, bg):
-        (h, w) = self._win.getmaxyx()
-        
-        # work around a problem with the MacOS X Terminal - draw the
-        # background explicitly by drawing BG on BG "." characters
-        win.bkgdset(" ", fg)
-        for row in xrange(h):
-            win.addstr(row, 0, " " * (w-1), bg)
 
 
 class DrillView(View):
@@ -79,7 +58,7 @@ class DrillView(View):
         return actions
 
 
-class WildcattingView:
+class WildcattingView(View):
     log = logging.getLogger("Wildcatting")
 
     TOP_BORDER = 2

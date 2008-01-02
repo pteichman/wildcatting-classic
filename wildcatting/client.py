@@ -4,7 +4,6 @@ import random
 import time
 
 from view import OilFieldCursesView, WildcattingView, SurveyorsReportView, PregameReportView, WeeklyReportView, DrillView
-from view import putch
 from report import WeeklyReport
 from game import Game
 from colors import Colors

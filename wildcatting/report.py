@@ -26,8 +26,6 @@ class WeeklyReport:
                             output = 0
                         
                         rowDict = {}
-                        # we need this for the color, perhaps we can put the bracket here instead?
-                        #rowDict["site"] = site
                         rowDict["row"] = row
                         rowDict["col"] = col
                         rowDict["cost"] = cost = well.getInitialCost()

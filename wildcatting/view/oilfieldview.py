@@ -3,12 +3,14 @@ import random
 import logging
 import textwrap
 
+from view import View
+
 from wildcatting.colors import Colors
 import wildcatting.game
 import wildcatting.model
 
 
-class OilFieldTextView:
+class OilFieldTextView(View):
     def __init__(self, model):
         assert isinstance(model, wildcatting.model.OilField)
         self._model = model
@@ -105,7 +107,7 @@ class ColorChooser:
         return self._chooseColor(site, self._colors)
 
 
-class OilFieldCursesView:
+class OilFieldCursesView(View):
     def __init__(self, win):
         self._win = win
 
@@ -132,6 +134,6 @@ class OilFieldCursesView:
                         symbol = well.getPlayer().getSymbol()
                         color = colorChooser.siteColor(site)
 
-                    wildcatting.view.putch(self._win, row, col, ord(symbol), color)
+                    self.putch(self._win, row, col, ord(symbol), color)
 
         self._win.refresh()

@@ -22,6 +22,10 @@ class Client:
         self._symbol = symbol
         self._turn = 1
 
+    def _updatePlayerField(self, site):
+        self._playerField.setSite(site.getRow(), site.getCol(), site)
+        self._wildcatting.updateField(self._playerField)
+
     def _refreshPlayerField(self):
         self._playerField = OilField.deserialize(self._server.game.getPlayerField(self._handle))
         self._wildcatting.updateField(self._playerField)
@@ -67,6 +71,7 @@ class Client:
             if "drill" in actions:
                 self._server.game.drill(self._handle, site.getRow(), site.getCol())
                 site = Site.deserialize(self._server.game.getPlayerSite(self._handle, site.getRow(), site.getCol()))
+                self._updatePlayerField(site)
                 drillView.updateSite(site)
                 drillView.display()
 

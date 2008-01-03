@@ -3,12 +3,12 @@ import curses
 import random
 import time
 
-from view import OilFieldCursesView, WildcattingView, SurveyorsReportView, PregameReportView, WeeklyReportView, DrillView
+from view import OilFieldCursesView, WildcattingView, SurveyorsReportView, PregameReportView, WeeklyReportView, DrillView, WeeklySummaryView
 from report import WeeklyReport
 from game import Game
 from colors import Colors
 
-from wildcatting.model import OilField, Setting, Site, Well
+from wildcatting.model import OilField, Setting, Site, Well, WeeklySummary
 
 
 class Client:
@@ -90,7 +90,7 @@ class Client:
         reportView = WeeklyReportView(self._stdscr, report, self._playerField)
         reportView.display()
         actions = {}
-        while not "endTurn" in actions:
+        while not "nextPlayer" in actions:
             actions = reportView.input()
             if "sell" in actions:
                 row, col = actions["sell"]
@@ -103,8 +103,15 @@ class Client:
                 reportView.setField(self._playerField)
                 reportView.setReport(report)
                 reportView.display()
-            
-        self._endTurn()
+
+    def _runWeeklySummary(self):
+        report = WeeklySummary.deserialize(self._server.game.getWeeklySummary(self._handle))
+        weeklySummaryView = WeeklySummaryView(self._stdscr, report)
+        weeklySummaryView.display()
+        
+        actions = {}
+        while not "done" in actions:
+            actions = weeklySummaryView.input()
         
     def wildcatting(self, stdscr):
         self._stdscr = stdscr
@@ -145,6 +152,8 @@ class Client:
                     self._refreshPlayerField()
                     self._runDrill(row, col)
                 self._runWeeklyReport()
+                self._runWeeklySummary()
+                self._endTurn()
                 self._refreshPlayerField()
                 wildcatting.display()
             elif "checkForUpdates" in actions and self._server.game.needsUpdate(self._handle):

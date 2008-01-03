@@ -8,6 +8,43 @@ from wildcatting.colors import Colors
 import wildcatting.model
 
 
+class WeeklySummaryView(View):
+    def __init__(self, stdscr, report):
+        View.__init__(self, stdscr)
+
+        self._report = report
+
+        (h,w) = self._stdscr.getmaxyx()
+        self._win = self._stdscr.derwin(16, 48, (h-16)/2, (w-48)/2)
+
+    def display(self):
+        self._stdscr.clear()
+        self._stdscr.refresh()
+        bkgd = Colors.get(curses.COLOR_BLACK, curses.COLOR_GREEN)
+        text = Colors.get(curses.COLOR_BLACK, curses.COLOR_GREEN)
+
+        self.setFGBG(self._win, text, bkgd)
+        
+        self.addCentered(self._win, 1, "... WILDCATTING ...")
+        self.addCentered(self._win, 3, "WEEK %03s" % self._report.getWeek())
+        row = 6
+        for rowDict in self._report.getReportRows():
+            username = rowDict["username"]
+            profitAndLoss = rowDict["profitAndLoss"]
+            self.addCentered(self._win, row, "%s $%10s" % (username, profitAndLoss))
+            row += 2
+        self._win.refresh()
+
+    def input(self):
+        actions = {}
+        c = self._stdscr.getch()
+        if c == -1:
+            pass
+        else:
+            actions["done"] = True
+
+        return actions
+
 class WeeklyReportView(View):
     def __init__(self, stdscr, report, field):
         View.__init__(self, stdscr)
@@ -106,7 +143,7 @@ class WeeklyReportView(View):
                 actions["sell"] = row, col
         elif c == ord(" ") or c == ord("\n"):
             if self._cursorTurn == None:
-                actions["endTurn"] = True
+                actions["nextPlayer"] = True
            
         self._win.refresh()
 

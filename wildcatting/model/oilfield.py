@@ -164,6 +164,7 @@ class Well(Serializable):
         self._sold = True
         price = self._initialCost / 2
         self._profitAndLoss += price
+        self._player.income(price)
         return price
 
     def drill(self, site, drillIncrement):
@@ -179,6 +180,7 @@ class Well(Serializable):
         cost = drillCost * drillIncrement
         self._initialCost += cost
         self._profitAndLoss -= cost
+        self._player.expense(cost)
 
         foundOil = (self._drillDepth == oilDepth)
         if foundOil:
@@ -193,6 +195,12 @@ class Well(Serializable):
                 output = 0
             else:
                 output = self._output
+
+            tax = site.getTax()
+            income = int(output * oilPrice)
             
-            self._profitAndLoss -= site.getTax()
-            self._profitAndLoss += int(output * oilPrice)
+            self._profitAndLoss -= tax
+            self._profitAndLoss += income
+
+            self._player.expense(tax)
+            self._player.income(income)

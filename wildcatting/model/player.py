@@ -10,6 +10,8 @@ class Player(Serializable):
         self._symbol = symbol
         self._secret = None
 
+        self._profitAndLoss = 0
+
     def getUsername(self):
         return self._username
 
@@ -22,3 +24,12 @@ class Player(Serializable):
     def setSecret(self, secret):
         assert isinstance(secret, str)
         self._secret = secret
+
+    def getProfitAndLoss(self):
+        return self._profitAndLoss
+
+    def income(self, income):
+        self._profitAndLoss += income
+
+    def expense(self, expense):
+        self._profitAndLoss -= expense

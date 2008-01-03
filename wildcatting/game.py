@@ -10,6 +10,7 @@ import wildcatting.turn
 from oilprices import Prices
 from theme import DefaultTheme, Theme
 
+
 class PeakedFiller:
     def fill(self, field):
         assert isinstance(field, wildcatting.model.OilField)
@@ -253,6 +254,11 @@ class Game:
 
         self._turn.setPlayer(nextPlayer)
         self._turn.setWeek(week)
+
+    def getWeeklySummary(self):
+        report = wildcatting.model.WeeklySummary(self._playerOrder, self._turn.getWeek())
+
+        return report
 
     def markUpdate(self, player):
         playerUpdates = dict([(p.getUsername(), True) for p in self._players.values()])

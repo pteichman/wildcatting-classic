@@ -300,6 +300,11 @@ class GameService:
 
         return playerField.serialize()
 
+    def getWeeklySummary(self, handle):
+        game, player = self._readHandle(handle)
+
+        return wildcatting.model.WeeklySummary.serialize(game.getWeeklySummary())
+
 class StandaloneServer:
     def __init__(self, theme):
         import inspect

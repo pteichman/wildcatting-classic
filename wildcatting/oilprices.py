@@ -15,6 +15,9 @@ class Price:
         self._date = date
         self._price = price
 
+    def getValue(self):
+        return self._price
+
     def __str__(self):
         return "$%.2f (%s)" % (self._price, self._date.isoformat())
 

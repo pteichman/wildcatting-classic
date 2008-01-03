@@ -29,6 +29,7 @@ class Theme:
         setting = wildcatting.model.Setting()
         setting.setLocation(self.getLocation())
         setting.setEra(self.getEra())
+        setting.setPriceFormat(self.getPriceFormat())
         setting.setFacts(self.getFacts())
         setting.setDrillIncrement(self.getDrillIncrement())
         return setting
@@ -51,6 +52,8 @@ class Theme:
 
     # units
     def getDrillIncrement(self):
+        raise "UnimplementedAbstractMethod"
+    def getPriceFormat(self):
         raise "UnimplementedAbstractMethod"
 
     ## economics

@@ -68,6 +68,8 @@ class WestTexas(Theme):
     ## units
     def getDrillIncrement(self):
         return 10
+    def getPriceFormat(self):
+        return "$%.2f"
 
     ## economics
     def getMinDrillCost(self):

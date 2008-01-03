@@ -7,6 +7,7 @@ from wildcatting.exceptions import WildcattingException
 import wildcatting.model
 import wildcatting.turn
 
+from oilprices import Prices
 from theme import DefaultTheme, Theme
 
 class PeakedFiller:
@@ -154,13 +155,16 @@ class Game:
         self._turn = None
         self._isStarted = False
 
-        ## FIXME populate this from the oilprices module
-        self._oilPrice = 100 * theme.getInflationAdjustment()
+        self._prices = Prices(turnCount).__iter__()
+        self._updatePrice(self._prices.next())
         
         self._oilField = wildcatting.model.OilField(width, height)
         OilFiller(theme).fill(self._oilField)
         DrillCostFiller(theme).fill(self._oilField)
         TaxFiller(theme).fill(self._oilField)
+
+    def _updatePrice(self, price):
+        self._oilPrice = price.getValue() * self._theme.getInflationAdjustment()
 
     def _generateSecret(self, player):
         return "".join([random.choice(("0", "1", "2", "3", "4",
@@ -244,7 +248,7 @@ class Game:
             nextPlayer = self._playerOrder[0]
             week = week + 1
             
-            ## TODO update oilPrice everyweek
+            self._updatePrice(self._prices.next())
             self._oilField.week(self._oilPrice)
 
         self._turn.setPlayer(nextPlayer)
@@ -264,6 +268,9 @@ class Game:
 
     def getTurn(self):
         return self._turn
+
+    def getOilPrice(self):
+        return self._oilPrice
 
     def getOilField(self):
         return self._oilField

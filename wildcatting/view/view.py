@@ -13,6 +13,12 @@ class View:
         col = (w - len(text))/2
         win.addstr(row, col, text)
 
+    def addRight(self, win, row, text):
+        (h, w) = win.getmaxyx()
+
+        col = w - len(text) - 1
+        win.addstr(row, col, text)
+
     def setFGBG(self, win, fg, bg):
         (h, w) = self._win.getmaxyx()
         

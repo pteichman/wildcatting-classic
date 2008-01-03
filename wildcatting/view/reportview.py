@@ -38,7 +38,8 @@ class WeeklyReportView(View):
         self.setFGBG(self._win, text, bkgd)
 
         self._win.addstr(0, 0, self._report.getUsername().upper())
-        self._win.addstr(0, 36, "WEEK %s" % self._report.getWeek())
+        self.addCentered(self._win, 0, "%s PER BARREL" % self._report.getOilPrice())
+        self.addRight(self._win, 0, "WEEK %s" % self._report.getWeek())
         self._win.addstr(1, 1, "  X   Y   COST     TAX     INCOME     P&L")
 
         sumProfitAndLoss = 0

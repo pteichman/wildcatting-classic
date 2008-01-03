@@ -47,3 +47,6 @@ class WeeklyReport:
 
     def getSymbol(self):
         return self._symbol
+
+    def getOilPrice(self):
+        return self._setting.getPriceFormat() % self._oilPrice

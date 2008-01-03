@@ -270,6 +270,10 @@ class GameService:
 
         return playerSite.serialize()
 
+    def getOilPrice(self, handle):
+        game, player = self._readHandle(handle)
+        return game.getOilPrice()
+
     def getPlayerField(self, handle):
         game, player = self._readHandle(handle)
         field = game.getOilField()

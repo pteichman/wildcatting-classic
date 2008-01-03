@@ -82,13 +82,20 @@ class WildcattingView(View):
         self._colorChooser = wildcatting.view.ColorChooser()
         self._x, self._y = 0, 0
         self._turn = 1
+        self._price = 0
 
     def _drawBorder(self):
         (h, w) = self._stdscr.getmaxyx()
         location = self._setting.getLocation()
         era = self._setting.getEra()
-        self._stdscr.addstr(0, 4, "%s, %s." %(location, era), curses.A_BOLD)
-        self._stdscr.addstr(0, w - 10, "Week %s" % str(self._turn), curses.A_BOLD)
+
+        pricestr = self._setting.getPriceFormat() % self._price
+        
+        self._stdscr.addstr(0, 4, "%s, %s.  Oil is %s." % (location, era, pricestr), curses.A_BOLD)
+
+        week = "Week %d" % self._turn
+
+        self._stdscr.addstr(0, w - self.SIDE_BORDER - len(week) - 1, week, curses.A_BOLD)
         fact = random.choice(self._setting.getFacts())
         wrapped = self._wrap_fact(fact, " "*4, w-8)
         self._stdscr.addstr(h-3, 0, wrapped)
@@ -123,6 +130,9 @@ class WildcattingView(View):
 
     def updateField(self, field):
         self._oilView.setField(field)
+
+    def updatePrice(self, price):
+        self._price = price
 
     def updateTurn(self, turn):
         self._turn = turn

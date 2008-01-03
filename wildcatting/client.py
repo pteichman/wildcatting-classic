@@ -27,6 +27,8 @@ class Client:
 
     def _refreshPlayerField(self):
         self._playerField = OilField.deserialize(self._server.game.getPlayerField(self._handle))
+        self._oilPrice = self._server.game.getOilPrice(self._handle)
+        self._wildcatting.updatePrice(self._oilPrice)
         self._wildcatting.updateField(self._playerField)
 
     def _endTurn(self):
@@ -87,7 +89,7 @@ class Client:
     def _runWeeklyReport(self):
         ## FIXME we want to move WeeklyReport generation to the server side.
         ## oil prices and other economic details live there
-        report = WeeklyReport(self._playerField, self._username, self._symbol, self._turn, self._setting, 100 * 0.125)
+        report = WeeklyReport(self._playerField, self._username, self._symbol, self._turn, self._setting, self._oilPrice)
         reportView = WeeklyReportView(self._stdscr, report, self._playerField)
         reportView.display()
         actions = {}
@@ -100,7 +102,7 @@ class Client:
                 self._updatePlayerField(site)
                 ## FIXME we want to move WeeklyReport generation to the server side
                 ## oil prices and other economic details live there
-                report = WeeklyReport(self._playerField, self._username, self._symbol, self._turn, self._setting, 100 * 0.125)
+                report = WeeklyReport(self._playerField, self._username, self._symbol, self._turn, self._setting, self._oilPrice)
                 reportView.setField(self._playerField)
                 reportView.setReport(report)
                 reportView.display()

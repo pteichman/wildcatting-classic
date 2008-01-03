@@ -32,3 +32,11 @@ class Setting(Serializable):
         assert isinstance(increment, int)
     
         self._increment = increment
+
+    def getPriceFormat(self):
+        return self._priceFormat
+
+    def setPriceFormat(self, priceFormat):
+        assert isinstance(priceFormat, str)
+        
+        self._priceFormat = priceFormat

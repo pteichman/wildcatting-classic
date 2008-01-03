@@ -155,7 +155,7 @@ class Game:
         self._turn = None
         self._isStarted = False
 
-        self._prices = Prices(turnCount).__iter__()
+        self._prices = Prices(turnCount+1).__iter__()
         self._updatePrice(self._prices.next())
         
         self._oilField = wildcatting.model.OilField(width, height)

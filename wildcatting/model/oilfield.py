@@ -125,7 +125,7 @@ class Well(Serializable):
         return cmp(self._turn, other._turn)
 
     def _generateOutput(self):
-        self._output = random.randint(1,100)
+        self._output = random.randint(1,250)
 
     def getPlayer(self):
         return self._player

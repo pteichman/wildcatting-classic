@@ -66,7 +66,7 @@ class Client:
         actions = {}
         site = self._playerField.getSite(row, col)
         drillView = DrillView(self._stdscr, site, self._setting)
-        while site.getWell().getDrillDepth() < 10:
+        while site.getWell().getOutput() is None and site.getWell().getDrillDepth() < 10:
             drillView.display()
             actions = drillView.input()
             if "drill" in actions:
@@ -75,9 +75,6 @@ class Client:
                 self._updatePlayerField(site)
                 drillView.updateSite(site)
                 drillView.display()
-
-                if site.getWell().getOutput() is not None:
-                    break
             if "stop" in actions:
                 break
 

@@ -79,6 +79,8 @@ class Client:
             if "stop" in actions:
                 break
 
+        self._updatePlayerField(site)
+        
         if site.getWell().getOutput() is None:
             drillView.setMessage("DRY HOLE!")
             drillView.display()

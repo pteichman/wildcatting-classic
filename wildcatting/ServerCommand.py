@@ -11,13 +11,15 @@ class ServerCommand(Command):
 
     def __init__(self):
         Command.__init__(self, "server", summary="Run the Wildcatting server")
+        self.add_option("-n", "--hostname", action="store", type="str",
+                        default="localhost", help="server hostname")
         self.add_option("-p", "--port", action="store", type="int",
                         default="7777", help="server port")
 
     def run(self, options, args):
         wildcatting.util.startLogger("server.log")
 
-        hostname = "localhost"
+        hostname = options.hostname
 
         # this should be a server option
         theme = wildcatting.theme.DefaultTheme()

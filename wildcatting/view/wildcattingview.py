@@ -183,3 +183,10 @@ class WildcattingView(View):
             actions["survey"] = (self._y, self._x)
             
         return actions
+
+    def animateGameEnd(self):
+        curses.curs_set(0)
+        self._drawKeyBar()
+        self._stdscr.refresh()
+        self._oilView.animateGameEnd()
+        

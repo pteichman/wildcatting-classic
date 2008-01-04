@@ -3,7 +3,7 @@ import curses
 import random
 import time
 
-from view import OilFieldCursesView, WildcattingView, SurveyorsReportView, PregameReportView, WeeklyReportView, DrillView, WeeklySummaryView
+from view import OilFieldCursesView, WildcattingView, SurveyorsReportView, PregameReportView, WeeklyReportView, DrillView, WeeklySummaryView, FadeInOilFieldCursesAnimator
 from report import WeeklyReport
 from game import Game
 from colors import Colors
@@ -141,7 +141,9 @@ class Client:
         self._refreshPlayerField()
 
         wildcatting.display()
-        while True:
+        
+        gameFinished = False
+        while not gameFinished:
             turnOver = False
             actions = wildcatting.input()
             if "survey" in actions:
@@ -155,14 +157,21 @@ class Client:
                 self._runWeeklySummary()
                 self._endTurn()
                 self._refreshPlayerField()
+                gameFinished = self._server.game.isFinished(self._handle)
                 wildcatting.display()
             elif "checkForUpdates" in actions and self._server.game.needsUpdate(self._handle):
                 self._refreshPlayerField()
+                gameFinished = self._server.game.isFinished(self._handle)
                 wildcatting.display()
             elif "weeklyReport" in actions:
                 self._runWeeklyReport()
                 self._refreshPlayerField()
                 wildcatting.display()
+
+        wildcatting.animateGameEnd()
+
+        while self._stdscr.getch() == -1:
+            pass
 
     def run(self, server):
         self._server = server

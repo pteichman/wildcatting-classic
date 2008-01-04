@@ -4,9 +4,10 @@ import random
 import curses
 
 from wildcatting.cmdparse import Command
-from wildcatting.view import OilFieldTextView, OilFieldCursesView
+from wildcatting.view import OilFieldTextView, OilFieldCursesView, FadeInOilFieldCursesAnimator
 from wildcatting.game import Game
 from wildcatting.theme import DefaultTheme
+
 
 class ScreensaverCommand(Command):
     log = logging.getLogger("Wildcatting")
@@ -70,20 +71,14 @@ class ScreensaverCommand(Command):
             game = Game(win_w, win_h)
             field = game.getOilField()
 
-            view = OilFieldCursesView(win, field)
+            view = OilFieldCursesView(win)
+            view.setField(field)
 
-            coords = [(row, col) for row in xrange(field.getHeight())
-                      for col in xrange(field.getWidth())]
-
-            while len(coords) > 0:
-                choice = random.randint(0, len(coords) - 1)
-                row, col = coords[choice]
-                del coords[choice]
-
-                site = field.getSite(row, col)
-                site.setSurveyed(True)
+            win.clear()
+            animator = FadeInOilFieldCursesAnimator(field)
+            while not animator.isDone():
+                animator.animate()
                 view.display()
-            time.sleep(0.25)
 
     def viewScreensaver(self, stdscr, options, args):
         border, border_win = self.borderWin(stdscr, options.no_border)

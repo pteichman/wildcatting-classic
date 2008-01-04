@@ -107,6 +107,25 @@ class ColorChooser:
         return self._chooseColor(site, self._colors)
 
 
+class FadeInOilFieldCursesAnimator:
+    def __init__(self, field):
+        self._field = field
+
+        self._coords = [(row, col) for row in xrange(field.getHeight())
+                        for col in xrange(field.getWidth())]
+
+    def isDone(self):
+        return len(self._coords) == 0
+
+    def animate(self):
+        choice = random.randint(0, len(self._coords) - 1)
+        row, col = self._coords[choice]
+        del self._coords[choice]
+
+        site = self._field.getSite(row, col)
+        site.setSurveyed(True)
+
+
 class OilFieldCursesView(View):
     def __init__(self, win):
         self._win = win
@@ -137,3 +156,9 @@ class OilFieldCursesView(View):
                     self.putch(self._win, row, col, ord(symbol), color)
 
         self._win.refresh()
+
+    def animateGameEnd(self):
+        animator = FadeInOilFieldCursesAnimator(self._field)
+        while not animator.isDone():
+            animator.animate()
+            self.display()

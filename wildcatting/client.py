@@ -175,6 +175,8 @@ class Client:
                 self._runWeeklySummary()
                 wildcatting.display()
             elif "checkForUpdates" in actions:
+                ## TODO combine the various polling for updates calls
+                gameFinished = self._server.game.isFinished(self._handle)
                 updates = [Site.deserialize(s) for s in self._server.game.getUpdatedSites(self._handle)]
                 for site in updates:
                     self._updatePlayerField(site)
@@ -188,8 +190,6 @@ class Client:
                     
                 if len(updates) > 0:
                     wildcatting.display()
-            
-            gameFinished = self._server.game.isFinished(self._handle)
 
         self._refreshPlayerField()
         wildcatting.animateGameEnd()

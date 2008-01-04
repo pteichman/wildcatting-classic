@@ -59,6 +59,8 @@ class SettingService:
 
 class GameService:
     HANDLE_SEP = "::"
+
+    log = logging.getLogger("Wildcatting")
     
     def __init__(self, theme=None):
         if theme is None:
@@ -142,7 +144,11 @@ class GameService:
 
         secret = game.addPlayer(player)
 
-        return self._encodeGameHandle(gameId, player, secret)
+        handle = self._encodeGameHandle(gameId, player, secret)
+
+        self.log.debug("%s joined game %s (%s)", player, gameId, handle)
+
+        return handle
 
     def survey(self, handle, row, col):
         game, player = self._readHandle(handle)

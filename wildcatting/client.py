@@ -123,6 +123,7 @@ class Client:
         if self._handle is not None:
             # connecting to a game already in progress
             self._gameId = self._server.game.getGameId(self._handle)
+            self._turn = self._server.game.getWeek(self._handle)
             self.log.info("Reconnected to game handle: %s", self._handle)
         elif self._gameId is not None:
             # joining a new game

@@ -194,6 +194,11 @@ class GameService:
         gameId, playerName, secret = self._decodeGameHandle(handle)
         return gameId
 
+    def getWeek(self, handle):
+        game, player = self._readHandle(handle)
+
+        return game.getTurn().getWeek()
+
     def start(self, handle):
         game, player = self._readHandle(handle)
 

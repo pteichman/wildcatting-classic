@@ -166,7 +166,7 @@ class GameService:
         site.setSurveyed(True)
         turn.setSurveyedSite(site)
 
-        game.markUpdate(player)
+        game.markSiteUpdated(player, site)
         
         return site.serialize()
 
@@ -186,9 +186,9 @@ class GameService:
         site.setWell(well)
         turn.setDrilledSite(site)
 
-        game.markUpdate(player)
+        game.markSiteUpdated(player, site)
         
-        return True
+        return self._makePlayerSite(site).serialize()
 
     def getGameId(self, handle):
         gameId, playerName, secret = self._decodeGameHandle(handle)
@@ -260,24 +260,32 @@ class GameService:
 
         return True
 
-    def needsUpdate(self, handle):
+    def getUpdatedSites(self, handle):
         game, player = self._readHandle(handle)
 
-        return game.needsUpdate(player)
+        updates = game.getUpdatedSites(player)
+
+        return [u.serialize() for u in updates]
 
     def _updatePlayerSite(self, playerSite, site):
         playerSite.setDrillCost(site.getDrillCost())
         playerSite.setProbability(site.getProbability())
         playerSite.setWell(site.getWell())
         playerSite.setTax(site.getTax())
+        playerSite.setSurveyed(site.isSurveyed())
+        
+    def _makePlayerSite(self, site):
+        playerSite = wildcatting.model.Site(site.getRow(), site.getCol())
+        if site.isSurveyed():
+            self._updatePlayerSite(playerSite, site)
+
+        return playerSite
 
     def getPlayerSite(self, handle, row, col):
         game, player = self._readHandle(handle)
         field = game.getOilField()
         site = field.getSite(row, col)
-        playerSite = wildcatting.model.Site(row, col)
-        if site.isSurveyed():
-            self._updatePlayerSite(playerSite, site)
+        playerSite = self._makePlayerSite(site)
 
         return playerSite.serialize()
 
@@ -297,10 +305,7 @@ class GameService:
                 site = field.getSite(row, col)
                 playerSite = playerField.getSite(row, col)
 
-                surveyed = site.isSurveyed()
-                playerSite.setSurveyed(surveyed)
-
-                if surveyed or game.isFinished():
+                if site.isSurveyed() or game.isFinished():
                     self._updatePlayerSite(playerSite, site)
 
         return playerField.serialize()

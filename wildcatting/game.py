@@ -185,7 +185,7 @@ class Game:
 
         self._players[secret] = player
         self._playerOrder.append(player)
-        self._playerUpdates[player.getUsername()] = False
+        self._playerUpdates[player.getUsername()] = []
 
         return secret
 
@@ -260,17 +260,20 @@ class Game:
 
         return report
 
-    def markUpdate(self, player):
-        playerUpdates = dict([(p.getUsername(), True) for p in self._players.values()])
+    def markSiteUpdated(self, player, site):
+        playerUpdates = dict([(p.getUsername(), []) for p in self._playerOrder])
+        for p in self._players.values():
+            playerUpdates[p.getUsername()].append(site)
+
         username = player.getUsername()
         playerUpdates[username] = self._playerUpdates[username]
         self._playerUpdates = playerUpdates
 
-    def needsUpdate(self, player):
+    def getUpdatedSites(self, player):
         username = player.getUsername()
-        update = self._playerUpdates[username]
-        self._playerUpdates[username] = False
-        return update
+        updates = self._playerUpdates[username]
+        self._playerUpdates[username] = []
+        return updates
 
     def getTurn(self):
         return self._turn

@@ -41,6 +41,7 @@ class Client:
         surveyed = site.isSurveyed()
         if not surveyed:
             site = Site.deserialize(self._server.game.survey(self._handle, row, col))
+            self._updatePlayerField(site)
 
         report = SurveyorsReportView(self._stdscr, site, surveyed)
         report.display()
@@ -70,9 +71,9 @@ class Client:
             drillView.display()
             actions = drillView.input()
             if "drill" in actions:
-                self._server.game.drill(self._handle, site.getRow(), site.getCol())
-                site = Site.deserialize(self._server.game.getPlayerSite(self._handle, site.getRow(), site.getCol()))
-                self._updatePlayerField(site)
+                row, col = site.getRow(), site.getCol()
+                self._server.game.drill(self._handle, row, col)
+                site = Site.deserialize(self._server.game.getPlayerSite(self._handle, row, col))
                 drillView.updateSite(site)
                 drillView.display()
             if "stop" in actions:
@@ -82,6 +83,8 @@ class Client:
             drillView.setMessage("DRY HOLE!")
             drillView.display()
             time.sleep(3)
+
+        return site
 
     def _runWeeklyReport(self):
         ## FIXME we want to move WeeklyReport generation to the server side.
@@ -152,17 +155,19 @@ class Client:
                 row, col = actions["survey"]
                 drillAWell = self._survey(row, col)
                 if drillAWell:
-                    self._server.game.erect(self._handle, row, col)
-                    self._refreshPlayerField()
+                    site = Site.deserialize(self._server.game.erect(self._handle, row, col))
+                    self._updatePlayerField(site)
                     self._runDrill(row, col)
                 self._runWeeklyReport()
-                self._refreshPlayerField()                
                 self._endTurn()
                 self._runWeeklySummary()
                 wildcatting.display()
-            elif "checkForUpdates" in actions and self._server.game.needsUpdate(self._handle):
-                self._refreshPlayerField()
-                wildcatting.display()
+            elif "checkForUpdates" in actions:
+                updates = [Site.deserialize(s) for s in self._server.game.getUpdatedSites(self._handle)]
+                for site in updates:
+                    self._updatePlayerField(site)
+                if len(updates) > 0:
+                    wildcatting.display()
             
             gameFinished = self._server.game.isFinished(self._handle)
 

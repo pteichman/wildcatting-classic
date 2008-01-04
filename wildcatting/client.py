@@ -134,6 +134,7 @@ class Client:
             self._gameId = self._server.game.new(field_w, field_h, 13)
             self._handle = self._server.game.join(self._gameId, self._username, self._symbol)
             self.log.info("Created a new game: ID is %s", self._gameId)
+            self.log.info("To reconnect, run with --handle %s" % self._handle)
 
         self._runPreGame(self._gameId, self._username)
         

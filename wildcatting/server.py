@@ -256,9 +256,7 @@ class GameService:
         game, player = self._readHandle(handle)
         turn = self._ensureTurn(game, player)
 
-        game.endTurn(player)
-
-        return True
+        return game.endTurn(player)
 
     def getUpdatedSites(self, handle):
         game, player = self._readHandle(handle)

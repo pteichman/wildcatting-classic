@@ -255,6 +255,8 @@ class Game:
         self._turn.setPlayer(nextPlayer)
         self._turn.setWeek(week)
 
+        return week
+
     def getWeeklySummary(self):
         report = wildcatting.model.WeeklySummary(self._playerOrder, self._turn.getWeek())
 

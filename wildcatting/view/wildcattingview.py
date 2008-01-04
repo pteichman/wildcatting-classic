@@ -136,6 +136,7 @@ class WildcattingView(View):
 
     def updateTurn(self, turn):
         self._turn = turn
+        self._drawBorder()
 
     def display(self):
         self._stdscr.clear()

@@ -147,7 +147,6 @@ class Client:
         
         gameFinished = False
         while not gameFinished:
-            turnOver = False
             actions = wildcatting.input()
             if "survey" in actions:
                 row, col = actions["survey"]
@@ -157,20 +156,17 @@ class Client:
                     self._refreshPlayerField()
                     self._runDrill(row, col)
                 self._runWeeklyReport()
-                self._runWeeklySummary()
+                self._refreshPlayerField()                
                 self._endTurn()
-                self._refreshPlayerField()
-                gameFinished = self._server.game.isFinished(self._handle)
+                self._runWeeklySummary()
                 wildcatting.display()
             elif "checkForUpdates" in actions and self._server.game.needsUpdate(self._handle):
                 self._refreshPlayerField()
-                gameFinished = self._server.game.isFinished(self._handle)
                 wildcatting.display()
-            elif "weeklyReport" in actions:
-                self._runWeeklyReport()
-                self._refreshPlayerField()
-                wildcatting.display()
+            
+            gameFinished = self._server.game.isFinished(self._handle)
 
+        self._refreshPlayerField()
         wildcatting.animateGameEnd()
 
         while self._stdscr.getch() == -1:

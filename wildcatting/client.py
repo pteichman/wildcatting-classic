@@ -123,16 +123,16 @@ class Client:
         if self._handle is not None:
             # connecting to a game already in progress
             self._gameId = self._server.game.getGameId(self._handle)
-            self.log.info("Reconnected to game handle: %s" % self._handle)
+            self.log.info("Reconnected to game handle: %s", self._handle)
         elif self._gameId is not None:
             # joining a new game
             self._handle = self._server.game.join(self._gameId, self._username, self._symbol)
-            self.log.info("Joined game: %s" % self._gameId)
+            self.log.info("Joined game: %s", self._gameId)
         else:
             # creating a new game
             self._gameId = self._server.game.new(field_w, field_h, 13)
             self._handle = self._server.game.join(self._gameId, self._username, self._symbol)
-            self.log.info("Created a new game: ID is %s" + self._gameId)
+            self.log.info("Created a new game: ID is %s", self._gameId)
 
         self._runPreGame(self._gameId, self._username)
         

@@ -148,7 +148,6 @@ class Client:
             self.log.info("Created a new game: ID is %s", self._gameId)
             self.log.info("To reconnect, run with --handle %s" % self._handle)
 
-
         self._runPreGame(self._gameId, self._username)
         
         self._week = self._server.game.getWeek(self._handle)
@@ -197,6 +196,8 @@ class Client:
 
         while self._stdscr.getch() == -1:
             pass
+
+        self._runWeeklySummary()
 
     def run(self, server):
         self._server = server

@@ -20,6 +20,7 @@ class Client:
         self._username = username
         self._symbol = symbol
         self._week = None
+        self._playersTurn = None
 
     def _updatePlayerField(self, site):
         self._playerField.setSite(site.getRow(), site.getCol(), site)
@@ -31,8 +32,15 @@ class Client:
         self._wildcatting.updatePrice(self._oilPrice)
         self._wildcatting.updateField(self._playerField)
 
+    def _refreshPlayersTurn(self):
+        playersTurn = self._server.game.getPlayersTurn(self._handle)
+        if playersTurn != self._playersTurn:
+            self._playersTurn = playersTurn
+            self._wildcatting.updatePlayersTurn(playersTurn)
+        
     def _endTurn(self):
         self._week = self._server.game.endTurn(self._handle)
+        self._refreshPlayersTurn()
         self._wildcatting.updateTurn(self._week)
         
     def _survey(self, row, col):
@@ -147,6 +155,8 @@ class Client:
         
         self._wildcatting = wildcatting = WildcattingView(self._stdscr, field_h, field_w, self._setting)
 
+        self._refreshPlayersTurn()
+
         self._refreshPlayerField()
 
         wildcatting.display()
@@ -174,6 +184,8 @@ class Client:
                 if week > self._week:
                     self._week = week
                     wildcatting.updateTurn(week)
+
+                self._refreshPlayersTurn()
                     
                 if len(updates) > 0:
                     wildcatting.display()

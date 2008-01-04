@@ -22,7 +22,6 @@ class WeeklySummaryView(View):
         self._stdscr.refresh()
         bkgd = Colors.get(curses.COLOR_BLACK, curses.COLOR_GREEN)
         text = Colors.get(curses.COLOR_BLACK, curses.COLOR_GREEN)
-
         self.setFGBG(self._win, text, bkgd)
         
         self.addCentered(self._win, 1, "... WILDCATTING ...")

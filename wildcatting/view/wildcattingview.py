@@ -83,6 +83,7 @@ class WildcattingView(View):
         self._x, self._y = 0, 0
         self._turn = 1
         self._price = 0
+        self._playersTurn = None
 
     def _drawBorder(self):
         (h, w) = self._stdscr.getmaxyx()
@@ -116,16 +117,16 @@ class WildcattingView(View):
         border_h, border_w = self._border_win.getmaxyx()
         colors = list(self._colorChooser.getColors())
         colors.reverse()
-        keyStr = "." * (border_w - 2)
-        bkgd = Colors.get(curses.COLOR_WHITE, curses.COLOR_WHITE)
+        keyStr = " " * (border_w - 2)
+        bkgd = Colors.get(curses.COLOR_BLACK, curses.COLOR_WHITE)
         self._border_win.addstr(border_h - 2, 1, keyStr, bkgd)
         for i in xrange(len(colors)):
             color = colors[i]
             self._border_win.addstr(border_h - 2, 1 + i, " ", color)
 
         coordStr = "X=%s   Y=%s" % (str(self._x).rjust(2), str(self._y).rjust(2))
-        foreground = Colors.get(curses.COLOR_BLACK, curses.COLOR_WHITE)
-        self._border_win.addstr(border_h - 2, border_w / 2 - len(coordStr) / 2, coordStr, foreground)
+        self.addCentered(self._border_win, border_h - 2, coordStr, bkgd)
+        self.addRight(self._border_win, border_h - 2, "%s's turn" % self._playersTurn, bkgd)
         self._border_win.refresh()
 
     def updateField(self, field):
@@ -137,6 +138,10 @@ class WildcattingView(View):
     def updateTurn(self, turn):
         self._turn = turn
         self._drawBorder()
+
+    def updatePlayersTurn(self, playersTurn):
+        self._playersTurn = playersTurn
+        self._drawKeyBar()
 
     def display(self):
         self._stdscr.clear()

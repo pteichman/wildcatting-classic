@@ -7,20 +7,26 @@ class View:
     def __init__(self, stdscr):
         self._stdscr = stdscr
 
-    def addCentered(self, win, row, text):
+    def addCentered(self, win, row, text, color=None):
         (h, w) = win.getmaxyx()
 
         col = (w - len(text))/2
-        win.addstr(row, col, text)
+        if color is None:
+            win.addstr(row, col, text)
+        else:
+            win.addstr(row, col, text, color)
 
-    def addRight(self, win, row, text):
+    def addRight(self, win, row, text, color=None):
         (h, w) = win.getmaxyx()
 
         col = w - len(text) - 1
-        win.addstr(row, col, text)
+        if color is None:
+            win.addstr(row, col, text)
+        else:
+            win.addstr(row, col, text, color)
 
     def setFGBG(self, win, fg, bg):
-        (h, w) = self._win.getmaxyx()
+        (h, w) = win.getmaxyx()
         
         # work around a problem with the MacOS X Terminal - draw the
         # background explicitly by drawing BG on BG "." characters

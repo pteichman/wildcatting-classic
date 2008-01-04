@@ -258,6 +258,11 @@ class GameService:
 
         return game.endTurn(player)
 
+    def getPlayersTurn(self, handle):
+        game, player = self._readHandle(handle)
+
+        return game.getTurn().getPlayer().getUsername()
+
     def getUpdatedSites(self, handle):
         game, player = self._readHandle(handle)
 

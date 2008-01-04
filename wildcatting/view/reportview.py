@@ -46,6 +46,8 @@ class WeeklySummaryView(View):
         return actions
 
 class WeeklyReportView(View):
+    log = logging.getLogger("Wildcatting")
+    
     def __init__(self, stdscr, report, field):
         View.__init__(self, stdscr)
 
@@ -135,15 +137,16 @@ class WeeklyReportView(View):
             else:
                 self._cursorTurn += 1
                 self._moveCursor()
-        elif c == ord("s") or c == ord("S"):
-            if self._cursorTurn is not None:
-                rowDict = self._report.getReportDict()[self._cursorTurn]
-                row = rowDict["row"]
-                col = rowDict["col"]
-                actions["sell"] = row, col
         elif c == ord(" ") or c == ord("\n"):
-            if self._cursorTurn == None:
+            if self._cursorTurn is None:
                 actions["nextPlayer"] = True
+            else:
+                report = self._report.getReportDict()
+                if report.has_key(self._cursorTurn):
+                    rowDict = report[self._cursorTurn]
+                    row = rowDict["row"]
+                    col = rowDict["col"]
+                    actions["sell"] = row, col
            
         self._win.refresh()
 

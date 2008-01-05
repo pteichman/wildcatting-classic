@@ -86,6 +86,16 @@ class Client:
     def _endTurn(self):
         updateDict = self._server.game.endTurn(self._handle)
         self._wildcatting.update(updateDict)
+
+        ## get weekly updates to all of our wells, perhaps these should just be in the
+        ## dict above
+        playerField = self._wildcatting.getPlayerField()
+        for row in xrange(playerField.getHeight()):
+            for col in xrange(playerField.getWidth()):
+                well = playerField.getSite(row, col).getWell()
+                if well is not None and well.getPlayer().getUsername() == self._username:
+                    site = Site.deserialize(self._server.game.getPlayerSite(self._handle, row, col))
+                    self._wildcatting.updatePlayerField(site)
         
     def _survey(self, row, col):
         site = self._wildcatting.getPlayerField().getSite(row, col)

@@ -1,5 +1,7 @@
 from wildcatting.theme import Theme
 
+import wildcatting.model
+
 # we don't want to send raw_facts into our importers' namespaces
 __all__ = ["WestTexas"]
 
@@ -57,6 +59,11 @@ Texas is more than an area. Texas is an idea and an experience that transcends p
 
 
 class WestTexas(Theme):
+    def __init__(self):
+        Theme.__init__(self)
+        
+        self._wellTheory = wildcatting.model.SimpleWellTheory()
+    
     ## literary setting
     def getLocation(self):
         return "West Texas"
@@ -70,6 +77,10 @@ class WestTexas(Theme):
         return 10
     def getPriceFormat(self):
         return "$%.2f"
+
+    ## extraction
+    def getWellTheory(self):
+        return self._wellTheory
 
     ## economics
     def getMinDrillCost(self):

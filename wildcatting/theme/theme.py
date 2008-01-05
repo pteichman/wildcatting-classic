@@ -56,6 +56,10 @@ class Theme:
     def getPriceFormat(self):
         raise "UnimplementedAbstractMethod"
 
+    ## extraction
+    def getWellTheory(self):
+        raise "UnimplementedAbstractMethod"
+
     ## economics
     def getMinDrillCost(self):
         raise "UnimplementedAbstractMethod"

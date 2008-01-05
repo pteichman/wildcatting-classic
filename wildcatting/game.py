@@ -225,6 +225,17 @@ class Game:
             return True
         return False
 
+    def drill(self, row, col):
+        site = self._oilField.getSite(row, col)
+        well = site.getWell()
+        foundOil = well.drill(site, self._theme.getDrillIncrement())
+
+        if foundOil:
+            theory = self._theme.getWellTheory()
+            theory.start(well)
+
+        return foundOil
+
     def sell(self, row, col):
         site = self._oilField.getSite(row, col)
         well = site.getWell()
@@ -250,7 +261,7 @@ class Game:
             week = week + 1
             
             self._updatePrice(self._prices.next())
-            self._oilField.week(self._oilPrice)
+            self._oilField.week(self._oilPrice, self._theme.getWellTheory(), week)
 
         self._turn.setPlayer(nextPlayer)
         self._turn.setWeek(week)

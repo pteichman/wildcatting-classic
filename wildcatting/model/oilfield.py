@@ -14,10 +14,10 @@ class OilField(Serializable):
         self._rows = [ [ Site(row, col) for col in xrange(width) ]
                        for row in xrange(height) ]
 
-    def week(self, oilPrice):
+    def week(self, oilPrice, wellTheory, currentWeek):
         for row in self._rows:
             for site in row:
-                site.week(oilPrice)
+                site.week(oilPrice, wellTheory, currentWeek)
 
     def getSite(self, row, col):
         assert row < self._height
@@ -107,14 +107,31 @@ class Site(Serializable):
         assert isinstance(tax, int)
         self._tax = tax
 
-    def week(self, oilPrice):
+    def week(self, oilPrice, wellTheory, currentWeek):
         if self._well is not None:
+            if self._well.getOutput() is not None and not self._well.isSold():
+                wellTheory.week(self._well, currentWeek)
             self._well.week(self, oilPrice)
+
+
+class SimpleWellTheory:
+    def start(self, well):
+        output = random.randint(1, 250)
+        well.setOutput(output)
+        well.setInitialOutput(output)
+
+    def week(self, well, currentWeek):
+        weeksOperational = currentWeek - well.getWeek()
+        output = well.getInitialOutput() - random.random() * weeksOperational*weeksOperational
+        if output < 0:
+            output = 0
+        well.setOutput(output)
 
 
 class Well(Serializable):
     def __init__(self):
         self._drillDepth = 1
+        self._initialOutput = None
         self._output = None
         self._sold = False
         
@@ -123,9 +140,6 @@ class Well(Serializable):
 
     def __cmp__(self, other):
         return cmp(self._turn, other._turn)
-
-    def _generateOutput(self):
-        self._output = random.randint(1,250)
 
     def getPlayer(self):
         return self._player
@@ -144,6 +158,12 @@ class Well(Serializable):
 
     def setDrillDepth(self, drillDepth):
         self._drillDepth = drillDepth
+
+    def getInitialOutput(self):
+        return self._initialOutput
+
+    def setInitialOutput(self, initialOutput):
+        self._initialOutput = initialOutput
 
     def getOutput(self):
         return self._output
@@ -183,8 +203,6 @@ class Well(Serializable):
         self._player.expense(cost)
 
         foundOil = (self._drillDepth == oilDepth)
-        if foundOil:
-            self._generateOutput()
             
         return foundOil
 

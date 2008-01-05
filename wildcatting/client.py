@@ -17,6 +17,7 @@ class Wildcatting:
         self._week = 0
         self._oilPrice = 0
         self._playersTurn = None
+        self._gameFinished = False
     
     def getPlayerField(self):
         return self._playerField
@@ -41,6 +42,12 @@ class Wildcatting:
 
     def setPlayersTurn(self, playersTurn):
         self._playersTurn = playersTurn
+
+    def isGameFinished(self):
+        return self._gameFinished
+
+    def setGameFinished(self, gameFinished):
+        self._gameFinished = gameFinished
 
     def updatePlayerField(self, site):
         self._playerField.setSite(site.getRow(), site.getCol(), site)
@@ -196,9 +203,8 @@ class Client:
         self._wildcattingView = wildcattingView = WildcattingView(self._stdscr, self._wildcatting, self._setting)
 
         wildcattingView.display()
-        
-        gameFinished = False
-        while not gameFinished:
+
+        while not self._wildcatting.isGameFinished():
             actions = wildcattingView.input()
             if "survey" in actions:
                 row, col = actions["survey"]
@@ -211,6 +217,7 @@ class Client:
                 self._endTurn()
                 self._runWeeklySummary()
                 wildcattingView.display()
+                self._wildcatting.setGameFinished(self._server.game.isFinished(self._handle))
             elif "checkForUpdates" in actions:
                 updateDict = self._server.game.getUpdateDict(self._handle)
                 updated = self._wildcatting.update(updateDict)

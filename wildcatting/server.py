@@ -263,12 +263,20 @@ class GameService:
 
         return game.getTurn().getPlayer().getUsername()
 
-    def getUpdatedSites(self, handle):
+    def getUpdateDict(self, handle):
         game, player = self._readHandle(handle)
+        turn = game.getTurn()
+        
+        updateDict = {}
+        updateDict["week"] = turn.getWeek()
+        updateDict["oilPrice"] = game.getOilPrice()
+        updateDict["playersTurn"] = turn.getPlayer().getUsername()
+        updateDict["gameFinished"] = game.isFinished()
+        
+        updatedSites = game.getUpdatedSites(player)
+        updateDict["sites"] = [u.serialize() for u in updatedSites]
 
-        updates = game.getUpdatedSites(player)
-
-        return [u.serialize() for u in updates]
+        return updateDict
 
     def _updatePlayerSite(self, playerSite, site):
         playerSite.setDrillCost(site.getDrillCost())

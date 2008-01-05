@@ -64,37 +64,38 @@ class WildcattingView(View):
     TOP_BORDER = 2
     SIDE_BORDER = 3
     
-    def __init__(self, stdscr, rows, cols, setting):
+    def __init__(self, stdscr, wildcatting_, setting):
         self._stdscr = stdscr
+        self._wildcatting = wildcatting_
         self._setting = setting
 
         (h, w) = stdscr.getmaxyx()
         bwh = h - (self.TOP_BORDER * 2)
         bww = w - (self.SIDE_BORDER * 2)
 
+        field = wildcatting_.getPlayerField()
+        rows, cols = field.getHeight(), field.getWidth()
         self._border_win = stdscr.derwin(bwh, bww, 1, 3)
         self._field_win = stdscr.derwin(rows, cols, 2, 4)
         bkgd = Colors.get(curses.COLOR_WHITE, curses.COLOR_BLACK)
         self._field_win.bkgdset(" ", bkgd)
         self._oilView = oilView = wildcatting.view.OilFieldCursesView(self._field_win)
+        oilView.setField(wildcatting_.getPlayerField())
 
         self._fh, self._fw = self._field_win.getmaxyx()
         self._colorChooser = wildcatting.view.ColorChooser()
         self._x, self._y = 0, 0
-        self._turn = 1
-        self._price = 0
-        self._playersTurn = None
 
     def _drawBorder(self):
         (h, w) = self._stdscr.getmaxyx()
         location = self._setting.getLocation()
         era = self._setting.getEra()
 
-        pricestr = self._setting.getPriceFormat() % self._price
+        pricestr = self._setting.getPriceFormat() % self._wildcatting.getOilPrice()
         
         self._stdscr.addstr(0, 4, "%s, %s.  Oil is %s." % (location, era, pricestr), curses.A_BOLD)
 
-        week = "Week %d" % self._turn
+        week = "Week %d" % self._wildcatting.getWeek()
 
         self._stdscr.addstr(0, w - self.SIDE_BORDER - len(week) - 1, week, curses.A_BOLD)
         fact = random.choice(self._setting.getFacts())
@@ -126,22 +127,8 @@ class WildcattingView(View):
 
         coordStr = "X=%s   Y=%s" % (str(self._x).rjust(2), str(self._y).rjust(2))
         self.addCentered(self._border_win, border_h - 2, coordStr, bkgd)
-        self.addRight(self._border_win, border_h - 2, "%s's turn" % self._playersTurn, bkgd)
+        self.addRight(self._border_win, border_h - 2, "%s's turn" % self._wildcatting.getPlayersTurn(), bkgd)
         self._border_win.refresh()
-
-    def updateField(self, field):
-        self._oilView.setField(field)
-
-    def updatePrice(self, price):
-        self._price = price
-
-    def updateTurn(self, turn):
-        self._turn = turn
-        self._drawBorder()
-
-    def updatePlayersTurn(self, playersTurn):
-        self._playersTurn = playersTurn
-        self._drawKeyBar()
 
     def display(self):
         self._stdscr.clear()

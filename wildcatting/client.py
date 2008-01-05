@@ -11,6 +11,58 @@ from colors import Colors
 from wildcatting.model import OilField, Setting, Site, Well, WeeklySummary
 
 
+class Wildcatting:
+    def __init__(self):
+        self._playerField = None
+        self._week = 0
+        self._oilPrice = 0
+        self._playersTurn = None
+    
+    def getPlayerField(self):
+        return self._playerField
+
+    def setPlayerField(self, playerField):
+        self._playerField = playerField
+
+    def getWeek(self):
+        return self._week
+
+    def setWeek(self, week):
+        self._week = week
+
+    def getOilPrice(self):
+        return self._oilPrice
+
+    def setOilPrice(self, oilPrice):
+        self._oilPrice = oilPrice
+
+    def getPlayersTurn(self):
+        return self._playersTurn
+
+    def setPlayersTurn(self, playersTurn):
+        self._playersTurn = playersTurn
+
+    def updatePlayerField(self, site):
+        self._playerField.setSite(site.getRow(), site.getCol(), site)
+
+    def update(self, updateDict):
+        gameFinished = updateDict["gameFinished"]
+        week = updateDict["week"]
+        playersTurn = updateDict["playersTurn"]
+        oilPrice = updateDict["oilPrice"]
+        sites = [Site.deserialize(s) for s in updateDict["sites"]]                
+
+        updated = len(sites) > 0 or week > self._week or oilPrice != self._oilPrice or playersTurn !=  self._playersTurn or gameFinished
+
+        self._week = week
+        self._playersTurn = playersTurn
+        self._gameFinished = gameFinished
+        for site in sites:
+            self.updatePlayerField(site)
+
+        return updated        
+
+
 class Client:
     log = logging.getLogger("Wildcatting")
     
@@ -19,36 +71,19 @@ class Client:
         self._handle = handle
         self._username = username
         self._symbol = symbol
-        self._week = None
-        self._playersTurn = None
 
-    def _updatePlayerField(self, site):
-        self._playerField.setSite(site.getRow(), site.getCol(), site)
-        self._wildcatting.updateField(self._playerField)
+        self._wildcatting = Wildcatting()
 
-    def _refreshPlayerField(self):
-        self._playerField = OilField.deserialize(self._server.game.getPlayerField(self._handle))
-        self._oilPrice = self._server.game.getOilPrice(self._handle)
-        self._wildcatting.updatePrice(self._oilPrice)
-        self._wildcatting.updateField(self._playerField)
-
-    def _refreshPlayersTurn(self):
-        playersTurn = self._server.game.getPlayersTurn(self._handle)
-        if playersTurn != self._playersTurn:
-            self._playersTurn = playersTurn
-            self._wildcatting.updatePlayersTurn(playersTurn)
-        
     def _endTurn(self):
-        self._week = self._server.game.endTurn(self._handle)
-        self._refreshPlayersTurn()
-        self._wildcatting.updateTurn(self._week)
+        week = self._server.game.endTurn(self._handle)
+        self._wildcatting.setWeek(week)
         
     def _survey(self, row, col):
-        site = self._playerField.getSite(row, col)
+        site = self._wildcatting.getPlayerField().getSite(row, col)
         surveyed = site.isSurveyed()
         if not surveyed:
             site = Site.deserialize(self._server.game.survey(self._handle, row, col))
-            self._updatePlayerField(site)
+            self._wildcatting.updatePlayerField(site)
 
         report = SurveyorsReportView(self._stdscr, site, surveyed)
         report.display()
@@ -72,7 +107,7 @@ class Client:
 
     def _runDrill(self, row, col):
         actions = {}
-        site = self._playerField.getSite(row, col)
+        site = self._wildcatting.getPlayerField().getSite(row, col)
         drillView = DrillView(self._stdscr, site, self._setting)
         while site.getWell().getOutput() is None and site.getWell().getDrillDepth() < 10:
             drillView.display()
@@ -86,7 +121,7 @@ class Client:
             if "stop" in actions:
                 break
 
-        self._updatePlayerField(site)
+        self._wildcatting.updatePlayerField(site)
         
         if site.getWell().getOutput() is None:
             drillView.setMessage("DRY HOLE!")
@@ -98,8 +133,8 @@ class Client:
     def _runWeeklyReport(self):
         ## FIXME we want to move WeeklyReport generation to the server side.
         ## oil prices and other economic details live there
-        report = WeeklyReport(self._playerField, self._username, self._symbol, self._week, self._setting, self._oilPrice)
-        reportView = WeeklyReportView(self._stdscr, report, self._playerField)
+        report = WeeklyReport(self._wildcatting.getPlayerField(), self._username, self._symbol, self._wildcatting.getWeek(), self._setting, self._wildcatting.getOilPrice())
+        reportView = WeeklyReportView(self._stdscr, report, self._wildcatting.getPlayerField())
         reportView.display()
         actions = {}
         while not "nextPlayer" in actions:
@@ -108,11 +143,11 @@ class Client:
                 row, col = actions["sell"]
                 self._server.game.sell(self._handle, row, col)
                 site = Site.deserialize(self._server.game.getPlayerSite(self._handle, row, col))
-                self._updatePlayerField(site)
+                self._wildcatting.updatePlayerField(site)
                 ## FIXME we want to move WeeklyReport generation to the server side
                 ## oil prices and other economic details live there
-                report = WeeklyReport(self._playerField, self._username, self._symbol, self._week, self._setting, self._oilPrice)
-                reportView.setField(self._playerField)
+                report = WeeklyReport(self._wildcatting.getPlayerField(), self._username, self._symbol, self._wildcatting.getWeek(), self._setting, self._wildcatting.getOilPrice())
+                reportView.setField(self._wildcatting.getPlayerField())
                 reportView.setReport(report)
                 reportView.display()
 
@@ -149,50 +184,41 @@ class Client:
             self.log.info("To reconnect, run with --handle %s" % self._handle)
 
         self._runPreGame(self._gameId, self._username)
-        
-        self._week = self._server.game.getWeek(self._handle)
-        
-        self._wildcatting = wildcatting = WildcattingView(self._stdscr, field_h, field_w, self._setting)
 
-        self._refreshPlayersTurn()
+        playerField = OilField.deserialize(self._server.game.getPlayerField(self._handle))
+        self._wildcatting.setPlayerField(playerField)
 
-        self._refreshPlayerField()
+        updateDict = self._server.game.getUpdateDict(self._handle)
+        self._wildcatting.update(updateDict)
 
-        wildcatting.display()
+        self._wildcattingView = wildcattingView = WildcattingView(self._stdscr, self._wildcatting, self._setting)
+
+        wildcattingView.display()
         
         gameFinished = False
         while not gameFinished:
-            actions = wildcatting.input()
+            actions = wildcattingView.input()
             if "survey" in actions:
                 row, col = actions["survey"]
                 drillAWell = self._survey(row, col)
                 if drillAWell:
                     site = Site.deserialize(self._server.game.erect(self._handle, row, col))
-                    self._updatePlayerField(site)
+                    self._wildcatting.updatePlayerField(site)
                     self._runDrill(row, col)
                 self._runWeeklyReport()
                 self._endTurn()
                 self._runWeeklySummary()
-                wildcatting.display()
+                wildcattingView.display()
             elif "checkForUpdates" in actions:
-                ## TODO combine the various polling for updates calls
-                gameFinished = self._server.game.isFinished(self._handle)
-                updates = [Site.deserialize(s) for s in self._server.game.getUpdatedSites(self._handle)]
-                for site in updates:
-                    self._updatePlayerField(site)
+                updateDict = self._server.game.getUpdateDict(self._handle)
+                updated = self._wildcatting.update(updateDict)
+                if updated:
+                    wildcattingView.display()
 
-                week = self._server.game.getWeek(self._handle)
-                if week > self._week:
-                    self._week = week
-                    wildcatting.updateTurn(week)
-
-                self._refreshPlayersTurn()
-                    
-                if len(updates) > 0:
-                    wildcatting.display()
-
-        self._refreshPlayerField()
-        wildcatting.animateGameEnd()
+        playerField = OilField.deserialize(self._server.game.getPlayerField(self._handle))
+        self._wildcatting.setPlayerField(playerField)
+        
+        wildcattingView.animateGameEnd()
 
         while self._stdscr.getch() == -1:
             pass

@@ -146,7 +146,7 @@ class GameService:
 
         handle = self._encodeGameHandle(gameId, player, secret)
 
-        self.log.debug("%s joined game %s (%s)", player, gameId, handle)
+        self.log.debug("%s joined game %s (%s)", player.getUsername(), gameId, handle)
 
         return handle
 

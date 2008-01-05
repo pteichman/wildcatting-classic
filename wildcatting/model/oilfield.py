@@ -1,6 +1,7 @@
 from serialize import Serializable
 
 import random
+import math
 
 
 class OilField(Serializable):
@@ -122,7 +123,14 @@ class SimpleWellTheory:
 
     def week(self, well, currentWeek):
         weeksOperational = currentWeek - well.getWeek()
-        output = well.getInitialOutput() - random.random() * weeksOperational*weeksOperational
+
+        # simple 3 week peak with noise
+        if weeksOperational <= 3:
+            offset = random.random() * math.pow(weeksOperational + 3, 2)            
+        else:
+            offset = - random.random() * math.pow(weeksOperational - 3, 2)            
+
+        output = well.getOutput() + offset
         if output < 0:
             output = 0
         well.setOutput(output)

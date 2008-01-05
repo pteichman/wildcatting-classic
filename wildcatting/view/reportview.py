@@ -20,9 +20,9 @@ class WeeklySummaryView(View):
     def display(self):
         self._stdscr.clear()
         self._stdscr.refresh()
-        bkgd = Colors.get(curses.COLOR_BLACK, curses.COLOR_GREEN)
-        text = Colors.get(curses.COLOR_BLACK, curses.COLOR_GREEN)
-        self.setFGBG(self._win, text, bkgd)
+
+        fg, bg = self.getGreenFGBG()
+        self.setFGBG(self._win, fg, bg)
         
         self.addCentered(self._win, 1, "... WILDCATTING ...")
         self.addCentered(self._win, 3, "WEEK %03s" % self._report.getWeek())
@@ -30,7 +30,12 @@ class WeeklySummaryView(View):
         for rowDict in self._report.getReportRows():
             username = rowDict["username"]
             profitAndLoss = rowDict["profitAndLoss"]
-            self.addCentered(self._win, row, "%s $%10s" % (username, profitAndLoss))
+            self.addLeft(self._win, row, username, pad=12)
+
+            # could be profit, but probably a loss
+            loss = "$ %8d" % profitAndLoss
+
+            self.addRight(self._win, row, loss, pad=12)
             row += 2
         self._win.refresh()
 
@@ -70,10 +75,9 @@ class WeeklyReportView(View):
         self._stdscr.clear()
         self._stdscr.refresh()
         (h, w) = self._win.getmaxyx()        
-        bkgd = Colors.get(curses.COLOR_BLACK, curses.COLOR_GREEN)
-        text = Colors.get(curses.COLOR_BLACK, curses.COLOR_GREEN)
 
-        self.setFGBG(self._win, text, bkgd)
+        fg, bg = self.getGreenFGBG()
+        self.setFGBG(self._win, fg, bg)
 
         self._win.addstr(0, 0, self._report.getUsername().upper())
         self.addCentered(self._win, 0, "%s PER BARREL" % self._report.getOilPrice())
@@ -178,10 +182,8 @@ class SurveyorsReportView(View):
         cost_str = "$" + str(self._site.getDrillCost()).rjust(4)
         tax_str = "$" + str(self._site.getTax()).rjust(4)
 
-        bkgd = Colors.get(curses.COLOR_BLACK, curses.COLOR_GREEN)
-        text = Colors.get(curses.COLOR_BLACK, curses.COLOR_GREEN)
-
-        self.setFGBG(self._win, text, bkgd)
+        fg, bg = self.getGreenFGBG()
+        self.setFGBG(self._win, fg, bg)
 
         self._win.addstr(1, 14, "SURVEYOR'S REPORT")
         self._win.addstr(4, 12, "LOCATION")
@@ -266,10 +268,8 @@ class PregameReportView(View):
 
         (h, w) = self._win.getmaxyx()
 
-        bkgd = Colors.get(curses.COLOR_GREEN, curses.COLOR_GREEN)
-        text = Colors.get(curses.COLOR_BLACK, curses.COLOR_GREEN)
-
-        self.setFGBG(self._win, text, bkgd)
+        fg, bg = self.getGreenFGBG()
+        self.setFGBG(self._win, fg, bg)
 
         self.addCentered(self._win, 1, "PLAYERS: GAME %s" % self._gameId)
 

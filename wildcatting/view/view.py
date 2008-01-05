@@ -1,11 +1,28 @@
 import logging
+import curses
+import os
 
+from wildcatting.colors import Colors
 
 class View:
     log = logging.getLogger("Wildcatting")
 
     def __init__(self, stdscr):
         self._stdscr = stdscr
+
+        # for mac terminal workarounds - lazy mac check
+        self._mac = os.path.exists("/mach_kernel")
+
+    def getGreenFGBG(self):
+        if self._mac:
+            bkgd = Colors.get(curses.COLOR_GREEN, curses.COLOR_GREEN)
+            text = Colors.get(curses.COLOR_BLACK, curses.COLOR_GREEN)
+        else:
+            bkgd = Colors.get(curses.COLOR_BLACK, curses.COLOR_GREEN)
+            text = Colors.get(curses.COLOR_BLACK, curses.COLOR_GREEN)
+
+        return text, bkgd
+
 
     def addCentered(self, win, row, text, color=None):
         (h, w) = win.getmaxyx()
@@ -16,10 +33,19 @@ class View:
         else:
             win.addstr(row, col, text, color)
 
-    def addRight(self, win, row, text, color=None):
+    def addLeft(self, win, row, text, color=None, pad=0):
         (h, w) = win.getmaxyx()
 
-        col = w - len(text) - 1
+        col = pad
+        if color is None:
+            win.addstr(row, col, text)
+        else:
+            win.addstr(row, col, text, color)
+
+    def addRight(self, win, row, text, color=None, pad=0):
+        (h, w) = win.getmaxyx()
+
+        col = w - len(text) - 1 - pad
         if color is None:
             win.addstr(row, col, text)
         else:
@@ -28,11 +54,13 @@ class View:
     def setFGBG(self, win, fg, bg):
         (h, w) = win.getmaxyx()
         
+        win.bkgdset(" ", fg)
+
         # work around a problem with the MacOS X Terminal - draw the
         # background explicitly by drawing BG on BG "." characters
-        win.bkgdset(" ", fg)
-        for row in xrange(h):
-            win.addstr(row, 0, " " * (w-1), bg)
+        if self._mac:
+            for row in xrange(h):
+                win.addstr(row, 0, "." * (w-1), bg)
 
     def putch(self, win, y, x, ch, attr=None):
         # workaround so we can write things to the bottom corner

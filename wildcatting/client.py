@@ -60,6 +60,7 @@ class Wildcatting:
         sites = [Site.deserialize(s) for s in updateDict["sites"]]
 
         updated = len(sites) > 0 or week > self._week or oilPrice != self._oilPrice or playersTurn !=  self._playersTurn or gameFinished
+        weekUpdated = week > self._week
 
         self._week = week
         self._playersTurn = playersTurn
@@ -69,7 +70,7 @@ class Wildcatting:
         for site in sites:
             self.updatePlayerField(site)
 
-        return updated        
+        return updated, weekUpdated
 
 
 class Client:
@@ -85,7 +86,10 @@ class Client:
 
     def _endTurn(self):
         updateDict = self._server.game.endTurn(self._handle)
-        self._wildcatting.update(updateDict)
+        updated, weekUpdated = self._wildcatting.update(updateDict)
+
+        if weekUpdated:
+            self._runWeeklySummary()
 
         ## get weekly updates to all of our wells, perhaps these should just be in the
         ## dict above
@@ -225,12 +229,13 @@ class Client:
                     self._runDrill(row, col)
                 self._runWeeklyReport()
                 self._endTurn()
-                self._runWeeklySummary()
                 wildcattingView.display()
                 self._wildcatting.setGameFinished(self._server.game.isFinished(self._handle))
             elif "checkForUpdates" in actions and self._wildcatting.getPlayersTurn() != self._username:
                 updateDict = self._server.game.getUpdateDict(self._handle)
-                updated = self._wildcatting.update(updateDict)
+                updated, weekUpdated = self._wildcatting.update(updateDict)
+                if weekUpdated:
+                    self._runWeeklySummary()                    
                 if updated:
                     wildcattingView.display()
 

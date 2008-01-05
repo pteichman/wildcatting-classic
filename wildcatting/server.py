@@ -256,7 +256,9 @@ class GameService:
         game, player = self._readHandle(handle)
         turn = self._ensureTurn(game, player)
 
-        return game.endTurn(player)
+        game.endTurn(player)
+        
+        return self.getUpdateDict(handle)
 
     def getPlayersTurn(self, handle):
         game, player = self._readHandle(handle)

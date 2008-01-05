@@ -84,8 +84,8 @@ class Client:
         self._wildcatting = Wildcatting()
 
     def _endTurn(self):
-        week = self._server.game.endTurn(self._handle)
-        self._wildcatting.setWeek(week)
+        updateDict = self._server.game.endTurn(self._handle)
+        self._wildcatting.update(updateDict)
         
     def _survey(self, row, col):
         site = self._wildcatting.getPlayerField().getSite(row, col)
@@ -218,7 +218,7 @@ class Client:
                 self._runWeeklySummary()
                 wildcattingView.display()
                 self._wildcatting.setGameFinished(self._server.game.isFinished(self._handle))
-            elif "checkForUpdates" in actions:
+            elif "checkForUpdates" in actions and self._wildcatting.getPlayersTurn() != self._username:
                 updateDict = self._server.game.getUpdateDict(self._handle)
                 updated = self._wildcatting.update(updateDict)
                 if updated:

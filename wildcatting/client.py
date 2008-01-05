@@ -50,13 +50,15 @@ class Wildcatting:
         week = updateDict["week"]
         playersTurn = updateDict["playersTurn"]
         oilPrice = updateDict["oilPrice"]
-        sites = [Site.deserialize(s) for s in updateDict["sites"]]                
+        sites = [Site.deserialize(s) for s in updateDict["sites"]]
 
         updated = len(sites) > 0 or week > self._week or oilPrice != self._oilPrice or playersTurn !=  self._playersTurn or gameFinished
 
         self._week = week
         self._playersTurn = playersTurn
         self._gameFinished = gameFinished
+        self._oilPrice = oilPrice
+
         for site in sites:
             self.updatePlayerField(site)
 

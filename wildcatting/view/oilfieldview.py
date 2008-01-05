@@ -127,15 +127,12 @@ class FadeInOilFieldCursesAnimator:
 
 
 class OilFieldCursesView(View):
-    def __init__(self, win):
+    def __init__(self, win, wildcatting_):
         self._win = win
-
-    def setField(self, field):
-        assert isinstance(field, wildcatting.model.OilField)
-        self._field = field
+        self._wildcatting = wildcatting_
 
     def display(self):
-        field = self._field
+        field = self._wildcatting.getPlayerField()
 
         colorChooser = ColorChooser()
         for row in xrange(field.getHeight()):
@@ -158,7 +155,7 @@ class OilFieldCursesView(View):
         self._win.refresh()
 
     def animateGameEnd(self):
-        animator = FadeInOilFieldCursesAnimator(self._field)
+        animator = FadeInOilFieldCursesAnimator(self._wildcatting.getPlayerField())
         while not animator.isDone():
             animator.animate()
             self.display()

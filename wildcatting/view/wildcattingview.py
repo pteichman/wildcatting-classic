@@ -79,8 +79,7 @@ class WildcattingView(View):
         self._field_win = stdscr.derwin(rows, cols, 2, 4)
         bkgd = Colors.get(curses.COLOR_WHITE, curses.COLOR_BLACK)
         self._field_win.bkgdset(" ", bkgd)
-        self._oilView = oilView = wildcatting.view.OilFieldCursesView(self._field_win)
-        oilView.setField(wildcatting_.getPlayerField())
+        self._oilView = oilView = wildcatting.view.OilFieldCursesView(self._field_win, wildcatting_)
 
         self._fh, self._fw = self._field_win.getmaxyx()
         self._colorChooser = wildcatting.view.ColorChooser()

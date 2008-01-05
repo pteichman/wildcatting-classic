@@ -23,7 +23,6 @@ class View:
 
         return text, bkgd
 
-
     def addCentered(self, win, row, text, color=None):
         (h, w) = win.getmaxyx()
 
@@ -61,6 +60,8 @@ class View:
         if self._mac:
             for row in xrange(h):
                 win.addstr(row, 0, "." * (w-1), bg)
+        else:
+            self._win.clear()            
 
     def putch(self, win, y, x, ch, attr=None):
         # workaround so we can write things to the bottom corner

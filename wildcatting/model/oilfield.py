@@ -115,27 +115,6 @@ class Site(Serializable):
             self._well.week(self, oilPrice)
 
 
-class SimpleWellTheory:
-    def start(self, well):
-        output = random.randint(1, 250)
-        well.setOutput(output)
-        well.setInitialOutput(output)
-
-    def week(self, well, currentWeek):
-        weeksOperational = currentWeek - well.getWeek()
-
-        # simple 3 week peak with noise
-        if weeksOperational <= 3:
-            offset = random.random() * math.pow(weeksOperational + 3, 2)            
-        else:
-            offset = - random.random() * math.pow(weeksOperational - 3, 2)            
-
-        output = well.getOutput() + offset
-        if output < 0:
-            output = 0
-        well.setOutput(output)
-
-
 class Well(Serializable):
     def __init__(self):
         self._drillDepth = 1

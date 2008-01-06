@@ -1,3 +1,0 @@
-include go-wildcatting
-include *.py
-recursive-include wildcatting *.py

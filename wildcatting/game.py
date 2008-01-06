@@ -7,7 +7,7 @@ from wildcatting.exceptions import WildcattingException
 import wildcatting.model
 import wildcatting.turn
 
-from oilprices import Prices
+from oilprices import GaussianPrices
 from theme import DefaultTheme, Theme
 
 
@@ -182,7 +182,7 @@ class Game:
         self._turn = None
         self._isStarted = False
 
-        self._prices = Prices(turnCount+1).__iter__()
+        self._prices = GaussianPrices(theme.getInitialOilPrice())
         self._updatePrice(self._prices.next())
         
         self._oilField = wildcatting.model.OilField(width, height)
@@ -191,7 +191,7 @@ class Game:
         TaxFiller(theme).fill(self._oilField)
 
     def _updatePrice(self, price):
-        self._oilPrice = price.getValue() * self._theme.getInflationAdjustment()
+        self._oilPrice = price
 
     def _generateSecret(self, player):
         return "".join([random.choice(("0", "1", "2", "3", "4",

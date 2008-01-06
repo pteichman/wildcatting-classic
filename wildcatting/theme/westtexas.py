@@ -94,8 +94,8 @@ class WestTexas(Theme):
         return 550
     def getMaxOutput(self):
         return 16000
-    def getInflationAdjustment(self):
-        return 0.125
+    def getInitialOilPrice(self):
+        return 4.50
 
     ## oil probability distribution
     def getOilMinDropoff(self):

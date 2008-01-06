@@ -1,7 +1,8 @@
 import datetime
+import math
 import random
 
-class Prices:
+class HistoricalPrices:
     def __init__(self, length):
         global historical_data
         start = random.randrange(len(historical_data)-length)
@@ -9,6 +10,63 @@ class Prices:
 
     def __iter__(self):
         return self._prices.__iter__()
+
+class GaussianPrices:
+    """Gaussian distribution"""
+    def __init__(self, start, mu=None, sigma=None):
+        self._price = start
+
+        if mu is None:
+            mu = 0.0
+
+        if sigma is None:
+            sigma = 1.0
+
+        self._mu = mu
+        self._sigma = sigma
+
+    def next(self):
+        change = random.gauss(self._mu, self._sigma)
+        self._price = max(0.01, self._price + self._price * change/100)
+        return self._price
+
+    def _calculate_mean(self, nums):
+        sum = 0
+        for num in nums:
+            sum = sum + num
+        return sum / len(nums)
+
+    def _calculate_sigma(self, mean, nums):
+        diffs = []
+        for num in nums:
+            diffs.append(math.pow(num-mean, 2))
+
+        sum = 0
+        for num in diffs:
+            sum = sum + num
+
+        return math.sqrt(abs(sum/len(nums)))
+
+class HistoricalGaussianPrices(GaussianPrices):
+    """Gaussian distribution based on our historical price data"""
+    def __init__(self, start):
+        global historical_data
+
+        self._changes = self._calculate_changes(historical_data)
+        mu = self._calculate_mean(self._changes)
+        sigma = self._calculate_sigma(mu, self._changes)
+
+        GaussianPrices.__init__(self, start, mu, sigma)
+
+    def _calculate_changes(self, prices):
+        ret = []
+
+        prev = prices[0]
+        for cur in prices:
+            change = (cur.getValue()-prev.getValue())/prev.getValue()
+            ret.append(change)
+
+        return ret
 
 class Price:
     def __init__(self, date, price):
@@ -5514,6 +5572,10 @@ historical_data = [
     ]
 
 if __name__ == "__main__":
-    prices = Prices(10)
-    for price in prices:
-        print price
+    prices = GaussianPrices(10.00)
+    prev = prices.next()
+    print "%.2f" % prev
+    for i in xrange(0, 10):
+        cur = prices.next()
+        print "%.2f (%.2f%%)" % (cur, (cur-prev)/prev*100)
+        prev = cur

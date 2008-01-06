@@ -38,6 +38,9 @@ class ThemeInfo(Command):
         themes.sort()
         return themes
 
+    def _formatPrice(self, theme, price):
+        return theme.getPriceFormat() % price
+
     def printTheme(self, themeName):
         themes = self._getAllThemes()
 
@@ -54,6 +57,15 @@ class ThemeInfo(Command):
         print "Name: %s" % themeName
         print "Location: %s" % theme.getLocation()
         print "Era: %s" % theme.getEra()
+        print
+        print "Drilling cost: %s .. %s per %d depth units" \
+              % (self._formatPrice(theme, theme.getMinDrillCost()),
+                 self._formatPrice(theme, theme.getMaxDrillCost()),
+                 theme.getDrillIncrement())
+        print "Taxes: %s .. %s" % (self._formatPrice(theme, theme.getMinTax()),
+                                   self._formatPrice(theme, theme.getMaxTax()))
+        print "Oil price generator: %s" % str(theme.getOilPrices())
+        
         print
         print "Facts:"
 

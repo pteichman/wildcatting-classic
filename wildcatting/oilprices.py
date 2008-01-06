@@ -25,6 +25,18 @@ class GaussianPrices:
         self._mu = mu
         self._sigma = sigma
 
+    def __str__(self):
+        lines = [str(self.__class__)]
+
+        lines.append("  Initial oil price: $%.2f" % self._price)
+        lines.append("  Mean change between turns: %.3f%%" % self._mu)
+        lines.append("  Standard deviation: %.3f%%" % self._sigma)
+        lines.append("    1. 68.27%% of price changes will be in the range: %.3f%% .. %.3f%%" % (self._mu - self._sigma, self._mu + self._sigma))
+        lines.append("    2. 95.45%% of price changes will be in the range: %.3f%% .. %.3f%%" % (self._mu - self._sigma*2, self._mu + self._sigma*2))
+        lines.append("  Initial price +/- one standard deviation: $%.2f .. %.2f" % (self._price + self._price * (self._mu - self._sigma) / 100, self._price + self._price * (self._mu + self._sigma) / 100))
+        
+        return "\n".join(lines)
+
     def next(self):
         change = random.gauss(self._mu, self._sigma)
         self._price = max(0.01, self._price + self._price * change/100)

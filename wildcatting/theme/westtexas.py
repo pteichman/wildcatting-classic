@@ -1,6 +1,7 @@
 from wildcatting.theme import Theme
 
 import wildcatting.game
+from wildcatting.oilprices import GaussianPrices
 
 
 # we don't want to send raw_facts into our importers' namespaces
@@ -94,8 +95,8 @@ class WestTexas(Theme):
         return 550
     def getMaxOutput(self):
         return 16000
-    def getInitialOilPrice(self):
-        return 4.50
+    def getOilPrices(self):
+        return GaussianPrices(4.50, 0.0, 1.0)
 
     ## oil probability distribution
     def getOilMinDropoff(self):

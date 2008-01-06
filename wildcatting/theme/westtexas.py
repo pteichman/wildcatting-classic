@@ -39,6 +39,9 @@ Sid Richardson began ranching in the 1930s and developed a love of Western art, 
 Before the big oil companies gained control of the business it was open to any white man who could hustle up the money for a rig, talk a farmer into leasing the mineral rights to his land, and then maintain enough optimism or pigheadedness to drill up his leasehold until he either found oil or convinced himself that he had made a mistake.
 
 # Texas facts
+Eighty-five percent of the public libraries in Texas were founded by women's clubs.
+Prehistoric tribes in Texas traded for turquoise and obsidian from New Mexico, shell from the Pacific and Atlantic coasts and exotic stone from as far away as Minnesota.
+A stone quarry in Texas was used for millennia by inhabitants of the southern Great Plains and is now a monument national Alibates Monument National in the Amarillo area.  
 The population of Texas is 21 million, not including the 16 million cattle.
 70% of the population of Texas lives within 200 miles of Austin.
 Texas possesses three of the Top Ten most populous cities in the U.S. - Houston, Dallas and San Antonio.

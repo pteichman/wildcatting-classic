@@ -59,7 +59,10 @@ class OilFieldTextView(View):
 
 
 class ColorChooser:
-    def __init__(self):
+    def __init__(self, mac):
+        # for workarounds
+        self._mac = mac
+
         # increasing order of hotness
         self._colors = [
             Colors.get(curses.COLOR_WHITE, curses.COLOR_BLUE),
@@ -104,7 +107,11 @@ class ColorChooser:
 
         assert isinstance(site, wildcatting.model.Site)
 
-        return self._chooseColor(site, self._colors)
+        colors = self._colors
+        if self._mac:
+            colors = self._blankColors
+            
+        return self._chooseColor(site, colors)
 
 
 class FadeInOilFieldCursesAnimator:
@@ -128,13 +135,14 @@ class FadeInOilFieldCursesAnimator:
 
 class OilFieldCursesView(View):
     def __init__(self, win, wildcatting_):
+        View.__init__(self, win)
         self._win = win
         self._wildcatting = wildcatting_
 
     def display(self):
         field = self._wildcatting.getPlayerField()
 
-        colorChooser = ColorChooser()
+        colorChooser = ColorChooser(self._mac)
         for row in xrange(field.getHeight()):
             for col in xrange(field.getWidth()):
                 site = field.getSite(row, col)
@@ -144,7 +152,10 @@ class OilFieldCursesView(View):
                         # work around an MacOS X terminal problem with
                         # displaying blank characters - it doesn't draw
                         # the background if the well is " "
-                        symbol = " "
+                        if self._mac:
+                            symbol = "."
+                        else:
+                            symbol = " "
                         color = colorChooser.blankColor(site)
                     else:
                         symbol = well.getPlayer().getSymbol()

@@ -164,6 +164,9 @@ class Client:
             actions = reportView.input()
             if "sell" in actions:
                 row, col = actions["sell"]
+                site = self._wildcatting.getPlayerField().getSite(row, col)
+                if site.getWell().isSold():
+                    continue
                 self._server.game.sell(self._handle, row, col)
                 site = Site.deserialize(self._server.game.getPlayerSite(self._handle, row, col))
                 self._wildcatting.updatePlayerField(site)

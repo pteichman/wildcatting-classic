@@ -24,7 +24,7 @@ class PeakedFiller:
                 # calculate sum of distances from peak
                 minc = 99999
                 for p in xrange(len(peaks)):
-                    (y, x, peakHeight) = peaks[p]
+                    (y, x) = peaks[p]
 
                     a = row - y
                     b = col - x
@@ -42,7 +42,7 @@ class PeakedFiller:
                 e = random.randint(minDropoff, maxDropoff) / (maxDropoff - minDropoff) * d
                 e = max(0.001, e) / 40
                 f = 1 - max(min((math.log(e) + 7) / 7, 1.0), 0)
-                peakHeight = peaks[closest][2]                
+                peakHeight = maxValue - minValue
                 value = int(f * peakHeight - (closest) * random.random() * lesserPeakFactor)
                 value = max(minValue + random.randint(0, fudge), value)
                 value = min(maxValue - random.randint(0, fudge), value)
@@ -56,8 +56,7 @@ class PeakedFiller:
         peaks = [None]*random.randint(1, maxPeaks)
         for i in xrange(len(peaks)):
             peaks[i] = (random.randint(0, model.getHeight()),
-                        random.randint(0, model.getWidth()),
-                        random.randint((maxValue - minValue)*3/4, maxValue))
+                        random.randint(0, model.getWidth()))
         return peaks
 
     def getValueRange(self):

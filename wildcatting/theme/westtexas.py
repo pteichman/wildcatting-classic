@@ -1,6 +1,7 @@
 from wildcatting.theme import Theme
 
-import wildcatting.model
+import wildcatting.game
+
 
 # we don't want to send raw_facts into our importers' namespaces
 __all__ = ["WestTexas"]
@@ -62,7 +63,7 @@ class WestTexas(Theme):
     def __init__(self):
         Theme.__init__(self)
         
-        self._wellTheory = wildcatting.model.SimpleWellTheory()
+        self._wellTheory = wildcatting.game.SimpleWellTheory()
     
     ## literary setting
     def getLocation(self):

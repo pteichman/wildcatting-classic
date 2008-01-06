@@ -12,6 +12,7 @@ from theme import DefaultTheme, Theme
 
 
 class PeakedFiller:
+
     def fill(self, field):
         assert isinstance(field, wildcatting.model.OilField)
         peaks = self._generatePeaks(field)
@@ -37,9 +38,12 @@ class PeakedFiller:
                 maxDropoff = self.getMaxDropoff()
                 lesserPeakFactor = self.getLesserPeakFactor()
                 fudge = self.getFudge()
-                d = random.randint(minDropoff, maxDropoff) * minc * minc / math.sqrt(model.getWidth() * model.getHeight())
-                peakHeight = peaks[closest][2]
-                value = int(peakHeight - (closest) * random.random() * lesserPeakFactor - d)
+                d = minc * minc / math.sqrt(model.getWidth() * model.getHeight())
+                e = random.randint(minDropoff, maxDropoff) / (maxDropoff - minDropoff) * d
+                e = max(0.001, e) / 40
+                f = 1 - max(min((math.log(e) + 7) / 7, 1.0), 0)
+                peakHeight = peaks[closest][2]                
+                value = int(f * peakHeight - (closest) * random.random() * lesserPeakFactor)
                 value = max(minValue + random.randint(0, fudge), value)
                 value = min(maxValue - random.randint(0, fudge), value)
 

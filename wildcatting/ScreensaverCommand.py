@@ -7,6 +7,7 @@ from wildcatting.cmdparse import Command
 from wildcatting.view import OilFieldTextView, OilFieldCursesView, FadeInOilFieldCursesAnimator
 from wildcatting.game import Game
 from wildcatting.theme import DefaultTheme
+from wildcatting.client import Wildcatting
 
 
 class ScreensaverCommand(Command):
@@ -92,8 +93,9 @@ class ScreensaverCommand(Command):
             game = Game(win_w, win_h)
             field = game.getOilField()
 
-            view = OilFieldCursesView(win)
-            view.setField(field)
+            w = Wildcatting()
+            w.setPlayerField(field)
+            view = OilFieldCursesView(win, w)
 
             for row in xrange(field.getHeight()):
                 for col in xrange(field.getWidth()):

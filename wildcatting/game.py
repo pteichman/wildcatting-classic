@@ -38,14 +38,13 @@ class PeakedFiller:
                 maxDropoff = self.getMaxDropoff()
                 lesserPeakFactor = self.getLesserPeakFactor()
                 fudge = self.getFudge()
-                d = minc * minc / math.sqrt(model.getWidth() * model.getHeight())
-                e = random.randint(minDropoff, maxDropoff) / (maxDropoff - minDropoff) * d
-                e = max(0.001, e) / 40
-                f = 1 - max(min((math.log(e) + 7) / 7, 1.0), 0)
+                d = (minc + random.random() * fudge) / math.sqrt(model.getWidth() * model.getHeight())
+                e = max(0.001, d)
+                f = 1 - max(min((math.log(e) + 2.5) / 2.5, 1.0), 0)
                 peakHeight = maxValue - minValue
-                value = int(f * peakHeight - (closest) * random.random() * lesserPeakFactor)
-                value = max(minValue + random.randint(0, fudge), value)
-                value = min(maxValue - random.randint(0, fudge), value)
+                value = int(f * peakHeight - closest * random.random() * lesserPeakFactor)
+                value = max(minValue, value)
+                value = min(maxValue, value)
 
                 site = model.getSite(row, col)
                 self.fillSite(site, value)

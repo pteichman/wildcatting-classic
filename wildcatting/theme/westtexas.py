@@ -104,7 +104,7 @@ class WestTexas(Theme):
     def getOilMaxPeaks(self):
         return 5
     def getOilFudge(self):
-        return 8
+        return 4
     def getOilLesserPeakFactor(self):
         return 5
 

@@ -184,8 +184,8 @@ class GameService:
         well.setPlayer(player)
         well.setWeek(game.getTurn().getWeek())
         site.setWell(well)
+        game.drill(row, col)
         turn.setDrilledSite(site)
-
         game.markSiteUpdated(player, site)
         
         return self._makePlayerSite(site).serialize()

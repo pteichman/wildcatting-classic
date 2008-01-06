@@ -266,7 +266,7 @@ class Game:
         site = self._oilField.getSite(row, col)
         well = site.getWell()
 
-        cost = site.getDrillCost() * well.getDrillDepth() * self._theme.getDrillIncrement
+        cost = site.getDrillCost() * well.getDrillDepth() * self._theme.getDrillIncrement()
 
         well.setSold(True)
 

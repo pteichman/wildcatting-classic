@@ -117,7 +117,7 @@ class Site(Serializable):
 
 class Well(Serializable):
     def __init__(self):
-        self._drillDepth = 1
+        self._drillDepth = 0
         self._initialOutput = None
         self._output = None
         self._sold = False
@@ -175,7 +175,7 @@ class Well(Serializable):
         return price
 
     def drill(self, site, drillIncrement):
-        assert 1 <= self._drillDepth <= 12
+        assert 0 <= self._drillDepth <= 10
 
         oilDepth = site.getOilDepth()
         drillCost = site.getDrillCost()

@@ -232,7 +232,8 @@ class Client:
                 if drillAWell:
                     site = Site.deserialize(self._server.game.erect(self._handle, row, col))
                     self._wildcatting.updatePlayerField(site)
-                    self._runDrill(row, col)
+                    if site.getWell().getOutput() is None:
+                        self._runDrill(row, col)
                 self._runWeeklyReport()
                 self._endTurn()
                 wildcattingView.display()

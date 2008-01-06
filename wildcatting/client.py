@@ -182,6 +182,9 @@ class Client:
         actions = {}
         while not "done" in actions:
             actions = weeklySummaryView.input()
+
+    def _isMyTurn(self):
+        return self._wildcatting.getPlayersTurn() == self._username
         
     def wildcatting(self, stdscr):
         self._stdscr = stdscr
@@ -220,7 +223,7 @@ class Client:
 
         while not self._wildcatting.isGameFinished():
             actions = wildcattingView.input()
-            if "survey" in actions:
+            if "survey" in actions and self._isMyTurn():
                 row, col = actions["survey"]
                 drillAWell = self._survey(row, col)
                 if drillAWell:
@@ -231,7 +234,7 @@ class Client:
                 self._endTurn()
                 wildcattingView.display()
                 self._wildcatting.setGameFinished(self._server.game.isFinished(self._handle))
-            elif "checkForUpdates" in actions and self._wildcatting.getPlayersTurn() != self._username:
+            elif "checkForUpdates" in actions and not self._isMyTurn():
                 updateDict = self._server.game.getUpdateDict(self._handle)
                 updated, weekUpdated = self._wildcatting.update(updateDict)
                 if weekUpdated:

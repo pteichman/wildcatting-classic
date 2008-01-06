@@ -65,7 +65,8 @@ class WildcattingView(View):
     SIDE_BORDER = 3
     
     def __init__(self, stdscr, wildcatting_, setting):
-        self._stdscr = stdscr
+        View.__init__(self, stdscr)
+
         self._wildcatting = wildcatting_
         self._setting = setting
 
@@ -134,6 +135,11 @@ class WildcattingView(View):
         for i in xrange(len(colors)):
             color = colors[i]
             self._border_win.addstr(border_h - 2, 1 + i, " ", color)
+
+        if self._mac:
+            col = len(colors) + 1
+            color = Colors.get(curses.COLOR_WHITE, curses.COLOR_WHITE)
+            self._border_win.addstr(border_h - 2, col, "." * (border_w - col - 1), color)
 
         coordStr = "X=%s   Y=%s" % (str(self._x).rjust(2), str(self._y).rjust(2))
         self.addCentered(self._border_win, border_h - 2, coordStr, bkgd)

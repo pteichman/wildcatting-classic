@@ -1,3 +1,4 @@
+import os
 import curses
 import random
 import logging
@@ -59,9 +60,9 @@ class OilFieldTextView(View):
 
 
 class ColorChooser:
-    def __init__(self, mac):
-        # for workarounds
-        self._mac = mac
+    def __init__(self):
+        # for mac terminal workarounds - lazy mac check
+        self._mac = os.path.exists("/mach_kernel")
 
         # increasing order of hotness
         self._colors = [
@@ -142,7 +143,7 @@ class OilFieldCursesView(View):
     def display(self):
         field = self._wildcatting.getPlayerField()
 
-        colorChooser = ColorChooser(self._mac)
+        colorChooser = ColorChooser()
         for row in xrange(field.getHeight()):
             for col in xrange(field.getWidth()):
                 site = field.getSite(row, col)

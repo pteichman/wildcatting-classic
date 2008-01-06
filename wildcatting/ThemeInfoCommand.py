@@ -64,8 +64,12 @@ class ThemeInfo(Command):
                  theme.getDrillIncrement())
         print "Taxes: %s .. %s" % (self._formatPrice(theme, theme.getMinTax()),
                                    self._formatPrice(theme, theme.getMaxTax()))
-        print "Oil price generator: %s" % str(theme.getOilPrices())
-        
+        prices = theme.getOilPrices()
+        print "Oil price generator: %s" % str(prices)
+
+        print "Maximum oil output: %d barrels" % theme.getMaxOutput()
+        print "At starting price, well profit is %s .. %s" % (self._formatPrice(theme, 0.), self._formatPrice(theme, theme.getMaxOutput() * theme.getOilPrices().getInitialPrice()))
+
         print
         print "Facts:"
 

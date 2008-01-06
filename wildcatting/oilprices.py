@@ -14,7 +14,7 @@ class HistoricalPrices:
 class GaussianPrices:
     """Gaussian distribution"""
     def __init__(self, start, mu=None, sigma=None):
-        self._price = start
+        self._initialPrice = self._price = start
 
         if mu is None:
             mu = 0.0
@@ -36,6 +36,9 @@ class GaussianPrices:
         lines.append("  Initial price +/- one standard deviation: $%.2f .. %.2f" % (self._price + self._price * (self._mu - self._sigma) / 100, self._price + self._price * (self._mu + self._sigma) / 100))
         
         return "\n".join(lines)
+
+    def getInitialPrice(self):
+        return self._initialPrice
 
     def next(self):
         change = random.gauss(self._mu, self._sigma)

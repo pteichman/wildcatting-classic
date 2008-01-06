@@ -91,7 +91,7 @@ class WestTexas(Theme):
     def getMinTax(self):
         return 100
     def getMaxTax(self):
-        return 1000
+        return 550
     def getMaxOutput(self):
         return 16000
     def getInflationAdjustment(self):

@@ -1,4 +1,5 @@
 import logging
+import socket
 
 import wildcatting.version
 import wildcatting.server
@@ -12,7 +13,7 @@ class ServerCommand(Command):
     def __init__(self):
         Command.__init__(self, "server", summary="Run the Wildcatting server")
         self.add_option("-n", "--hostname", action="store", type="str",
-                        default="localhost", help="server hostname")
+                        default="", help="server hostname")
         self.add_option("-p", "--port", action="store", type="int",
                         default="7777", help="server port")
 
@@ -31,6 +32,11 @@ class ServerCommand(Command):
         s.register_subinstance("game", wildcatting.server.GameService(theme))
         s.register_subinstance("setting", wildcatting.server.SettingService(theme))
         s.register_introspection_functions()
+
+        if len(hostname) == 0:
+            # use hostname for display purposes, even if we're bound
+            # to all interfaces
+            hostname = socket.gethostname()
 
         url = "http://%s:%d/" % (hostname, options.port)
 

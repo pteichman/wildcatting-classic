@@ -67,7 +67,9 @@ class WestTexas(Theme):
     def __init__(self):
         Theme.__init__(self)
         
-        self._wellTheory = wildcatting.game.SimpleWellTheory()
+        self._wellTheory = wildcatting.game.SimpleWellTheory(
+            self.getMinOutput(), self.getMaxOutput())
+        self._oilPrices = GaussianPrices(4.50, 0.0, 1.0)
     
     ## literary setting
     def getLocation(self):
@@ -96,10 +98,12 @@ class WestTexas(Theme):
         return 100
     def getMaxTax(self):
         return 550
+    def getMinOutput(self):
+        return 1
     def getMaxOutput(self):
-        return 16000
+        return 250
     def getOilPrices(self):
-        return GaussianPrices(4.50, 0.0, 1.0)
+        return self._oilPrices
 
     ## oil probability distribution
     def getOilMinDropoff(self):

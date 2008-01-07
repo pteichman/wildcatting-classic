@@ -141,8 +141,15 @@ class TaxFiller:
 
 
 class SimpleWellTheory:
+    def __init__(self, minOutput, maxOutput):
+        self._minOutput = minOutput
+        self._maxOutput = maxOutput
+
+    def __str__(self):
+        pass
+    
     def start(self, well):
-        output = random.randint(1, 250)
+        output = random.randint(self._minOutput, self._maxOutput)
         well.setOutput(output)
         well.setInitialOutput(output)
 

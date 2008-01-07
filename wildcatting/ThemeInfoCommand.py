@@ -67,8 +67,10 @@ class ThemeInfo(Command):
         prices = theme.getOilPrices()
         print "Oil price generator: %s" % str(prices)
 
+        print
+
         print "Maximum oil output: %d barrels" % theme.getMaxOutput()
-        print "At starting price, well profit is %s .. %s" % (self._formatPrice(theme, 0.), self._formatPrice(theme, theme.getMaxOutput() * theme.getOilPrices().getInitialPrice()))
+        print "At starting price, well profit is %s .. %s" % (self._formatPrice(theme, theme.getMinOutput()), self._formatPrice(theme, theme.getMaxOutput() * theme.getOilPrices().getInitialPrice()))
 
         print
         print "Facts:"

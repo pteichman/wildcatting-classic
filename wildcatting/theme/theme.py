@@ -69,6 +69,8 @@ class Theme:
         raise "UnimplementedAbstractMethod"
     def getMaxTax(self):
         raise "UnimplementedAbstractMethod"
+    def getMinOutput(self):
+        raise "UnimplementedAbstractMethod"
     def getMaxOutput(self):
         raise "UnimplementedAbstractMethod"
     def getOilPrices(self):

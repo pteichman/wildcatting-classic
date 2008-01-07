@@ -2,8 +2,7 @@
 
 == Version 1.1 ==
 
-  * Better notification that a user's turn has started
-  * Python 2.4 support?
-  * Star the winning player
-  * Make final weekly summary say Final Report or similar
-  * Remove references to weeks after the game is over
+1.1 will be a bug fix release.
+
+See the bug list here:
+http://code.google.com/p/wildcatting/issues/list?q=label:Milestone-Release1.1&can=1

@@ -23,7 +23,7 @@ class ClientCommand(Command):
         self.add_option("", "--no-network", action="store_true") 
         self.add_option("-p", "--port", type="int",
                         default="7777", help="server port")
-        self.add_option("-n", "--hostname", type="string",
+        self.add_option("-n", "--host", type="string",
                         default="localhost", help="server hostname")
         self.add_option("-u", "--username", type="string",
                         default=user, help="username")
@@ -37,7 +37,7 @@ class ClientCommand(Command):
     def run(self, options, args):
         startLogger("client.log")
         
-        url = "http://%s:%d/" % (options.hostname, options.port)
+        url = "http://%s:%d/" % (options.host, options.port)
         if options.no_network:
             from theme import DefaultTheme
             from server import StandaloneServer

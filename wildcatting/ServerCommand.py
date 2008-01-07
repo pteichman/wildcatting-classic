@@ -12,7 +12,7 @@ class ServerCommand(Command):
 
     def __init__(self):
         Command.__init__(self, "server", summary="Run the Wildcatting server")
-        self.add_option("-n", "--hostname", action="store", type="str",
+        self.add_option("-n", "--host", action="store", type="str",
                         default="", help="server hostname")
         self.add_option("-p", "--port", action="store", type="int",
                         default="7777", help="server port")
@@ -20,12 +20,12 @@ class ServerCommand(Command):
     def run(self, options, args):
         wildcatting.util.startLogger("server.log")
 
-        hostname = options.hostname
+        host = options.host
 
         # this should be a server option
         theme = wildcatting.theme.DefaultTheme()
         
-        s = wildcatting.server.TieredXMLRPCServer((hostname, options.port))
+        s = wildcatting.server.TieredXMLRPCServer((host, options.port))
 
         s.register_instance(wildcatting.server.BaseService())
         s.register_subinstance("admin", wildcatting.server.AdminService())
@@ -33,12 +33,12 @@ class ServerCommand(Command):
         s.register_subinstance("setting", wildcatting.server.SettingService(theme))
         s.register_introspection_functions()
 
-        if len(hostname) == 0:
+        if len(host) == 0:
             # use hostname for display purposes, even if we're bound
             # to all interfaces
-            hostname = socket.gethostname()
+            host = socket.gethostname()
 
-        url = "http://%s:%d/" % (hostname, options.port)
+        url = "http://%s:%d/" % (host, options.port)
 
         self.log.info("Wildcatting server start")
         print "%s server listening at %s" % (wildcatting.version.VERSION_STRING, url)

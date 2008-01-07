@@ -3,9 +3,59 @@ hanging his hat on a hook by the office door.  "I don't know if you'll
 find it out here in West Texas, but hell.  We'll do anything honest to
 make a living."
 
-=====
+===========
+Wildcatting
+===========
 
 Welcome to Wildcatting!  The year is 1902, and you've traveled to West
 Texas from back East to secure your name as an oil speculator.  You
 have hired a top-notch surveying team and are prepared to go deeply in
 debt to make the find of the century!
+
+========
+Gameplay
+========
+
+Wildcatting is a minimally multiplayer networked game.  All
+functionality can be reached from the go-wildcatting script, which
+uses rug/cvs style commands and argument parsing.
+
+You run the server on one computer:
+
+ $ go-wildcatting server
+
+And the client on another:
+
+ $ go-wildcatting client --host <serverhost> [--game gameid]
+
+Running the client with no --game argument will start a new game on
+the server.  You will see a lobby that shows the gameid and the
+players who have joined.
+
+Share that gameid with your friends, and they can run the client with
+--game gameid to join.
+
+Once everyone has joined, the first player presses any key and the
+game begins!
+
+Oil Field View
+--------------
+
+The oil field view shows the sites that have been surveyed.  Navigate
+to a site using the arrow keys and press space to survey, then decide
+if you want to drill.  You cannot survey a site that has already been
+surveyed.
+
+Drilling View
+-------------
+
+The drilling view shows you how far down you have drilled and how much
+money that operation has cost so far.  You can stop drilling at any
+time by hitting "q", or hit the space bar to continue drilling.
+
+Weekly Report
+-------------
+
+On the weekly report, you'll see all your wells.  You can sell a well
+at any time by navigating to it and hitting the space bar.  Navigate
+to "NEXT PLAYER" and hit space to end your turn.

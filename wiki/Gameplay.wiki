@@ -14,6 +14,8 @@ Running the client with no `--game` argument will start a new game on
 the server.  You will see a lobby that shows the gameid and the
 players who have joined.
 
+http://wildcatting.googlecode.com/files/lobby.png
+
 Share that gameid with your friends, and they can run the client with
 `--game gameid` to join.
 

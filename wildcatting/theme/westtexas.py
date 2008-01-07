@@ -69,7 +69,7 @@ class WestTexas(Theme):
         
         self._wellTheory = wildcatting.game.SimpleWellTheory(
             self.getMinOutput(), self.getMaxOutput())
-        self._oilPrices = GaussianPrices(4.50, 0.0, 5.0)
+        self._oilPrices = GaussianPrices(4.50, 2.0, 5.0)
     
     ## literary setting
     def getLocation(self):

@@ -3,3 +3,4 @@
 == Version 1.1 ==
 
   * Better notification that a user's turn has started
+  * Python 2.4 support?

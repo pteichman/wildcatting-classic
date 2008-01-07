@@ -58,17 +58,17 @@ class ThemeInfo(Command):
         print "Location: %s" % theme.getLocation()
         print "Era: %s" % theme.getEra()
         print
+        prices = theme.getOilPrices()
+        print "Oil price generator: %s" % str(prices)
+
+        print
+
         print "Drilling cost: %s .. %s per %d depth units" \
               % (self._formatPrice(theme, theme.getMinDrillCost()),
                  self._formatPrice(theme, theme.getMaxDrillCost()),
                  theme.getDrillIncrement())
         print "Taxes: %s .. %s" % (self._formatPrice(theme, theme.getMinTax()),
                                    self._formatPrice(theme, theme.getMaxTax()))
-        prices = theme.getOilPrices()
-        print "Oil price generator: %s" % str(prices)
-
-        print
-
         print "Maximum oil output: %d barrels" % theme.getMaxOutput()
         print "At starting price, well profit is %s .. %s" % (self._formatPrice(theme, theme.getMinOutput()), self._formatPrice(theme, theme.getMaxOutput() * theme.getOilPrices().getInitialPrice()))
 

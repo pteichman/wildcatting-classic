@@ -40,7 +40,7 @@ class PeakedFiller:
                 fudge = self.getFudge()
                 d = (minc + random.random() * fudge) / math.sqrt(model.getWidth() * model.getHeight())
                 e = max(0.001, d)
-                f = 1 - max(min((math.log(e) + 2.5) / 2.5, 1.0), 0)
+                f = 1 - max(min((math.log(e) + 3) / 3, 1.0), 0)
                 peakHeight = maxValue - minValue
                 value = int(f * peakHeight - closest * random.random() * lesserPeakFactor)
                 value = max(minValue, value)
@@ -157,10 +157,10 @@ class SimpleWellTheory:
         weeksOperational = currentWeek - well.getWeek()
 
         # simple 3 week peak with noise
-        if weeksOperational <= 3:
-            offset = (0.5 + random.random()) * math.pow(weeksOperational + 3, 2)            
+        if weeksOperational <= 2:
+            offset = (0.5 + random.random()) * math.pow(weeksOperational + 3, 2)
         else:
-            offset = - (0.5 + random.random()) * math.pow(weeksOperational - 3, 2)            
+            offset = - (1 + random.random()) * math.pow(weeksOperational - 3, 2)            
 
         output = well.getOutput() + offset
         if output < 0:

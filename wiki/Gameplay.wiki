@@ -24,18 +24,28 @@ game begins!
 
 ==Oil Field View==
 
+http://wildcatting.googlecode.com/files/empty-oilfield-view.png
+
 The oil field view shows the sites that have been surveyed.  Navigate
 to a site using the arrow keys and press space to survey, then decide
 if you want to drill.  You cannot survey a site that has already been
 surveyed.
 
+==Surveyor's Report==
+
+http://wildcatting.googlecode.com/files/surveyors-report.png
+
 ==Drilling View==
+
+http://wildcatting.googlecode.com/files/drilling-view.png
 
 The drilling view shows you how far down you have drilled and how much
 money that operation has cost so far.  You can stop drilling at any
 time by hitting "q", or hit the space bar to continue drilling.
 
 ==Weekly Report==
+
+http://wildcatting.googlecode.com/files/weekly-report-view.png
 
 On the weekly report, you'll see all your wells.  You can sell a well
 at any time by navigating to it and hitting the space bar.  Navigate

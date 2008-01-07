@@ -1,0 +1,5 @@
+= Future features =
+
+== Version 1.1 ==
+
+  * Better notification that a user's turn has started

@@ -6,3 +6,4 @@
   * Python 2.4 support?
   * Star the winning player
   * Make final weekly summary say Final Report or similar
+  * Remove references to weeks after the game is over

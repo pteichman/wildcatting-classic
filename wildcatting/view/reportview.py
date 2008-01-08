@@ -27,16 +27,25 @@ class WeeklySummaryView(View):
         self.addCentered(self._win, 1, "... WILDCATTING ...")
         self.addCentered(self._win, 3, "WEEK %03s" % self._report.getWeek())
         row = 6
-        for rowDict in self._report.getReportRows():
+        reportRows = self._report.getReportRows()
+        for rowDict in reportRows:
             username = rowDict["username"]
             profitAndLoss = rowDict["profitAndLoss"]
+            leader = rowDict["leader"]
+            if leader:
+                self.addLeft(self._win, row, "*", pad=10)
             self.addLeft(self._win, row, username, pad=12)
 
             # could be profit, but probably a loss
             loss = "$ %8d" % profitAndLoss
 
             self.addRight(self._win, row, loss, pad=12)
-            row += 2
+            
+            # support up to 9 or more players
+            if len(reportRows) > 5:
+                row += 1
+            else:
+                row += 2
         self._win.refresh()
 
     def input(self):

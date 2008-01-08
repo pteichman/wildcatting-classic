@@ -246,6 +246,8 @@ class Client:
                 if updated:
                     wildcattingView.display()
 
+        self._stdscr.refresh()
+
         playerField = OilField.deserialize(self._server.game.getPlayerField(self._handle))
         self._wildcatting.setPlayerField(playerField)
         

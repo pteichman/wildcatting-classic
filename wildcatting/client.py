@@ -146,7 +146,7 @@ class Client:
 
         self._wildcatting.updatePlayerField(site)
         
-        if site.getWell().getOutput() is None:
+        if site.getWell().getOutput() is None and not "stop" in actions:
             drillView.setMessage("DRY HOLE!")
             drillView.display()
             time.sleep(3)

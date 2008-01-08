@@ -58,7 +58,7 @@ class ThemeInfo(Command):
         print "Location: %s" % theme.getLocation()
         print "Era: %s" % theme.getEra()
         print
-        prices = theme.newOilPrices()
+        prices = theme.getOilPrices()
         print "Oil price generator: %s" % str(prices)
 
         print

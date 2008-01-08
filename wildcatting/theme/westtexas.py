@@ -99,7 +99,7 @@ class WestTexas(Theme):
         return 1
     def getMaxOutput(self):
         return 250
-    def newOilPrices(self):
+    def getOilPrices(self):
        return GaussianPrices(4.50, 2.0, 5.0)
 
     ## oil probability distribution

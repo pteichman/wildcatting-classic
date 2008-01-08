@@ -1,0 +1,8 @@
+Stats to track, with cash bonuses.
+
+  * Most dry holes
+  * Longest string of dry holes
+  * Highest producing well
+  * Longest producing well
+  * Shooting the Moon (all dry holes, negates score at end of game)
+  * Barrels pumped

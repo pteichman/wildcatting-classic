@@ -17,15 +17,18 @@ class WeeklySummaryView(View):
         (h,w) = self._stdscr.getmaxyx()
         self._win = self._stdscr.derwin(16, 48, (h-16)/2, (w-48)/2)
 
-    def display(self):
+    def display(self, gameFinished=False):
         self._stdscr.clear()
         self._stdscr.refresh()
 
         fg, bg = self.getGreenFGBG()
         self.setFGBG(self._win, fg, bg)
-        
+
         self.addCentered(self._win, 1, "... WILDCATTING ...")
-        self.addCentered(self._win, 3, "WEEK %03s" % self._report.getWeek())
+        if not gameFinished:
+            self.addCentered(self._win, 3, "WEEK %03s" % self._report.getWeek())
+        else:
+            self.addCentered(self._win, 3, "FINAL REPORT")
         row = 6
         reportRows = self._report.getReportRows()
         for rowDict in reportRows:

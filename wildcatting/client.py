@@ -88,7 +88,7 @@ class Client:
         updateDict = self._server.game.endTurn(self._handle)
         updated, weekUpdated = self._wildcatting.update(updateDict)
 
-        if weekUpdated:
+        if weekUpdated and not self._wildcatting.isGameFinished():
             self._runWeeklySummary()
 
         ## get weekly updates to all of our wells, perhaps these should just be in the
@@ -180,7 +180,7 @@ class Client:
     def _runWeeklySummary(self):
         report = WeeklySummary.deserialize(self._server.game.getWeeklySummary(self._handle))
         weeklySummaryView = WeeklySummaryView(self._stdscr, report)
-        weeklySummaryView.display()
+        weeklySummaryView.display(self._wildcatting.isGameFinished())
         
         actions = {}
         while not "done" in actions:
@@ -241,7 +241,7 @@ class Client:
             elif "checkForUpdates" in actions and not self._isMyTurn():
                 updateDict = self._server.game.getUpdateDict(self._handle)
                 updated, weekUpdated = self._wildcatting.update(updateDict)
-                if weekUpdated:
+                if weekUpdated and not self._wildcatting.isGameFinished():
                     self._runWeeklySummary()                    
                 if updated:
                     wildcattingView.display()

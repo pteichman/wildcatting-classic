@@ -6,3 +6,5 @@ Stats to track, with cash bonuses.
   * Longest producing well
   * Shooting the Moon (all dry holes, negates score at end of game)
   * Barrels pumped
+
+Riskiest successful drill

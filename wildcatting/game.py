@@ -140,12 +140,14 @@ class TaxFiller:
 class Game:
     log = logging.getLogger("Wildcatting")
 
-    def __init__(self, width, height, turnCount=13, themeName=None):
+    def __init__(self, width, height, turnCount=13, theme=None):
         assert isinstance(width, int)
         assert isinstance(height, int)
         assert isinstance(turnCount, int)
 
-        theme = DefaultTheme()
+        if theme is None:
+            theme = DefaultTheme()
+
         assert isinstance(theme, Theme)
 
         self._turnCount = turnCount
@@ -156,7 +158,7 @@ class Game:
         self._turn = None
         self._isStarted = False
 
-        self._prices = theme.getOilPrices()
+        self._prices = theme.newOilPrices()
         self._updatePrice(self._prices.next())
         
         self._oilField = wildcatting.model.OilField(width, height)

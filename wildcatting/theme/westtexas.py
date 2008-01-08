@@ -69,8 +69,7 @@ class WestTexas(Theme):
         self._loadFacts(_rawFacts)
         self._wellTheory = SimpleWellTheory(self.getMinOutput(),
                                             self.getMaxOutput())
-        self._oilPrices = GaussianPrices(4.50, 2.0, 5.0)
-    
+     
     ## literary setting
     def getLocation(self):
         return "West Texas"
@@ -100,8 +99,8 @@ class WestTexas(Theme):
         return 1
     def getMaxOutput(self):
         return 250
-    def getOilPrices(self):
-        return self._oilPrices
+    def newOilPrices(self):
+       return GaussianPrices(4.50, 2.0, 5.0)
 
     ## oil probability distribution
     def getOilMinDropoff(self):

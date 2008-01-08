@@ -51,8 +51,8 @@ class BaseService:
         return version.VERSION_STRING
 
 class SettingService:
-    def __init__(self):
-        self._setting = DefaultTheme().generateSetting()
+    def __init__(self, theme):
+        self._setting = theme.generateSetting()
 
     def getSetting(self):
         return self._setting.serialize()
@@ -62,9 +62,10 @@ class GameService:
 
     log = logging.getLogger("Wildcatting")
     
-    def __init__(self):
+    def __init__(self, theme):
         self._games = {}
         self._nextGameId = 0
+        self._theme = theme
 
     def _getGame(self, gameId):
         assert isinstance(gameId, str)
@@ -128,7 +129,7 @@ class GameService:
         gameId = str(self._nextGameId)
         self._nextGameId = self._nextGameId + 1
 
-        self._games[gameId] = Game(width, height, turnCount, None)
+        self._games[gameId] = Game(width, height, turnCount, self._theme)
         return gameId
 
     def join(self, gameId, username, symbol):

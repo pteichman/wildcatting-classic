@@ -70,7 +70,7 @@ class Theme:
         raise "UnimplementedAbstractMethod"
     def getMaxOutput(self):
         raise "UnimplementedAbstractMethod"
-    def getOilPrices(self):
+    def newOilPrices(self):
         raise "UnimplementedAbstractMethod"
 
     ## oil probability distribution

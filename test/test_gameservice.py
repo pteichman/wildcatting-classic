@@ -5,10 +5,11 @@ from wildcatting.exceptions import WildcattingException
 from wildcatting.server import GameService
 
 from wildcatting.model import Site
+from wildcatting.theme import DefaultTheme
 
 class TestGameService(unittest.TestCase):
     def testGameStart(self):
-        service = GameService()
+        service = GameService(DefaultTheme())
 
         name1 = "alice"
         well1 = name1[0].upper()
@@ -24,7 +25,7 @@ class TestGameService(unittest.TestCase):
 
     def testShortGame(self):
         # start a game, survey once by each player
-        service = GameService()
+        service = GameService(DefaultTheme())
 
         name1 = "alice"
         well1 = name1[0].upper()

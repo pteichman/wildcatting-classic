@@ -7,9 +7,9 @@ from view import OilFieldCursesView, WildcattingView, SurveyorsReportView, Prega
 from report import WeeklyReport
 from game import Game
 from colors import Colors
+from exceptions import WildcattingException
 
 from wildcatting.model import OilField, Setting, Site, Well, WeeklySummary
-
 
 class Wildcatting:
     def __init__(self):
@@ -194,7 +194,12 @@ class Client:
         
         curses.curs_set(1)
         (h, w) = stdscr.getmaxyx()
-        field_w, field_h = w - (WildcattingView.SIDE_BORDER * 2) - 2, h - (WildcattingView.TOP_BORDER * 2) - 3
+
+        padding_w = WildcattingView.SIDE_BORDER * 2 + 2
+        padding_h = WildcattingView.TOP_BORDER * 2 + 3
+
+        field_w = w - padding_w
+        field_h = h - padding_h
 
         if self._handle is not None:
             # connecting to a game already in progress
@@ -219,6 +224,15 @@ class Client:
 
         updateDict = self._server.game.getUpdateDict(self._handle)
         self._wildcatting.update(updateDict)
+
+        # make sure we can fit
+        if field_h < playerField.getHeight() \
+               or field_w < playerField.getWidth():
+            raise Exception("Console must be at least %dx%d (is %dx%d)"
+                            % (playerField.getWidth() + padding_w,
+                               playerField.getHeight() + padding_h,
+                               w, h))
+            
 
         self._wildcattingView = wildcattingView = WildcattingView(self._stdscr, self._wildcatting, self._setting)
 
@@ -265,9 +279,11 @@ class Client:
         try:
             curses.wrapper(self.wildcatting)
         except KeyboardInterrupt:
-            print "To reconnect, run with --handle %s" % self._handle
             self.log.info("To reconnect, run with --handle %s" % self._handle)
-            raise
-        except:
-            self.log.error("Uncaught exception in client", exc_info=True)
             print "To reconnect, run with --handle %s" % self._handle
+            raise
+        except Exception, e:
+            self.log.error("Uncaught exception in client: %s", e)
+            self.log.debug("Uncaught exception in client: %s", e, exc_info=True)
+            if self._handle is not None:
+                print "To reconnect, run with --handle %s" % self._handle

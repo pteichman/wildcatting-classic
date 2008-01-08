@@ -290,17 +290,18 @@ class PregameReportView(View):
         curses.mousemask(curses.ALL_MOUSE_EVENTS)
 
         try:
-            curses.halfdelay(50)
-            c = self._win.getch()
+            try:
+                curses.halfdelay(50)
+                c = self._win.getch()
 
-            # the docs claim that an exception is thrown if the halfdelay()
-            # timeout is hit, but in practice it seems to return -1 instead
-            if c == -1:
+                # the docs claim that an exception is thrown if the halfdelay()
+                # timeout is hit, but in practice it seems to return -1 instead
+                if c == -1:
+                    return False
+            except KeyboardInterrupt:
+                raise
+            except:
                 return False
-        except KeyboardInterrupt:
-            raise
-        except:
-            return False
         finally:
             curses.cbreak()
 

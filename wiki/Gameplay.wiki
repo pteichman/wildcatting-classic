@@ -50,3 +50,5 @@ http://wildcatting.googlecode.com/files/weekly-report-view.png
 On the weekly report, you'll see all your wells.  You can sell a well
 at any time by navigating to it and hitting the space bar.  Navigate
 to "NEXT PLAYER" and hit space to end your turn.
+
+If you got a dry hole or decide to stop drilling, you'll keep paying taxes on the property until you sell the well!

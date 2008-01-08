@@ -1,13 +1,13 @@
-from wildcatting.theme import Theme
+from wildcatting.theme.theme import Theme
 
-import wildcatting.game
+from wildcatting.welltheory import SimpleWellTheory
 from wildcatting.oilprices import GaussianPrices
 
 
-# we don't want to send raw_facts into our importers' namespaces
+# we don't want to send _rawFacts into our importers' namespaces
 __all__ = ["WestTexas"]
 
-raw_facts = """
+_rawFacts = """
 Anadarko will rule the world as we know it. They don't like partners, they now own the UPR strip, much of which is now looking like the biggest gas basins in the US, and they like to drill... and drill... and drill. Everywhere. East Texas Bossier. Cotton Valley. James Lime. Austin Chalk. Just heard of a new hot play? Anadarko probably started it and owns it.
 Bud Brigham is a geophysicist who believed in technology. He rode high and he fell hard.  He was hammered for exporing, but now he has SIGNIFICANT wells drilling in Matagorda County and Wheeler County.
 Climate scientists are currently neutral as to whether human causes are the the major drivers of Global Warming.
@@ -66,9 +66,9 @@ Texas is more than an area. Texas is an idea and an experience that transcends p
 class WestTexas(Theme):
     def __init__(self):
         Theme.__init__(self)
-        
-        self._wellTheory = wildcatting.game.SimpleWellTheory(
-            self.getMinOutput(), self.getMaxOutput())
+        self._loadFacts(_rawFacts)
+        self._wellTheory = SimpleWellTheory(self.getMinOutput(),
+                                            self.getMaxOutput())
         self._oilPrices = GaussianPrices(4.50, 2.0, 5.0)
     
     ## literary setting
@@ -76,8 +76,6 @@ class WestTexas(Theme):
         return "West Texas"
     def getEra(self):
         return "Turn of The Century"
-    def getRawFacts(self):
-        return raw_facts
 
     ## units
     def getDrillIncrement(self):

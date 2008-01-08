@@ -8,12 +8,11 @@ class Theme:
     log = logging.getLogger("Wildcatting")
 
     def __init__(self):
-        self._processFacts()
+        self._facts = []
 
-    def _processFacts(self):
+    def _loadFacts(self, rawFacts):
         facts = []
-        factLines = self.getRawFacts().split("\n")
-        for line in factLines:
+        for line in rawFacts.split("\n"):
             fact = line.strip()
             if fact == "":
                 continue
@@ -46,8 +45,6 @@ class Theme:
     def getLocation(self):
         raise "UnimplementedAbstractMethod"
     def getEra(self):
-        raise "UnimplementedAbstractMethod"
-    def getRawFacts(self):
         raise "UnimplementedAbstractMethod"
 
     # units

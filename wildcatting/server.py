@@ -132,7 +132,7 @@ class GameService:
         gameId = str(self._nextGameId)
         self._nextGameId = self._nextGameId + 1
 
-        self._games[gameId] = Game(width, height, turnCount, self._theme)
+        self._games[gameId] = Game(width, height, turnCount, None)
         return gameId
 
     def join(self, gameId, username, symbol):

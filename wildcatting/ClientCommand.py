@@ -41,7 +41,7 @@ class ClientCommand(Command):
         if options.no_network:
             from theme import DefaultTheme
             from server import StandaloneServer
-            s = StandaloneServer(DefaultTheme())
+            s = StandaloneServer()
         else:
             s = ServerProxy(url, allow_none=True)
 

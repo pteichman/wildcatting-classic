@@ -51,8 +51,8 @@ class BaseService:
         return version.VERSION_STRING
 
 class SettingService:
-    def __init__(self, theme):
-        self._setting = theme.generateSetting()
+    def __init__(self):
+        self._setting = DefaultTheme().generateSetting()
 
     def getSetting(self):
         return self._setting.serialize()
@@ -62,11 +62,7 @@ class GameService:
 
     log = logging.getLogger("Wildcatting")
     
-    def __init__(self, theme=None):
-        if theme is None:
-            theme = DefaultTheme()
-        
-        self._theme = theme
+    def __init__(self):
         self._games = {}
         self._nextGameId = 0
 
@@ -326,7 +322,7 @@ class GameService:
         return wildcatting.model.WeeklySummary.serialize(game.getWeeklySummary())
 
 class StandaloneServer:
-    def __init__(self, theme):
+    def __init__(self):
         import inspect
 
         base = BaseService()
@@ -335,5 +331,5 @@ class StandaloneServer:
             setattr(self, name, method)
 
         self.admin = AdminService()
-        self.game = GameService(theme)
-        self.setting = SettingService(theme)
+        self.game = GameService()
+        self.setting = SettingService()

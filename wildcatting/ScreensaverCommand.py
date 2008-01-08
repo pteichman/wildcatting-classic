@@ -6,7 +6,6 @@ import curses
 from wildcatting.cmdparse import Command
 from wildcatting.view import OilFieldTextView, OilFieldCursesView, FadeInOilFieldCursesAnimator
 from wildcatting.game import Game
-from wildcatting.theme import DefaultTheme
 from wildcatting.client import Wildcatting
 
 
@@ -30,7 +29,7 @@ class ScreensaverCommand(Command):
 
     def asciiScreensaver(self):
         while True:
-            game = Game(80, 23, DefaultTheme())
+            game = Game(80, 23)
             field = game.getOilField()
             OilFieldTextView(field).ascii()
             time.sleep(.25)
@@ -38,7 +37,7 @@ class ScreensaverCommand(Command):
     def ansiScreensaver(self):
         try:
             while True:
-                game = Game(80, 23, DefaultTheme())
+                game = Game(80, 23)
                 field = game.getOilField()
                 OilFieldTextView(field).ansi()
                 time.sleep(.25)

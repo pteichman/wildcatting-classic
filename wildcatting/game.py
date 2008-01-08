@@ -66,10 +66,8 @@ class PeakedFiller:
 
 
 class OilFiller(PeakedFiller):
-    def __init__(self, theme=None):
-        if theme is None:
-            theme = DefaultTheme()
-
+    def __init__(self, theme):
+        assert isinstance(theme, Theme)
         self._theme = theme
     
     def getValueRange(self):
@@ -100,6 +98,7 @@ class OilFiller(PeakedFiller):
 
 class DrillCostFiller(PeakedFiller):
     def __init__(self, theme):
+        assert isinstance(theme, Theme)
         self._theme = theme
     
     def getValueRange(self):
@@ -125,10 +124,8 @@ class DrillCostFiller(PeakedFiller):
 
 
 class TaxFiller:
-    def __init__(self, theme=None):
-        if theme is None:
-            theme = DefaultTheme()
-
+    def __init__(self, theme):
+        assert isinstance(theme, Theme)
         self._theme = theme
     
     def fill(self, field):
@@ -143,14 +140,12 @@ class TaxFiller:
 class Game:
     log = logging.getLogger("Wildcatting")
 
-    def __init__(self, width, height, turnCount=13, theme=None):
+    def __init__(self, width, height, turnCount=13, themeName=None):
         assert isinstance(width, int)
         assert isinstance(height, int)
         assert isinstance(turnCount, int)
 
-        if theme is None:
-            theme = DefaultTheme()
-
+        theme = DefaultTheme()
         assert isinstance(theme, Theme)
 
         self._turnCount = turnCount

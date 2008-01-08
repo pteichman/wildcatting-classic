@@ -3,13 +3,14 @@ import unittest
 from wildcatting.exceptions import WildcattingException
 from wildcatting.model import OilField, Player
 from wildcatting.game import OilFiller, TaxFiller, Game
+from wildcatting.theme import DefaultTheme
 
 class TestOilFiller(unittest.TestCase):
     def testFreshField(self):
         rows = cols = 10
 
         field = OilField(rows, cols)
-        filler = OilFiller()
+        filler = OilFiller(DefaultTheme())
         filler.fill(field)
 
         for row in xrange(field.getHeight()):
@@ -25,8 +26,8 @@ class TestTaxFiller(unittest.TestCase):
         rows = cols = 10
 
         field = OilField(rows, cols)
-        OilFiller().fill(field)
-        TaxFiller().fill(field)
+        OilFiller(DefaultTheme()).fill(field)
+        TaxFiller(DefaultTheme()).fill(field)
 
         for row in xrange(field.getHeight()):
             for col in xrange(field.getWidth()):

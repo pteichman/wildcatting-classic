@@ -22,15 +22,12 @@ class ServerCommand(Command):
 
         host = options.host
 
-        # this should be a server option
-        theme = wildcatting.theme.DefaultTheme()
-        
         s = wildcatting.server.TieredXMLRPCServer((host, options.port))
 
         s.register_instance(wildcatting.server.BaseService())
         s.register_subinstance("admin", wildcatting.server.AdminService())
-        s.register_subinstance("game", wildcatting.server.GameService(theme))
-        s.register_subinstance("setting", wildcatting.server.SettingService(theme))
+        s.register_subinstance("game", wildcatting.server.GameService())
+        s.register_subinstance("setting", wildcatting.server.SettingService())
         s.register_introspection_functions()
 
         if len(host) == 0:

@@ -298,7 +298,7 @@ class Client:
             print "To reconnect, run with --handle %s" % self._handle
             raise
         except Exception, e:
-            self.log.error("Uncaught exception in client: %s", e)
+            self.log.error(str(e))
             self.log.debug("Uncaught exception in client: %s", e, exc_info=True)
             if self._handle is not None:
                 print "To reconnect, run with --handle %s" % self._handle

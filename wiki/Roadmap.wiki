@@ -1,5 +1,15 @@
 = Future features =
 
+== Version 1.2 ==
+
+1.2 will be a bug fix release, plus a couple of features:
+
+  * The next player can go as soon as you've surveyed a site.
+  * Standalone (hotseat) mode.
+
+And these bugs:
+http://code.google.com/p/wildcatting/issues/list?q=label:Milestone-Release1.2&can=1
+
 == Version 1.1 ==
 
 1.1 will be a bug fix release.

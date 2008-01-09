@@ -264,6 +264,8 @@ class SurveyorsReportView(View):
 
 
 class PregameReportView(View):
+    log = logging.getLogger("Wildcatting")
+
     def __init__(self, stdscr, gameId, isMaster, players):
         View.__init__(self, stdscr)
 
@@ -299,12 +301,13 @@ class PregameReportView(View):
         (h, w) = self._stdscr.getmaxyx()
         (wh, ww) = self._win.getmaxyx()
 
-        curses.mousemask(curses.BUTTON1_CLICKED)
+        # We're getting two clicks here somehow, disabling mouse for now
+        # curses.mousemask(curses.BUTTON1_DOUBLE_CLICKED)
 
         try:
             try:
-                curses.halfdelay(50)
                 c = self._win.getch()
+                curses.halfdelay(50)
 
                 # the docs claim that an exception is thrown if the halfdelay()
                 # timeout is hit, but in practice it seems to return -1 instead
@@ -312,7 +315,8 @@ class PregameReportView(View):
                     return False
             except KeyboardInterrupt:
                 raise
-            except:
+            except Exception, e:
+                self.log.error("got an exception", exc_info=True)
                 return False
         finally:
             curses.cbreak()

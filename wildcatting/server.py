@@ -251,7 +251,7 @@ class GameService:
 
         game.endTurn(player)
         
-        return self.getUpdateDict(handle)
+        return self.getUpdateDict(handle), self.getWellUpdates(handle)
 
     def getPlayersTurn(self, handle):
         game, player = self._readHandle(handle)
@@ -272,6 +272,20 @@ class GameService:
         updateDict["sites"] = [u.serialize() for u in updatedSites]
 
         return updateDict
+
+    def getWellUpdates(self, handle):
+        game, player = self._readHandle(handle)
+
+        wellUpdates = []
+        field = game.getOilField()        
+        for row in xrange(field.getHeight()):
+            for col in xrange(field.getWidth()):
+                well = field.getSite(row, col).getWell()
+                if well is not None and well.getPlayer().getUsername() == player.getUsername():
+                    wellDict = {"row": row, "col": col, "well": well.serialize()}
+                    wellUpdates.append(wellDict)
+
+        return wellUpdates
 
     def _updatePlayerSite(self, playerSite, site):
         playerSite.setDrillCost(site.getDrillCost())

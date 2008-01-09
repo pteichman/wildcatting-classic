@@ -164,21 +164,18 @@ class Client:
         return site
 
     def _endTurn(self):
-        updateDict = self._server.game.endTurn(self._handle)
+        updateDict, wellUpdates = self._server.game.endTurn(self._handle)
+        
         updated, weekUpdated = self._wildcatting.update(updateDict)
+        
+        for wellDict in wellUpdates:
+            row, col = wellDict["row"], wellDict["col"]
+            well = Well.deserialize(wellDict["well"])
+            site = self._wildcatting.getPlayerField().getSite(row, col)
+            site.setWell(well)
 
         if weekUpdated and not self._wildcatting.isGameFinished():
             self._runWeeklySummary()
-
-        ## get weekly updates to all of our wells, perhaps these should just be in the
-        ## dict above
-        playerField = self._wildcatting.getPlayerField()
-        for row in xrange(playerField.getHeight()):
-            for col in xrange(playerField.getWidth()):
-                well = playerField.getSite(row, col).getWell()
-                if well is not None and well.getPlayer().getUsername() == self._username:
-                    site = Site.deserialize(self._server.game.getPlayerSite(self._handle, row, col))
-                    self._wildcatting.updatePlayerField(site)
 
     def _runWeeklyReport(self):
         ## FIXME we want to move WeeklyReport generation to the server side.
@@ -222,10 +219,8 @@ class Client:
 
     def _getAvailableFieldSize(self):
         (h, w) = self._stdscr.getmaxyx()
-
         availableWidth = w - WildcattingView.SIDE_PADDING
         availableHeight = h - WildcattingView.TOP_PADDING
-
         return availableWidth, availableHeight
         
     def wildcatting(self, stdscr):

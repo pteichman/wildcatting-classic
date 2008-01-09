@@ -62,13 +62,13 @@ class Wildcatting:
         updated = len(sites) > 0 or week > self._week or oilPrice != self._oilPrice or playersTurn !=  self._playersTurn or gameFinished
         weekUpdated = week > self._week
 
+        for site in sites:
+            self.updatePlayerField(site)
+
         self._week = week
         self._playersTurn = playersTurn
         self._gameFinished = gameFinished
         self._oilPrice = oilPrice
-
-        for site in sites:
-            self.updatePlayerField(site)
 
         return updated, weekUpdated
 
@@ -247,16 +247,20 @@ class Client:
                                                                   self._setting)
         wildcattingView.display()
 
-        c = None
-        if self._isMyTurn():
-            wildcattingView.indicateTurn()
-            curses.mousemask(curses.BUTTON1_CLICKED)
-            curses.halfdelay(50)
-            c = self._stdscr.getch()
-
+        curses.mousemask(curses.BUTTON1_CLICKED)
+        curses.halfdelay(50)
+        
+        moved = False 
         while not self._wildcatting.isGameFinished():
-            actions = wildcattingView.input(c)
             c = None
+            if self._isMyTurn() and not moved:
+                wildcattingView.indicateTurn()
+                curses.cbreak()
+                c = self._stdscr.getch()
+                moved = True
+            
+            actions = wildcattingView.input(c)
+                
             if "survey" in actions and self._isMyTurn():
                 row, col = actions["survey"]
                 drillAWell = self._survey(row, col)
@@ -264,17 +268,16 @@ class Client:
                     self._drillAWell(row, col)
                 self._runWeeklyReport()
                 self._endTurn()
+                curses.halfdelay(50)
+                moved = False
                 wildcattingView.display()
-            elif "checkForUpdates" in actions and not self._isMyTurn():
+            elif "checkForUpdates" in actions:
                 updated, weekUpdated = self._updateWildcatting()
                 if weekUpdated and not self._wildcatting.isGameFinished():
                     self._runWeeklySummary()                    
                 if updated:
                     wildcattingView.display()
-                    if self._isMyTurn():
-                        wildcattingView.indicateTurn()
-                        c = self._stdscr.getch()
-
+ 
         self._stdscr.refresh()
         self._getNewPlayerField()
         wildcattingView.animateGameEnd()

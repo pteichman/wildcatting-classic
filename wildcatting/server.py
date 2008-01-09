@@ -326,7 +326,6 @@ class GameService:
                 playerSite = playerField.getSite(row, col)
 
                 if site.isSurveyed() or game.isFinished():
-                    self.log.info("Updating player site at (%s, %s) becuase it is surveyed" % (row, col))
                     self._updatePlayerSite(playerSite, site)
 
         return playerField.serialize()

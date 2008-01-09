@@ -157,6 +157,7 @@ class Game:
         self._playerUpdates = {}
         self._turn = None
         self._isStarted = False
+        self._isFinished = False
 
         self._prices = theme.getOilPrices()
         self._updatePrice(self._prices.next())
@@ -222,10 +223,19 @@ class Game:
     def isStarted(self):
         return self._isStarted
 
+    def _finish(self):
+        self._isFinished = True
+
+        players = self._players.values()
+        players.sort(lambda a, b: cmp(a.getProfitAndLoss(), b.getProfitAndLoss()))
+
+        playerStrs = ["%s (%d)" % (p.getUsername(), p.getProfitAndLoss())
+                      for p in players]
+
+        self.log.info("Game is finished.  Scores: %s", ", ".join(playerStrs))
+
     def isFinished(self):
-        if self._turn.getWeek() > self._turnCount:
-            return True
-        return False
+        return self._isFinished
 
     def drill(self, row, col):
         site = self._oilField.getSite(row, col)
@@ -267,6 +277,9 @@ class Game:
 
         self._turn.setPlayer(nextPlayer)
         self._turn.setWeek(week)
+
+        if week > self._turnCount:
+            self._finish()
 
         return week
 

@@ -96,24 +96,29 @@ class WildcattingView(View):
         location = self._setting.getLocation()
         era = self._setting.getEra()
 
-        pricestr = self._setting.getPriceFormat() % self._wildcatting.getOilPrice()
-        
-        self._stdscr.addstr(0, 4, "%s, %s.  Oil is %s." % (location, era, pricestr), curses.A_BOLD)
+        topstr = "%s, %s." % (location, era)
+        if self._wildcatting.isGameFinished():
+            self._stdscr.addstr(0, 4, topstr, curses.A_BOLD)
+        else:            
+            pricestr = self._setting.getPriceFormat() % self._wildcatting.getOilPrice()
+            topstr = topstr + "  Oil is %s" % pricestr
+            self._stdscr.addstr(0, 4, topstr, curses.A_BOLD)
 
-        week = "Week %d" % self._wildcatting.getWeek()
+            week = "Week %d" % self._wildcatting.getWeek()
 
-        newWeek = False
-        if week != self._week:
-            newWeek = True
+            newWeek = False
+            if week != self._week:
+                newWeek = True
 
-        self._week = week
+            self._week = week
 
-        self._stdscr.addstr(0, w - self.SIDE_BORDER - len(week) - 1, week, curses.A_BOLD)
+            self._stdscr.addstr(0, w - self.SIDE_BORDER - len(week) - 1, week, curses.A_BOLD)
 
-        if newWeek:
-            self._fact = random.choice(self._setting.getFacts())
-        wrapped = self._wrap_fact(self._fact, " "*4, w-8)
-        self._stdscr.addstr(h-3, 0, wrapped)
+            if newWeek:
+                self._fact = random.choice(self._setting.getFacts())
+            wrapped = self._wrap_fact(self._fact, " "*4, w-8)
+            self._stdscr.addstr(h-3, 0, wrapped)
+
         self._border_win.box()
 
     def _wrap_fact(self, fact, indent, width):
@@ -145,7 +150,9 @@ class WildcattingView(View):
 
         coordStr = "X=%s   Y=%s" % (str(self._x).rjust(2), str(self._y).rjust(2))
         self.addCentered(self._border_win, border_h - 2, coordStr, blackOnWhite)
-        self.addRight(self._border_win, border_h - 2, "%s's turn" % self._wildcatting.getPlayersTurn(), blackOnWhite)
+
+        if not self._wildcatting.isGameFinished():
+            self.addRight(self._border_win, border_h - 2, "%s's turn" % self._wildcatting.getPlayersTurn(), blackOnWhite)
             
         self._border_win.refresh()
 

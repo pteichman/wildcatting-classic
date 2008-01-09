@@ -306,8 +306,8 @@ class PregameReportView(View):
 
         try:
             try:
-                c = self._win.getch()
                 curses.halfdelay(50)
+                c = self._win.getch()
 
                 # the docs claim that an exception is thrown if the halfdelay()
                 # timeout is hit, but in practice it seems to return -1 instead
@@ -315,8 +315,7 @@ class PregameReportView(View):
                     return False
             except KeyboardInterrupt:
                 raise
-            except Exception, e:
-                self.log.error("got an exception", exc_info=True)
+            except Exception:
                 return False
         finally:
             curses.cbreak()

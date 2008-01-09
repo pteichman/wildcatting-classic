@@ -3,6 +3,8 @@ import socket
 import sys
 import os
 
+import version
+
 from client import Client
 from cmdparse import Command
 from util import startLogger
@@ -46,11 +48,16 @@ class ClientCommand(Command):
             s = ServerProxy(url, allow_none=True)
 
         try:
-            version = s.version()
+            server_version = s.version()
         except socket.error, e:
             print "Socket error contacting %s" % url
             print e.args[1]
             sys.exit(0)
+
+        if server_version != version.VERSION_STRING:
+            import textwrap
+            print textwrap.fill("ERROR: Server at %s requires a %s client" % (url, server_version), os.getenv("COLUMNS", 80) - 5)
+            sys.exit(1)
 
         c = Client(options.game, options.handle, options.username, options.well)
 

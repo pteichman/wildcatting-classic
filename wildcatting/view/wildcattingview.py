@@ -132,8 +132,8 @@ class WildcattingView(View):
         colors = list(self._colorChooser.getColors())
         colors.reverse()
         keyStr = " " * (border_w - 2)
-        bkgd = Colors.get(curses.COLOR_BLACK, curses.COLOR_WHITE)
-        self._border_win.addstr(border_h - 2, 1, keyStr, bkgd)
+        blackOnWhite = Colors.get(curses.COLOR_BLACK, curses.COLOR_WHITE)
+        self._border_win.addstr(border_h - 2, 1, keyStr, blackOnWhite)
         for i in xrange(len(colors)):
             color = colors[i]
             self._border_win.addstr(border_h - 2, 1 + i, " ", color)
@@ -144,9 +144,27 @@ class WildcattingView(View):
             self._border_win.addstr(border_h - 2, col, "." * (border_w - col - 1), color)
 
         coordStr = "X=%s   Y=%s" % (str(self._x).rjust(2), str(self._y).rjust(2))
-        self.addCentered(self._border_win, border_h - 2, coordStr, bkgd)
-        self.addRight(self._border_win, border_h - 2, "%s's turn" % self._wildcatting.getPlayersTurn(), bkgd)
+        self.addCentered(self._border_win, border_h - 2, coordStr, blackOnWhite)
+        self.addRight(self._border_win, border_h - 2, "%s's turn" % self._wildcatting.getPlayersTurn(), blackOnWhite)
+            
         self._border_win.refresh()
+
+    def indicateTurn(self):
+        border_h, border_w = self._border_win.getmaxyx()
+
+        blackOnGreen = Colors.get(curses.COLOR_BLACK, curses.COLOR_GREEN)
+        if self._mac:
+            self.addCentered(self._border_win, border_h - 2, "." * border_w - 2,
+                         Colors.get(curses.COLOR_GREEN, curses.COLOR_GREEN))
+            self.addCentered(self._border_win, "GO %s!" % self._wildcatting.getPlayersTurn().upper(),
+                             blackOnGreen)
+        else:
+            bar = ("GO %s!" % self._wildcatting.getPlayersTurn().upper()).center(border_w-2)
+            self.addCentered(self._border_win, border_h - 2, bar, blackOnGreen)
+        self._field_win.refresh()
+        self._border_win.refresh()
+        self._stdscr.move(self._y + 2, self._x + 4)
+        self._field_win.refresh()
 
     def display(self):
         curses.curs_set(1)
@@ -154,11 +172,8 @@ class WildcattingView(View):
         self._drawBorder()
         self._oilView.display()
 
-    def input(self):
+    def input(self, c=None):
         actions = {}
-        
-        curses.mousemask(curses.ALL_MOUSE_EVENTS)
-        curses.halfdelay(50)
 
         self._stdscr.move(self._y + 2, self._x + 4)
         self._field_win.refresh()
@@ -166,8 +181,12 @@ class WildcattingView(View):
             
         dx = 0 ; dy = 0
         survey = False
-            
-        c = self._stdscr.getch()
+
+        curses.mousemask(curses.ALL_MOUSE_EVENTS)
+        curses.halfdelay(50)
+
+        if c is None:
+            c = self._stdscr.getch()
         if c == -1:
             actions["checkForUpdates"] = True
         elif c == curses.KEY_UP: dy = -1

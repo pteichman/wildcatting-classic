@@ -247,8 +247,16 @@ class Client:
                                                                   self._setting)
         wildcattingView.display()
 
+        c = None
+        if self._isMyTurn():
+            wildcattingView.indicateTurn()
+            curses.mousemask(curses.ALL_MOUSE_EVENTS)
+            curses.halfdelay(50)
+            c = self._stdscr.getch()
+
         while not self._wildcatting.isGameFinished():
-            actions = wildcattingView.input()
+            actions = wildcattingView.input(c)
+            c = None
             if "survey" in actions and self._isMyTurn():
                 row, col = actions["survey"]
                 drillAWell = self._survey(row, col)
@@ -263,6 +271,9 @@ class Client:
                     self._runWeeklySummary()                    
                 if updated:
                     wildcattingView.display()
+                    if self._isMyTurn():
+                        wildcattingView.indicateTurn()
+                        c = self._stdscr.getch()
 
         self._stdscr.refresh()
         self._getNewPlayerField()

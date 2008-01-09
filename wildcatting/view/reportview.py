@@ -222,7 +222,7 @@ class SurveyorsReportView(View):
         self._win.keypad(1)
         self._win.move(15, 30)
         self._win.refresh()
-        curses.mousemask(curses.ALL_MOUSE_EVENTS)
+        curses.mousemask(curses.BUTTON1_CLICKED)
         curses.curs_set(1)
         while not done:
             c = self._win.getch()
@@ -299,7 +299,7 @@ class PregameReportView(View):
         (h, w) = self._stdscr.getmaxyx()
         (wh, ww) = self._win.getmaxyx()
 
-        curses.mousemask(curses.ALL_MOUSE_EVENTS)
+        curses.mousemask(curses.BUTTON1_CLICKED)
 
         try:
             try:

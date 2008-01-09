@@ -250,7 +250,7 @@ class Client:
         c = None
         if self._isMyTurn():
             wildcattingView.indicateTurn()
-            curses.mousemask(curses.ALL_MOUSE_EVENTS)
+            curses.mousemask(curses.BUTTON1_CLICKED)
             curses.halfdelay(50)
             c = self._stdscr.getch()
 

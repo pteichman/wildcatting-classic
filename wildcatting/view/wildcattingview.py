@@ -182,7 +182,7 @@ class WildcattingView(View):
         dx = 0 ; dy = 0
         survey = False
 
-        curses.mousemask(curses.ALL_MOUSE_EVENTS)
+        curses.mousemask(curses.BUTTON1_CLICKED)
         curses.halfdelay(50)
 
         if c is None:

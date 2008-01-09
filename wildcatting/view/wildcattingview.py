@@ -63,6 +63,8 @@ class WildcattingView(View):
 
     TOP_BORDER = 2
     SIDE_BORDER = 3
+    TOP_PADDING = TOP_BORDER * 2 + 3
+    SIDE_PADDING = SIDE_BORDER * 2 + 2
     
     def __init__(self, stdscr, wildcatting_, setting):
         View.__init__(self, stdscr)
@@ -147,6 +149,7 @@ class WildcattingView(View):
         self._border_win.refresh()
 
     def display(self):
+        curses.curs_set(1)
         self._stdscr.clear()
         self._drawBorder()
         self._oilView.display()

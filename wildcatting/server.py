@@ -331,6 +331,7 @@ class StandaloneServer:
         for name, method in funcs:
             setattr(self, name, method)
 
+        theme = DefaultTheme()
         self.admin = AdminService()
-        self.game = GameService()
-        self.setting = SettingService()
+        self.game = GameService(theme)
+        self.setting = SettingService(theme)

@@ -84,34 +84,23 @@ class Client:
 
         self._wildcatting = Wildcatting()
 
-    def _endTurn(self):
-        updateDict = self._server.game.endTurn(self._handle)
-        updated, weekUpdated = self._wildcatting.update(updateDict)
-
-        if weekUpdated and not self._wildcatting.isGameFinished():
-            self._runWeeklySummary()
-
-        ## get weekly updates to all of our wells, perhaps these should just be in the
-        ## dict above
-        playerField = self._wildcatting.getPlayerField()
-        for row in xrange(playerField.getHeight()):
-            for col in xrange(playerField.getWidth()):
-                well = playerField.getSite(row, col).getWell()
-                if well is not None and well.getPlayer().getUsername() == self._username:
-                    site = Site.deserialize(self._server.game.getPlayerSite(self._handle, row, col))
-                    self._wildcatting.updatePlayerField(site)
-        
-    def _survey(self, row, col):
-        site = self._wildcatting.getPlayerField().getSite(row, col)
-        surveyed = site.isSurveyed()
-        if not surveyed:
-            site = Site.deserialize(self._server.game.survey(self._handle, row, col))
-            self._wildcatting.updatePlayerField(site)
-
-        report = SurveyorsReportView(self._stdscr, site, surveyed)
-        report.display()
-        yes = report.input()
-        return yes
+    def _connectToGame(self):
+        if self._handle is not None:
+            # connecting to a game already in progress
+            self._gameId = self._server.game.getGameId(self._handle)
+            self.log.info("Reconnected to game handle: %s", self._handle)
+        elif self._gameId is not None:
+            # joining a new game
+            self._handle = self._server.game.join(self._gameId, self._username, self._symbol)
+            self.log.info("Joined game: %s", self._gameId)
+            self.log.info("To reconnect, run with --handle %s" % self._handle)
+        else:
+            # creating a new game
+            w, h = self._getAvailableFieldSize()
+            self._gameId = self._server.game.new(w, h, 13)
+            self._handle = self._server.game.join(self._gameId, self._username, self._symbol)
+            self.log.info("Created a new game: ID is %s", self._gameId)
+            self.log.info("To reconnect, run with --handle %s" % self._handle)
 
     def _runPreGame(self, gameId, username):
         while not self._server.game.isStarted(self._handle):
@@ -128,6 +117,27 @@ class Client:
             if start and isMaster:
                 self._server.game.start(self._handle)
 
+    def _getNewPlayerField(self):
+        playerField = OilField.deserialize(self._server.game.getPlayerField(self._handle))
+        self._wildcatting.setPlayerField(playerField)
+
+    def _survey(self, row, col):
+        site = self._wildcatting.getPlayerField().getSite(row, col)
+        surveyed = site.isSurveyed()
+        if not surveyed:
+            site = Site.deserialize(self._server.game.survey(self._handle, row, col))
+            self._wildcatting.updatePlayerField(site)
+
+        report = SurveyorsReportView(self._stdscr, site, surveyed)
+        report.display()
+        return report.input()
+
+    def _drillAWell(self, row, col):
+        site = Site.deserialize(self._server.game.erect(self._handle, row, col))
+        self._wildcatting.updatePlayerField(site)
+        if site.getWell().getOutput() is None:
+            self._runDrill(row, col)
+        
     def _runDrill(self, row, col):
         actions = {}
         site = self._wildcatting.getPlayerField().getSite(row, col)
@@ -152,6 +162,23 @@ class Client:
             time.sleep(3)
 
         return site
+
+    def _endTurn(self):
+        updateDict = self._server.game.endTurn(self._handle)
+        updated, weekUpdated = self._wildcatting.update(updateDict)
+
+        if weekUpdated and not self._wildcatting.isGameFinished():
+            self._runWeeklySummary()
+
+        ## get weekly updates to all of our wells, perhaps these should just be in the
+        ## dict above
+        playerField = self._wildcatting.getPlayerField()
+        for row in xrange(playerField.getHeight()):
+            for col in xrange(playerField.getWidth()):
+                well = playerField.getSite(row, col).getWell()
+                if well is not None and well.getPlayer().getUsername() == self._username:
+                    site = Site.deserialize(self._server.game.getPlayerSite(self._handle, row, col))
+                    self._wildcatting.updatePlayerField(site)
 
     def _runWeeklyReport(self):
         ## FIXME we want to move WeeklyReport generation to the server side.
@@ -186,56 +213,43 @@ class Client:
         while not "done" in actions:
             actions = weeklySummaryView.input()
 
+    def _updateWildcatting(self):
+        updateDict = self._server.game.getUpdateDict(self._handle)
+        return self._wildcatting.update(updateDict)
+
     def _isMyTurn(self):
         return self._wildcatting.getPlayersTurn() == self._username
+
+    def _getAvailableFieldSize(self):
+        (h, w) = self._stdscr.getmaxyx()
+
+        availableWidth = w - WildcattingView.SIDE_PADDING
+        availableHeight = h - WildcattingView.TOP_PADDING
+
+        return availableWidth, availableHeight
         
     def wildcatting(self, stdscr):
         self._stdscr = stdscr
-        
-        curses.curs_set(1)
-        (h, w) = stdscr.getmaxyx()
 
-        padding_w = WildcattingView.SIDE_BORDER * 2 + 2
-        padding_h = WildcattingView.TOP_BORDER * 2 + 3
-
-        field_w = w - padding_w
-        field_h = h - padding_h
-
-        if self._handle is not None:
-            # connecting to a game already in progress
-            self._gameId = self._server.game.getGameId(self._handle)
-            self.log.info("Reconnected to game handle: %s", self._handle)
-        elif self._gameId is not None:
-            # joining a new game
-            self._handle = self._server.game.join(self._gameId, self._username, self._symbol)
-            self.log.info("Joined game: %s", self._gameId)
-            self.log.info("To reconnect, run with --handle %s" % self._handle)
-        else:
-            # creating a new game
-            self._gameId = self._server.game.new(field_w, field_h, 13)
-            self._handle = self._server.game.join(self._gameId, self._username, self._symbol)
-            self.log.info("Created a new game: ID is %s", self._gameId)
-            self.log.info("To reconnect, run with --handle %s" % self._handle)
-
+        self._connectToGame()
         self._runPreGame(self._gameId, self._username)
 
-        playerField = OilField.deserialize(self._server.game.getPlayerField(self._handle))
-        self._wildcatting.setPlayerField(playerField)
-
-        updateDict = self._server.game.getUpdateDict(self._handle)
-        self._wildcatting.update(updateDict)
-
+        self._getNewPlayerField()
+        self._updateWildcatting()
+        
         # make sure we can fit
-        if field_h < playerField.getHeight() \
-               or field_w < playerField.getWidth():
+        availableWidth, availableHeight = self._getAvailableFieldSize()
+        if availableHeight < self._wildcatting.getPlayerField().getHeight() \
+               or availableWidth < self._wildcatting.getPlayerField().getWidth():
+            w, h = self._stdscr.getmaxyx()
             raise Exception("Console must be at least %dx%d (is %dx%d)"
-                            % (playerField.getWidth() + padding_w,
-                               playerField.getHeight() + padding_h,
+                            % (playerField.getWidth() + WildcattingView.SIDE_PADDING,
+                               playerField.getHeight() + WildcattingView.TOP_PADDING,
                                w, h))
             
-
-        self._wildcattingView = wildcattingView = WildcattingView(self._stdscr, self._wildcatting, self._setting)
-
+        self._wildcattingView = wildcattingView = WildcattingView(self._stdscr,
+                                                                  self._wildcatting,
+                                                                  self._setting)
         wildcattingView.display()
 
         while not self._wildcatting.isGameFinished():
@@ -244,27 +258,19 @@ class Client:
                 row, col = actions["survey"]
                 drillAWell = self._survey(row, col)
                 if drillAWell:
-                    site = Site.deserialize(self._server.game.erect(self._handle, row, col))
-                    self._wildcatting.updatePlayerField(site)
-                    if site.getWell().getOutput() is None:
-                        self._runDrill(row, col)
+                    self._drillAWell(row, col)
                 self._runWeeklyReport()
                 self._endTurn()
                 wildcattingView.display()
-                self._wildcatting.setGameFinished(self._server.game.isFinished(self._handle))
             elif "checkForUpdates" in actions and not self._isMyTurn():
-                updateDict = self._server.game.getUpdateDict(self._handle)
-                updated, weekUpdated = self._wildcatting.update(updateDict)
+                updated, weekUpdated = self._updateWildcatting()
                 if weekUpdated and not self._wildcatting.isGameFinished():
                     self._runWeeklySummary()                    
                 if updated:
                     wildcattingView.display()
 
         self._stdscr.refresh()
-
-        playerField = OilField.deserialize(self._server.game.getPlayerField(self._handle))
-        self._wildcatting.setPlayerField(playerField)
-        
+        self._getNewPlayerField()
         wildcattingView.animateGameEnd()
 
         while self._stdscr.getch() == -1:

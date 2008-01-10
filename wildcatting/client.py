@@ -282,8 +282,7 @@ class Client:
         self._getNewPlayerField()
         wildcattingView.animateGameEnd()
 
-        while self._stdscr.getch() == -1:
-            pass
+        self._stdscr.getch()
 
         self._runWeeklySummary()
 

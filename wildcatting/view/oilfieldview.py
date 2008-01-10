@@ -164,6 +164,7 @@ class OilFieldCursesView(View):
 
                     self.putch(self._win, row, col, ord(symbol), color)
 
+        self._eatAllKeyEvents(self._win)
         self._win.refresh()
 
     def animateGameEnd(self):

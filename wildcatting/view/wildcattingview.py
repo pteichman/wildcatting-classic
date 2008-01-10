@@ -27,6 +27,7 @@ class DrillView(View):
 
     def display(self):
         self._stdscr.clear()
+        self._eatAllKeyEvents(self._stdscr)
 
         drillDepth = self._site.getWell().getDrillDepth() * self._setting.getDrillIncrement()
         drillCost = self._site.getDrillCost()
@@ -177,6 +178,7 @@ class WildcattingView(View):
         curses.curs_set(1)
         self._stdscr.clear()
         self._drawBorder()
+        self._eatAllKeyEvents(self._stdscr)
         self._oilView.display()
 
     def input(self, c=None):

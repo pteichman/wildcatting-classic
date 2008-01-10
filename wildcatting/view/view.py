@@ -13,6 +13,13 @@ class View:
         # for mac terminal workarounds - lazy mac check
         self._mac = os.path.exists("/mach_kernel")
 
+    def _eatAllKeyEvents(self, win):
+        curses.cbreak()
+        win.nodelay(1)
+        while win.getch() != -1:
+            pass
+        win.nodelay(0)
+
     def getGreenFGBG(self):
         if self._mac:
             bkgd = Colors.get(curses.COLOR_GREEN, curses.COLOR_GREEN)

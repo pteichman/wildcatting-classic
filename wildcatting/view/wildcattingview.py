@@ -161,9 +161,9 @@ class WildcattingView(View):
 
         blackOnGreen = Colors.get(curses.COLOR_BLACK, curses.COLOR_GREEN)
         if self._mac:
-            self.addCentered(self._border_win, border_h - 2, "." * border_w - 2,
-                         Colors.get(curses.COLOR_GREEN, curses.COLOR_GREEN))
-            self.addCentered(self._border_win, "GO %s!" % self._wildcatting.getPlayersTurn().upper(),
+            self.addCentered(self._border_win, border_h - 2, "." * (border_w - 2),
+                             Colors.get(curses.COLOR_GREEN, curses.COLOR_GREEN))
+            self.addCentered(self._border_win, border_h - 2, "GO %s!" % self._wildcatting.getPlayersTurn().upper(),
                              blackOnGreen)
         else:
             bar = ("GO %s!" % self._wildcatting.getPlayersTurn().upper()).center(border_w-2)

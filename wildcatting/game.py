@@ -289,13 +289,10 @@ class Game:
         return report
 
     def markSiteUpdated(self, player, site):
-        playerUpdates = dict([(p.getUsername(), []) for p in self._playerOrder])
-        for p in self._players.values():
-            playerUpdates[p.getUsername()].append(site)
-
-        username = player.getUsername()
-        playerUpdates[username] = self._playerUpdates[username]
-        self._playerUpdates = playerUpdates
+        for updatePlayer in self._playerUpdates:
+            if updatePlayer != player.getUsername():
+                updateSites = self._playerUpdates[updatePlayer]
+                updateSites.append(site)
 
     def getUpdatedSites(self, player):
         username = player.getUsername()

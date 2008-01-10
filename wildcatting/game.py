@@ -227,7 +227,7 @@ class Game:
         self._isFinished = True
 
         players = self._players.values()
-        players.sort(lambda a, b: cmp(a.getProfitAndLoss(), b.getProfitAndLoss()))
+        players.sort(lambda a, b: cmp(b.getProfitAndLoss(), a.getProfitAndLoss()))
 
         playerStrs = ["%s (%d)" % (p.getUsername(), p.getProfitAndLoss())
                       for p in players]

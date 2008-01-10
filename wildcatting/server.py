@@ -225,7 +225,10 @@ class GameService:
         drilledSite = turn.getDrilledSite()
         if drilledSite and not (drilledSite.getRow() == row and drilledSite.getCol() == col):
             raise WildcattingException("Already drilled somewhere else this turn")
-        return game.drill(row, col)
+
+        game.drill(row, col)
+        well = game.getOilField().getSite(row,col).getWell()
+        return well.serialize()
 
     def sell(self, handle, row, col):
         game, player = self._readHandle(handle)

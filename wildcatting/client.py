@@ -146,15 +146,12 @@ class Client:
             drillView.display()
             actions = drillView.input()
             if "drill" in actions:
-                row, col = site.getRow(), site.getCol()
-                self._server.game.drill(self._handle, row, col)
-                site = Site.deserialize(self._server.game.getPlayerSite(self._handle, row, col))
-                drillView.updateSite(site)
+                wellUpdate = self._server.game.drill(self._handle, row, col)
+                well = Well.deserialize(wellUpdate)
+                site.setWell(well)
                 drillView.display()
             if "stop" in actions:
                 break
-
-        self._wildcatting.updatePlayerField(site)
         
         if site.getWell().getOutput() is None and not "stop" in actions:
             drillView.setMessage("DRY HOLE!")

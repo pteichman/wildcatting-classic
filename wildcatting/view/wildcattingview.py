@@ -19,9 +19,6 @@ class DrillView(View):
         self._setting = setting
         self._msg = None
 
-    def updateSite(self, site):
-        self._site = site
-
     def setMessage(self, msg):
         self._msg = msg
 

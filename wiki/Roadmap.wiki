@@ -2,10 +2,10 @@
 
 == ParaffinMilestone ==
 
-The ParaffinMilestone is currently targeted for a _January 14_ release, in time for Baconfest.  It will be the first release with simultaneous play, hotseat mode, and oil depth contours.  Oil prices will follow trends across games on the same server.
+ParaffinMilestone is currently targeted for a _January 14_ release, in time for Baconfest.  It will be the first release with simultaneous play, hotseat mode, and oil depth contours.  Oil prices will follow trends across games on the same server.
 
 http://code.google.com/p/wildcatting/issues/list?q=label:Milestone-Paraffin&can=1
 
 == FuelOilMilestone ==
 
-The FuelOilMilestone will introduce a new server infrastructure, likely using TurboGears.  It will have an HTML interface with post-game statistics and lifetime stats per player.
+FuelOilMilestone will introduce a new server infrastructure, likely using TurboGears.  It will have an HTML interface with post-game statistics and lifetime stats per player.

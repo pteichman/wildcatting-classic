@@ -30,6 +30,8 @@ class Theme:
         setting.setEra(self.getEra())
         setting.setPriceFormat(self.getPriceFormat())
         setting.setFacts(self.getFacts())
+        setting.setMinDrillCost(self.getMinDrillCost())
+        setting.setMaxDrillCost(self.getMaxDrillCost())
         setting.setDrillIncrement(self.getDrillIncrement())
         return setting
 

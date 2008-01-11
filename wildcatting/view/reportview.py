@@ -74,7 +74,7 @@ class WeeklyReportView(View):
 
         (h,w) = self._stdscr.getmaxyx()
         self._win = self._stdscr.derwin(16, 48, (h-16)/2, (w-48)/2)
-        self._colorChooser = wildcatting.view.ColorChooser()
+        self._colorChooser = wildcatting.view.ProbabilityColorChooser()
 
         # start cursor on nextPlayer prompt
         self._cursorTurn = None

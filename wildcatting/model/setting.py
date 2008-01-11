@@ -25,6 +25,18 @@ class Setting(Serializable):
         
         self._facts = facts
 
+    def getMinDrillCost(self):
+        return self._minDrillCost
+
+    def setMinDrillCost(self, minDrillCost):
+        self._minDrillCost = minDrillCost
+
+    def getMaxDrillCost(self):
+        return self._maxDrillCost
+
+    def setMaxDrillCost(self, maxDrillCost):
+        self._maxDrillCost = maxDrillCost
+
     def getDrillIncrement(self):
         return self._increment
 

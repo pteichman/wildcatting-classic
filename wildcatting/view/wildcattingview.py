@@ -80,7 +80,11 @@ class WildcattingView(View):
         self._field_win = stdscr.derwin(rows, cols, 2, 4)
         bkgd = Colors.get(curses.COLOR_WHITE, curses.COLOR_BLACK)
         self._field_win.bkgdset(" ", bkgd)
-        self._oilView = oilView = wildcatting.view.OilFieldCursesView(self._field_win, wildcatting_)
+        self._oilView = wildcatting.view.OilFieldProbabilityView(self._field_win, wildcatting_)
+        self._drillCostView = wildcatting.view.OilFieldDrillCostView(self._field_win, wildcatting_,
+                                                                         setting.getMinDrillCost(),
+                                                                         setting.getMaxDrillCost())
+        self._currentView = self._oilView
 
         self._week = None
         self._fact = None
@@ -146,6 +150,8 @@ class WildcattingView(View):
             color = Colors.get(curses.COLOR_WHITE, curses.COLOR_WHITE)
             self._border_win.addstr(border_h - 2, col, "." * (border_w - col - 1), color)
 
+        self.addLeft(self._border_win, border_h - 2, self._currentView.getKeyLabel(), blackOnWhite, pad=len(colors)+1)
+
         coordStr = "X=%s   Y=%s" % (str(self._x).rjust(2), str(self._y).rjust(2))
         self.addCentered(self._border_win, border_h - 2, coordStr, blackOnWhite)
 
@@ -176,7 +182,7 @@ class WildcattingView(View):
         self._stdscr.clear()
         self._drawBorder()
         self._eatAllKeyEvents(self._stdscr)
-        self._oilView.display()
+        self._currentView.display()
 
     def input(self, c=None):
         actions = {}
@@ -206,8 +212,12 @@ class WildcattingView(View):
             survey = True
         elif c == ord(' ') or c == ord('\n'):
             survey = True
-        elif c == ord('w'):
-            actions["weeklyReport"] = True
+        elif c == ord('\t'):
+            if self._currentView == self._oilView:
+                self._currentView = self._drillCostView
+            else:
+                self._currentView = self._oilView
+            self._currentView.display()
 
         if dx != 0 or dy != 0:
             if (self._x + dx) > self._fw - 1 or (self._y + dy) > self._fh - 1 or \
@@ -224,5 +234,5 @@ class WildcattingView(View):
     def animateGameEnd(self):
         curses.curs_set(0)
         self._drawKeyBar()
-        self._oilView.animateGameEnd()
+        self._currentView.animateGameEnd()
         

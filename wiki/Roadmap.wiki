@@ -1,13 +1,22 @@
 = Future features =
 
-== Version 1.2 ==
+== Milestones ==
+
+=== Paraffin ===
+
+The Paraffin milestone is currently targeted for a _January 14_ release, in time for Baconfest.  It will be the first release with simultaneous play, hotseat mode, and oil depth contours.
+
+http://code.google.com/p/wildcatting/issues/list?q=label:Milestone-Paraffin&can=1
+
+
+=== Version 1.2 ===
 
 1.2 will be a bug fix release.
 
 These bugs:
 http://code.google.com/p/wildcatting/issues/list?q=label:Milestone-Release1.2&can=1
 
-== Version 1.1 ==
+=== Version 1.1 ===
 
 1.1 will be a bug fix release.
 

@@ -52,12 +52,14 @@ class Site(Serializable):
         self._col = col
 
         self._prob = 0
-        self._oilDepth = None
         self._well = None
         self._drillCost = 0
         self._tax = 0
-
         self._surveyed = False
+
+        ## don't serialize
+        self.__reservoir = None
+        self.__initialDepthIndex = None
 
     def getCol(self):
         return self._col
@@ -75,13 +77,6 @@ class Site(Serializable):
     def setProbability(self, prob):
         assert 0 <= prob <= 100
         self._prob = prob
-
-    def getOilDepth(self):
-        return self._oilDepth
-
-    def setOilDepth(self, oilDepth):
-        assert 1 <= oilDepth <= 10
-        self._oilDepth = oilDepth
 
     def getWell(self):
         return self._well
@@ -108,6 +103,18 @@ class Site(Serializable):
         assert isinstance(tax, int)
         self._tax = tax
 
+    def getReservoir(self):
+        return self.__reservoir
+
+    def setReservoir(self, reservoir):
+        self.__reservoir = reservoir
+
+    def getInitialDepthIndex(self):
+        return self.__initialDepthIndex
+
+    def setInitialDepthIndex(self, initialDepthIndex):
+        self.__initialDepthIndex = initialDepthIndex
+
     def week(self, oilPrice, wellTheory, currentWeek):
         if self._well is not None:
             if self._well.getOutput() is not None and not self._well.isSold():
@@ -121,7 +128,7 @@ class Well(Serializable):
         self._initialOutput = None
         self._output = None
         self._sold = False
-        
+        self._player = None    
         self._initialCost = 0
         self._profitAndLoss = 0
 
@@ -177,7 +184,11 @@ class Well(Serializable):
     def drill(self, site, drillIncrement):
         assert 0 <= self._drillDepth <= 10
 
-        oilDepth = site.getOilDepth()
+        oilDepth = None
+        reservoir = site.getReservoir()
+        if reservoir is not None:
+            oilDepth = reservoir.getOilDepth()
+  
         drillCost = site.getDrillCost()
         
         assert oilDepth == None or self._drillDepth < oilDepth
@@ -187,7 +198,10 @@ class Well(Serializable):
         cost = drillCost * drillIncrement
         self._initialCost += cost
         self._profitAndLoss -= cost
-        self._player.expense(cost)
+
+        ## FIXME server may be drilling with no player, shouldn't need this here
+        if self._player is not None:
+            self._player.expense(cost)
 
         foundOil = (self._drillDepth == oilDepth)
             

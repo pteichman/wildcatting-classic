@@ -64,6 +64,7 @@ class Serializable:
     def __serialize_dict(self, dict):
         ret = {}
         for key, value in dict.items():
+            if "__" in key: continue
             ret[key] = self.__serialize_item(value)
         return ret
 

@@ -9,9 +9,15 @@ import wildcatting.turn
 
 from oilprices import GaussianPrices
 from theme import DefaultTheme, Theme
+from reservoir import Reservoir
+
+class Filler:
+
+    def fill(self, field):
+        raise "UnimplementedAbstractMethod"
 
 
-class PeakedFiller:
+class PeakedFiller(Filler):
 
     def fill(self, field):
         assert isinstance(field, wildcatting.model.OilField)
@@ -78,7 +84,7 @@ class OilFiller(PeakedFiller):
 
         r = random.randint(0, 100)
         if (r < value):
-            site.setOilDepth(int((1.0 - (r / 100.0)) * 9 + 1))
+            site.setInitialDepthIndex(random.randint(1,10))
 
     def getMinDropoff(self):
         return self._theme.getOilMinDropoff()
@@ -122,6 +128,48 @@ class DrillCostFiller(PeakedFiller):
     def getLesserPeakFactor(self):
         return self._theme.getDrillCostLesserPeakFactor()
 
+class ReservoirFiller(Filler):
+    log = logging.getLogger("Wildcatting")
+    def __init__(self, theme):
+        assert isinstance(theme, Theme)
+
+        self._theme = theme
+
+        self._reservoirCount = 0
+        self._siteCount = 0
+
+    def fill(self, field):
+        height, width = field.getHeight(), field.getWidth()
+        for row in xrange(field.getHeight()):
+            for col in xrange(field.getWidth()):
+                site = field.getSite(row, col)
+                if site.getInitialDepthIndex() is None: continue
+                adjacentSites = []
+                for (adjacentRow, adjacentCol) in [(row + 1, col), (row, col + 1)]:
+                    if adjacentRow == row and adjacentCol == col: continue
+                    if adjacentRow >= height or adjacentCol >= width:
+                        continue
+                        
+                    adjacentSite = field.getSite(adjacentRow, adjacentCol)
+                    adjacentSites.append(adjacentSite)
+                    self._fillSite(site, adjacentSites)
+
+        self.log.info("Created %s reservoirs covering %s sites" % (self._reservoirCount, self._siteCount))
+
+    def _fillSite(self, site, adjacentSites):
+        initialDepth = site.getInitialDepthIndex()
+        for adjacentSite in adjacentSites:
+            if adjacentSite.getInitialDepthIndex() is not None:
+                self._siteCount += 1
+                reservoir = site.getReservoir()
+                if reservoir is None:
+                    self._reservoirCount += 1
+                    reservoir = Reservoir(initialDepth)
+                    site.setReservoir(reservoir)
+                
+                reservoir.join(adjacentSite.getInitialDepthIndex())
+                adjacentSite.setReservoir(reservoir)
+
 
 class TaxFiller:
     def __init__(self, theme):
@@ -164,6 +212,7 @@ class Game:
         
         self._oilField = wildcatting.model.OilField(width, height)
         OilFiller(theme).fill(self._oilField)
+        ReservoirFiller(theme).fill(self._oilField)
         DrillCostFiller(theme).fill(self._oilField)
         TaxFiller(theme).fill(self._oilField)
 

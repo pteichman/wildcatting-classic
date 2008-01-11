@@ -9,9 +9,8 @@ It has been proposed that pumping oil from a site adjacent to an existing site s
 
 = Details =
 
-_OilReservoir_ will be the server object that allows us to implement this.  
+OilReservoir will be the server object that allows us to implement this.  
 
 For each site, the presence of oil will be determined the normal way based on the site probability.  A second pass for the field will create one reservoir object per set of adjacent sites.  Each reservoir will have a set amount of oil.  Any wells pumping out of a given reservoir will be reducing that supply of oil.
 
 After a ramp up period, weekly well output will be proportional to the amount of oil remaining in the reservoir.
-

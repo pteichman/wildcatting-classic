@@ -279,7 +279,10 @@ class Client:
         self._getNewPlayerField()
         wildcattingView.animateGameEnd()
 
-        self._stdscr.getch()
+        curses.curs_set(0)
+        actions = {}
+        while not "survey" in actions:
+            actions = wildcattingView.input()
 
         self._runWeeklySummary()
 

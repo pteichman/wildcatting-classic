@@ -153,10 +153,15 @@ class Client:
             if "stop" in actions:
                 break
         
-        if site.getWell().getOutput() is None and not "stop" in actions:
-            drillView.setMessage("DRY HOLE!")
-            drillView.display()
-            time.sleep(3)
+        if site.getWell().getOutput() is None:
+            if not "stop" in actions:
+                drillView.setMessage("DRY HOLE!")
+                drillView.display()
+                time.sleep(3)
+        else:
+            # extrapolate the site's oil depth rather than hit the
+            # server again.  atleast for now.
+            site.setOilDepth(well.getDrillDepth())
 
         return site
 

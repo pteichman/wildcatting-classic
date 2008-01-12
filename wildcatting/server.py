@@ -296,6 +296,7 @@ class GameService:
         playerSite.setWell(site.getWell())
         playerSite.setTax(site.getTax())
         playerSite.setSurveyed(site.isSurveyed())
+        playerSite.setOilDepth(site.getOilDepth())
         
     def _makePlayerSite(self, site):
         playerSite = wildcatting.model.Site(site.getRow(), site.getCol())
@@ -318,20 +319,8 @@ class GameService:
 
     def _exposeOil(self, site):
         reservoir = site.getReservoir()
-        if reservoir is None:
-            return
-
-        well = site.getWell()
-        if well is None:
-           well = wildcatting.model.Well()
-           site.setWell(well)
-
-        oilDepth = reservoir.getOilDepth()
-        ## FIXME it's probably kind of silly to be actually drilling here
-        ## we shoudl just need to set the drill depth, and make output
-        ## non-None i think
-        while well.getDrillDepth() <  oilDepth:
-           well.drill(site, self._theme.getDrillIncrement())
+        if reservoir is not None:
+            site.setOilDepth(reservoir.getOilDepth())
 
     def getPlayerField(self, handle):
         game, player = self._readHandle(handle)
@@ -352,7 +341,6 @@ class GameService:
 
                 if site.isSurveyed() or gameFinished:
                     self._updatePlayerSite(playerSite, site)
-               
 
         return playerField.serialize()
 

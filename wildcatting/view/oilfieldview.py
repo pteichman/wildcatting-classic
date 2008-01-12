@@ -134,15 +134,15 @@ class DrillCostColorChooser(ColorChooser):
 
         return colors[idx]
 
+
 class DepthColorChooser(ColorChooser):
     def _chooseColor(self, site, colors):
-        well = site.getWell()
-        if well is None:
+        oilDepth = site.getOilDepth()
+        if site.getOilDepth() is None:
             color = Colors.get(curses.COLOR_WHITE, curses.COLOR_BLACK)
         else:
-            drillDepth = well.getDrillDepth() * 1.0
-            drillRange = 9
-            idx = int(drillDepth / drillRange * (len(colors) - 1))
+            depthRange = 9
+            idx = int(oilDepth * 1.0 / depthRange * (len(colors) - 1))
             color = colors[idx]
 
         return color
@@ -179,8 +179,6 @@ class OilFieldCursesView(View):
 
     def display(self):
         field = self._wildcatting.getPlayerField()
-
-
         for row in xrange(field.getHeight()):
             for col in xrange(field.getWidth()):
                 site = field.getSite(row, col)
@@ -202,12 +200,7 @@ class OilFieldCursesView(View):
                 symbol = " "
             color = self._colorChooser.blankColor(site)
         else:
-            ## FIXME think about this, current None player means
-            ## the server has populated the drill for oil display
-            if well.getPlayer() is not None:
-                symbol = well.getPlayer().getSymbol()
-            else:
-                symbol = "."
+            symbol = well.getPlayer().getSymbol()
             color = self._colorChooser.siteColor(site)
 
         self.putch(self._win, site.getRow(), site.getCol(), ord(symbol), color)
@@ -243,8 +236,9 @@ class OilFieldDrillCostView(OilFieldCursesView):
 
 
 class OilFieldDepthView(OilFieldCursesView):
-    def getKeyLabel(self):
-        return "OIL DEPTH"
-
+    
     def _makeColorChooser(self):
         return DepthColorChooser()
+
+    def getKeyLabel(self):
+        return "OIL DEPTH"

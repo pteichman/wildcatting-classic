@@ -56,6 +56,7 @@ class Site(Serializable):
         self._drillCost = 0
         self._tax = 0
         self._surveyed = False
+        self._oilDepth = None
 
         ## don't serialize
         self.__reservoir = None
@@ -95,6 +96,12 @@ class Site(Serializable):
     def setSurveyed(self, surveyed):
         assert isinstance(surveyed, bool)
         self._surveyed = surveyed
+
+    def getOilDepth(self):
+        return self._oilDepth
+
+    def setOilDepth(self, oilDepth):
+        self._oilDepth = oilDepth
 
     def getTax(self):
         return self._tax
@@ -198,12 +205,11 @@ class Well(Serializable):
         cost = drillCost * drillIncrement
         self._initialCost += cost
         self._profitAndLoss -= cost
-
-        ## FIXME server may be drilling with no player, shouldn't need this here
-        if self._player is not None:
-            self._player.expense(cost)
+        self._player.expense(cost)
 
         foundOil = (self._drillDepth == oilDepth)
+        if foundOil:
+            site.setOilDepth(oilDepth)
             
         return foundOil
 

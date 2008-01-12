@@ -146,13 +146,12 @@ class ReservoirFiller(Filler):
                 if site.getInitialDepthIndex() is None: continue
                 adjacentSites = []
                 for (adjacentRow, adjacentCol) in [(row + 1, col), (row, col + 1)]:
-                    if adjacentRow == row and adjacentCol == col: continue
                     if adjacentRow >= height or adjacentCol >= width:
                         continue
                         
                     adjacentSite = field.getSite(adjacentRow, adjacentCol)
                     adjacentSites.append(adjacentSite)
-                    self._fillSite(site, adjacentSites)
+                self._fillSite(site, adjacentSites)
 
         self.log.info("Created %s reservoirs covering %s sites" % (self._reservoirCount, self._siteCount))
 

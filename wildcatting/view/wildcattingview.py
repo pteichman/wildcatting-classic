@@ -152,7 +152,7 @@ class WildcattingView(View):
             color = Colors.get(curses.COLOR_WHITE, curses.COLOR_WHITE)
             self._border_win.addstr(border_h - 2, col, "." * (border_w - col - 1), color)
 
-        label = self._getCurrentView().getKeyLabel()
+        label = " %s" % self._getCurrentView().getKeyLabel()
         self.addLeft(self._border_win, border_h - 2, label, blackOnWhite, pad=len(colors)+1)
 
         coordStr = "X=%s   Y=%s" % (str(self._x).rjust(2), str(self._y).rjust(2))

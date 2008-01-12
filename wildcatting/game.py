@@ -292,7 +292,7 @@ class Game:
 
         if foundOil:
             theory = self._theme.getWellTheory()
-            theory.start(well)
+            theory.start(site)
 
         return foundOil
 

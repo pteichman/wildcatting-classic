@@ -8,22 +8,32 @@ class SimpleWellTheory:
 
     def __str__(self):
         pass
+
+    def _getOutput(self, site):
+        well = site.getWell()
+        reservoir = site.getReservoir()
+        ratioPumped = reservoir.ratioPumped()
+        output = int(0.001 * well.getCapacity() * reservoir.getReserves())
+        ## FIXME use some kind of above 6th grade level mathmatical
+        ## construct here to make the first half of the oil the easiest
+        ## to pump, and the second half get progressively harder
+        if ratioPumped > 0.5:
+            output -= (ratioPumped - 0.5) * output
+        return output
     
-    def start(self, well):
-        output = random.randint(self._minOutput, self._maxOutput)
+    def start(self, site):
+        output = self._getOutput(site)
+        well = site.getWell()
         well.setOutput(output)
         well.setInitialOutput(output)
 
-    def week(self, well, currentWeek):
+    def week(self, site, currentWeek):
+        well = site.getWell()
         weeksOperational = currentWeek - well.getWeek()
 
-        # simple 3 week peak with noise
-        if weeksOperational <= 2:
-            offset = (0.5 + random.random()) * math.pow(weeksOperational + 3, 2)
-        else:
-            offset = - (1 + random.random()) * math.pow(weeksOperational - 3, 2)            
+        # well ramp up
+        if weeksOperational <= random.randint(1,3):
+            well.setCapacity(well.getCapacity() + 1)
 
-        output = well.getOutput() + offset
-        if output < 0:
-            output = 0
+        output = self._getOutput(site)
         well.setOutput(output)

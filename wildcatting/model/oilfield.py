@@ -125,7 +125,7 @@ class Site(Serializable):
     def week(self, oilPrice, wellTheory, currentWeek):
         if self._well is not None:
             if self._well.getOutput() is not None and not self._well.isSold():
-                wellTheory.week(self._well, currentWeek)
+                wellTheory.week(self, currentWeek)
             self._well.week(self, oilPrice)
 
 
@@ -138,6 +138,7 @@ class Well(Serializable):
         self._player = None    
         self._initialCost = 0
         self._profitAndLoss = 0
+        self._capacity = 1
 
     def __cmp__(self, other):
         return cmp(self._turn, other._turn)
@@ -181,6 +182,12 @@ class Well(Serializable):
     def getProfitAndLoss(self):
         return self._profitAndLoss
 
+    def getCapacity(self):
+        return self._capacity
+
+    def setCapacity(self, capacity):
+        self._capacity = capacity
+
     def sell(self):
         self._sold = True
         price = self._initialCost / 2
@@ -220,6 +227,10 @@ class Well(Serializable):
                 output = 0
             else:
                 output = self._output
+
+            reservoir = site.getReservoir()
+            if reservoir is not None:
+                reservoir.pump(output)
 
             tax = site.getTax()
             income = int(output * oilPrice)

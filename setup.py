@@ -1,6 +1,6 @@
 from distutils.core import setup
 setup(name="wildcatting",
-      version="1.2",
+      version="1.3",
       url="http://teichman.org/~peter/wildcatting/",
       author="Original Wildcatter",
       author_email="unknown@example.org",

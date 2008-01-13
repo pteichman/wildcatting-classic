@@ -1,2 +1,2 @@
-VERSION = "1.2"
+VERSION = "1.3"
 VERSION_STRING = "Wildcatting " + VERSION

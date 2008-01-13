@@ -86,8 +86,6 @@ class TrendingGaussianPrices:
 
         self._mu = random.gauss(0.0, 3.0)
         self._sigma = 2.0
-        
-        self.log.debug("New price trend: %d weeks (%.2f %.2f)" % (self._trendLength, self._mu, self._sigma))
 
     def next(self):
         if self._trendLength == self._trendWeek:

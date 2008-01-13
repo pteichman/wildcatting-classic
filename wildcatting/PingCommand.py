@@ -32,5 +32,5 @@ class ClientCommand(Command):
             print "Server at %s is not up." % url
             sys.exit(1)
 
-        print "Server at %s is up." % url
+        print "%s server at %s is up." % (server_version, url)
         sys.exit(0)

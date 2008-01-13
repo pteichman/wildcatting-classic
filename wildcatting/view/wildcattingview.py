@@ -151,12 +151,12 @@ class WildcattingView(View):
             color = Colors.get(curses.COLOR_WHITE, curses.COLOR_WHITE)
             self._border_win.addstr(border_h - 2, col, "." * (border_w - col - 1), color)
 
+        label = " %s" % self._getCurrentView().getKeyLabel()
+        self.addLeft(self._border_win, border_h - 2, label, blackOnWhite,
+                     pad=len(colors)+1)
+
         turn = self._wildcatting.getPlayersTurn()
         if turn is not None:
-            label = " %s" % self._getCurrentView().getKeyLabel()
-            self.addLeft(self._border_win, border_h - 2, label, blackOnWhite,
-                         pad=len(colors)+1)
-
             coordStr = "X=%s   Y=%s" % (str(self._x).rjust(2),
                                         str(self._y).rjust(2))
             self.addCentered(self._border_win, border_h - 2, coordStr, blackOnWhite)
@@ -165,10 +165,15 @@ class WildcattingView(View):
                 self.addRight(self._border_win, border_h - 2,
                               "%s's turn" % turn, blackOnWhite)
         else:
+            longestLabel = 0
+            for view in self._views:
+                if len(view.getKeyLabel()) > longestLabel:
+                    longestLabel = len(view.getKeyLabel())
+            
             players = self._wildcatting.getPendingPlayers()
             label = " WAITING FOR %s" % (", ".join(players).upper())
             self.addLeft(self._border_win, border_h - 2, label, blackOnWhite,
-                         pad=len(colors)+1)
+                         pad=len(colors) + 1 + longestLabel + 4)
     
         self._border_win.refresh()
 

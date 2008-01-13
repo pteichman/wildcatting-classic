@@ -201,7 +201,7 @@ class WildcattingView(View):
         self._drawBorder()
         self._getCurrentView().display()
 
-    def input(self, c=None):
+    def input(self, c=None, refresh=50):
         actions = {}
 
         self._stdscr.move(self._y + 2, self._x + 4)
@@ -212,7 +212,7 @@ class WildcattingView(View):
         survey = False
 
         curses.mousemask(curses.BUTTON1_CLICKED)
-        curses.halfdelay(50)
+        curses.halfdelay(refresh)
 
         if c is None:
             c = self._stdscr.getch()

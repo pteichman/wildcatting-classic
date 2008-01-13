@@ -258,8 +258,11 @@ class Client:
                                                                   self._setting)
         wildcattingView.display()
 
+        # Measured in deciseconds.  Thanks, curses.
+        origRefresh = refresh = 50
+
         curses.mousemask(curses.BUTTON1_CLICKED)
-        curses.halfdelay(50)
+        curses.halfdelay(refresh)
         
         moved = False 
         while not self._wildcatting.isGameFinished():
@@ -270,8 +273,8 @@ class Client:
                 c = self._stdscr.getch()
                 moved = True
             
-            actions = wildcattingView.input(c)
-                
+            actions = wildcattingView.input(c, refresh)
+
             if "survey" in actions and self._isMyTurn():
                 row, col = actions["survey"]
                 drillAWell = self._survey(row, col)
@@ -279,11 +282,24 @@ class Client:
                     self._drillAWell(row, col)
                 self._runWeeklyReport()
                 self._endTurn()
-                curses.halfdelay(50)
+
+                # back to the original refresh interval
+                refresh = origRefresh
+                curses.halfdelay(refresh)
                 moved = False
                 wildcattingView.display()
             elif "checkForUpdates" in actions:
+                now = time.time()
                 updated, weekUpdated = self._updateWildcatting()
+                then = time.time()
+
+                if then - now > refresh:
+                    # exponential backoff
+                    refresh = refresh * 2
+                    self.log.info("Update took %f seconds, backing off to %f",
+                                  then-now, refresh)
+                    curses.halfdelay(refresh)
+                
                 if weekUpdated and not self._wildcatting.isGameFinished():
                     self._runWeeklySummary()                    
                 if updated:

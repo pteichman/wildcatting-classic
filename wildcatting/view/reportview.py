@@ -50,7 +50,6 @@ class WeeklySummaryView(View):
             else:
                 row += 2
 
-        self._eatAllKeyEvents(self._win)
         self._win.refresh()
 
     def input(self):
@@ -122,7 +121,6 @@ class WeeklyReportView(View):
         self._win.addstr(15, 0, " NEXT PLAYER")
         self._win.addstr(15, 35, "$ %s" % str(sumProfitAndLoss).rjust(10))
         self._moveCursor()
-        self._eatAllKeyEvents(self._win)
         self._win.refresh()
 
     def _moveCursor(self):
@@ -166,7 +164,6 @@ class WeeklyReportView(View):
                     col = rowDict["col"]
                     actions["sell"] = row, col
            
-        self._eatAllKeyEvents(self._win)
         self._win.refresh()
 
         return actions
@@ -191,7 +188,6 @@ class SurveyorsReportView(View):
     def display(self):
         self._stdscr.clear()
         self._stdscr.refresh()
-        self._eatAllKeyEvents(self._stdscr)
 
         (h, w) = self._win.getmaxyx()
         coord_str = "X=%s  Y=%s" % (self._site.getCol(), self._site.getRow())
@@ -300,7 +296,6 @@ class PregameReportView(View):
         if self._isMaster:
             self.addCentered(self._win, h-1, "ANY KEY TO START")
 
-        self._eatAllKeyEvents(self._win)
         self._win.refresh()
 
     def input(self):

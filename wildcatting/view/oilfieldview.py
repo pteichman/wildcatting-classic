@@ -185,7 +185,6 @@ class OilFieldCursesView(View):
                 if site.isSurveyed():
                     self.displaySite(site)
 
-        self._eatAllKeyEvents(self._win)
         self._win.refresh()
 
     def displaySite(self, site):

@@ -182,17 +182,16 @@ class WildcattingView(View):
         border_h, border_w = self._border_win.getmaxyx()
 
         blackOnGreen = Colors.get(curses.COLOR_BLACK, curses.COLOR_GREEN)
+
+        go = "GO %s!" % self._wildcatting.getPlayersTurn().upper()
         if self._mac:
-            self.addCentered(self._border_win, border_h - 2, "." * (border_w - 2),
-                             Colors.get(curses.COLOR_GREEN, curses.COLOR_GREEN))
-            self.addCentered(self._border_win, border_h - 2, "GO %s!" % self._wildcatting.getPlayersTurn().upper(),
-                             blackOnGreen)
-        else:
-            bar = ("GO %s!" % self._wildcatting.getPlayersTurn().upper()).center(border_w-2)
-            self.addCentered(self._border_win, border_h - 2, bar, blackOnGreen)
-        self._field_win.refresh()
-        self._border_win.refresh()
+            bkgd, text = self.getGreenFGBG()
+            self.addCentered(self._border_win, border_h - 2,
+                             "." * (border_w - 2), text)
+
+        self.addCentered(self._border_win, border_h - 2, go, blackOnGreen)
         self._stdscr.move(self._y + 2, self._x + 4)
+        self._border_win.refresh()
         self._field_win.refresh()
 
     def display(self):

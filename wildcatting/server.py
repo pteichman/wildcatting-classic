@@ -95,15 +95,27 @@ class GameService:
         
         return secret
 
+    def _ensureSurveyTurn(self, game, player):
+        if game.isFinished():
+            raise WildcattingException("Game is over")
+
+        week = game.getWeek()
+        
+        if not week.isSurveyTurn(player):
+            raise WildcattingException("Not player's turn")
+
+        return week.getPlayerTurn(player)
+
     def _ensureTurn(self, game, player):
         if game.isFinished():
             raise WildcattingException("Game is over")
-        
-        turn = game.getTurn()
-        if turn.getPlayer() != player:
-            raise WildcattingException("Not player's turn")
 
-        return turn
+        week = game.getWeek()
+        
+        if week.isTurnFinished(player):
+            raise WildcattingException("Player's turn is finished")
+
+        return week.getPlayerTurn(player)
 
     def _encodeGameHandle(self, gameId, player, secret):
         assert isinstance(gameId, str)
@@ -149,7 +161,7 @@ class GameService:
 
     def survey(self, handle, row, col):
         game, player = self._readHandle(handle)
-        turn = self._ensureTurn(game, player)
+        turn = self._ensureSurveyTurn(game, player)
 
         if turn.getSurveyedSite():
             raise WildcattingException("Already surveyed this turn")
@@ -164,6 +176,7 @@ class GameService:
         turn.setSurveyedSite(site)
 
         game.markSiteUpdated(player, site)
+        game.getWeek().endSurvey(player)
         
         return site.serialize()
 
@@ -179,7 +192,7 @@ class GameService:
         site = field.getSite(row, col)
         well = wildcatting.model.Well()
         well.setPlayer(player)
-        well.setWeek(game.getTurn().getWeek())
+        well.setWeek(game.getWeek().getWeekNum())
         site.setWell(well)
         game.drill(row, col)
         turn.setDrilledSite(site)
@@ -250,7 +263,6 @@ class GameService:
 
     def endTurn(self, handle):
         game, player = self._readHandle(handle)
-        turn = self._ensureTurn(game, player)
 
         game.endTurn(player)
         
@@ -263,7 +275,7 @@ class GameService:
 
     def getUpdateDict(self, handle):
         game, player = self._readHandle(handle)
-        turn = game.getTurn()
+        turn = game.getWeek().getPlayerTurn(player)
         
         updateDict = {}
         updateDict["week"] = turn.getWeek()

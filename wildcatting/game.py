@@ -6,6 +6,7 @@ from wildcatting.exceptions import WildcattingException
 
 import wildcatting.model
 import wildcatting.turn
+import wildcatting.week
 
 from oilprices import GaussianPrices
 from theme import DefaultTheme, Theme
@@ -202,21 +203,17 @@ class Game:
         self._players = {}
         self._playerOrder = []
         self._playerUpdates = {}
-        self._turn = None
         self._isStarted = False
         self._isFinished = False
+        self._weekNum = 0
 
         self._prices = theme.getOilPrices()
-        self._updatePrice(self._prices.next())
         
         self._oilField = wildcatting.model.OilField(width, height)
         OilFiller(theme).fill(self._oilField)
         ReservoirFiller(theme).fill(self._oilField)
         DrillCostFiller(theme).fill(self._oilField)
         TaxFiller(theme).fill(self._oilField)
-
-    def _updatePrice(self, price):
-        self._oilPrice = price
 
     def _generateSecret(self, player):
         return "".join([random.choice(("0", "1", "2", "3", "4",
@@ -263,10 +260,22 @@ class Game:
 
     def start(self):
         self._isStarted = True
+        self._nextWeek()
 
-        self._turn = wildcatting.turn.Turn()
-        self._turn.setPlayer(self._playerOrder[0])
-        self._turn.setWeek(1)
+    def _nextWeek(self):
+        self._weekNum = self._weekNum + 1
+
+        price = self._prices.next()
+        self._week = wildcatting.week.Week(self._weekNum, self._playerOrder,
+                                           price)
+        self._oilField.week(price, self._theme.getWellTheory(),
+                            self._weekNum)
+
+        if self._weekNum > self._turnCount:
+            self._finish()
+
+    def getWeek(self):
+        return self._week
 
     def isStarted(self):
         return self._isStarted
@@ -307,34 +316,15 @@ class Game:
         return cost / 2
 
     def endTurn(self, player):
-        week = self._turn.getWeek()
+        self._week.endTurn(player)
 
-        curIndex = self._playerOrder.index(player)
-        nextPlayer = self._playerOrder[(curIndex + 1) % len(self._playerOrder)]
+        if self._week.isFinished():
+            self._nextWeek()
 
-        self._turn = wildcatting.turn.Turn()
-
-        if curIndex < len(self._playerOrder) - 1:
-            nextPlayer = self._playerOrder[curIndex + 1]
-        else:
-            nextPlayer = self._playerOrder[0]
-            week = week + 1
-            
-            self._updatePrice(self._prices.next())
-            self._oilField.week(self._oilPrice, self._theme.getWellTheory(), week)
-
-        self._turn.setPlayer(nextPlayer)
-        self._turn.setWeek(week)
-
-        if week > self._turnCount:
-            self._finish()
-
-        return week
+        return self._weekNum
 
     def getWeeklySummary(self):
-        report = wildcatting.model.WeeklySummary(self._playerOrder, self._turn.getWeek())
-
-        return report
+        return wildcatting.model.WeeklySummary(self._playerOrder, self._weekNum)
 
     def markSiteUpdated(self, player, site):
         for updatePlayer in self._playerUpdates:
@@ -348,11 +338,8 @@ class Game:
         self._playerUpdates[username] = []
         return updates
 
-    def getTurn(self):
-        return self._turn
-
     def getOilPrice(self):
-        return self._oilPrice
+        return self._week.getPrice()
 
     def getOilField(self):
         return self._oilField

@@ -121,21 +121,21 @@ class TestGame(unittest.TestCase):
         self.assertTrue(game.isStarted())
 
         # Week 1
-        self.assertEquals(1, game._turn.getWeek())
+        self.assertEquals(1, game.getWeek().getWeekNum())
         game.endTurn(player1)
-        self.assertEquals(1, game._turn.getWeek())
+        self.assertEquals(1, game.getWeek().getWeekNum())
         game.endTurn(player2)
 
         # Week 2
-        self.assertEquals(2, game._turn.getWeek())
+        self.assertEquals(2, game.getWeek().getWeekNum())
         game.endTurn(player1)
-        self.assertEquals(2, game._turn.getWeek())
+        self.assertEquals(2, game.getWeek().getWeekNum())
         game.endTurn(player2)
 
         # Week 3
-        self.assertEquals(3, game._turn.getWeek())
+        self.assertEquals(3, game.getWeek().getWeekNum())
         game.endTurn(player1)
-        self.assertEquals(3, game._turn.getWeek())
+        self.assertEquals(3, game.getWeek().getWeekNum())
         game.endTurn(player2)
 
 if __name__ == "__main__":

@@ -267,7 +267,7 @@ class GameService:
 
         game.endTurn(player)
         
-        return self.getUpdateDict(handle), self.getWellUpdates(handle)
+        return self.getUpdate(handle), self.getWellUpdates(handle)
 
     def getPlayersTurn(self, handle):
         game, player = self._readHandle(handle)
@@ -283,22 +283,20 @@ class GameService:
 
         return [p.getUsername() for p in players]
 
-    def getUpdateDict(self, handle):
+    def getUpdate(self, handle):
         game, player = self._readHandle(handle)
-        turn = game.getWeek().getPlayerTurn(player)
-        
-        updateDict = {}
-        updateDict["week"] = turn.getWeek()
-        updateDict["oilPrice"] = game.getOilPrice()
-        updateDict["playersTurn"] = self.getPlayersTurn(handle)
-        updateDict["pendingPlayers"] = self.getPendingPlayers(handle)
-        updateDict["gameFinished"] = game.isFinished()
-        
-        updatedSites = game.getUpdatedSites(player)
-        updateDict["sites"] = [u.serialize() for u in updatedSites]
 
-        return updateDict
+        week = game.getWeek().getPlayerTurn(player).getWeek()
+        oilPrice = game.getOilPrice()
+        playersTurn = self.getPlayersTurn(handle)
+        pendingPlayers = self.getPendingPlayers(handle)
+        gameFinished = game.isFinished()
+        #sites = [u.serialize() for u in game.getUpdatedSites(player)]
+        sites = game.getUpdatedSites(player)
 
+        update = wildcatting.model.Update(week, oilPrice, playersTurn, pendingPlayers, gameFinished, sites)
+        return update.serialize()
+        
     def getWellUpdates(self, handle):
         game, player = self._readHandle(handle)
 

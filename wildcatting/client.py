@@ -9,7 +9,7 @@ from game import Game
 from colors import Colors
 from exceptions import WildcattingException
 
-from wildcatting.model import OilField, Setting, Site, Well, WeeklySummary
+from wildcatting.model import OilField, Setting, Site, Well, WeeklySummary, Update
 
 class Wildcatting:
     def __init__(self):
@@ -59,15 +59,16 @@ class Wildcatting:
     def updatePlayerField(self, site):
         self._playerField.setSite(site.getRow(), site.getCol(), site)
 
-    def update(self, updateDict):
-        gameFinished = updateDict["gameFinished"]
-        week = updateDict["week"]
-        playersTurn = updateDict["playersTurn"]
-        pendingPlayers = updateDict["pendingPlayers"]
-        oilPrice = updateDict["oilPrice"]
-        sites = [Site.deserialize(s) for s in updateDict["sites"]]
+    def update(self, update):
+        gameFinished = update.getGameFinished()
+        week = update.getWeek()
+        playersTurn = update.getPlayersTurn()
+        pendingPlayers = update.getPendingPlayers()
+        oilPrice = update.getOilPrice()
+        sites = update.getSites()
 
-        updated = len(sites) > 0 or week > self._week or oilPrice != self._oilPrice or playersTurn !=  self._playersTurn or gameFinished
+        updated = len(sites) > 0 or week > self._week or oilPrice != self._oilPrice \
+                  or playersTurn !=  self._playersTurn or gameFinished
         weekUpdated = week > self._week
 
         for site in sites:
@@ -175,9 +176,10 @@ class Client:
         return site
 
     def _endTurn(self):
-        updateDict, wellUpdates = self._server.game.endTurn(self._handle)
+        u, wellUpdates = self._server.game.endTurn(self._handle)
+        update = Update.deserialize(u)
         
-        updated, weekUpdated = self._wildcatting.update(updateDict)
+        updated, weekUpdated = self._wildcatting.update(update)
         
         for wellDict in wellUpdates:
             row, col = wellDict["row"], wellDict["col"]
@@ -222,8 +224,8 @@ class Client:
             actions = weeklySummaryView.input()
 
     def _updateWildcatting(self):
-        updateDict = self._server.game.getUpdateDict(self._handle)
-        return self._wildcatting.update(updateDict)
+        update = Update.deserialize(self._server.game.getUpdate(self._handle))
+        return self._wildcatting.update(update)
 
     def _isMyTurn(self):
         return self._wildcatting.getPlayersTurn() == self._username

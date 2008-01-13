@@ -8,8 +8,10 @@ from wildcatting.oilprices import GaussianPrices
 __all__ = ["WestTexas"]
 
 _rawFacts = """
-Anadarko will rule the world as we know it. They don't like partners, they now own the UPR strip, much of which is now looking like the biggest gas basins in the US, and they like to drill... and drill... and drill. Everywhere. East Texas Bossier. Cotton Valley. James Lime. Austin Chalk. Just heard of a new hot play? Anadarko probably started it and owns it.
-Bud Brigham is a geophysicist who believed in technology. He rode high and he fell hard.  He was hammered for exporing, but now he has SIGNIFICANT wells drilling in Matagorda County and Wheeler County.
+Anadarko will rule the world as we know it. They don't like partners, they now own the UPR strip, much of which is now looking like the biggest gas basins in the US, and they like to drill.
+Everywhere. East Texas Bossier. Cotton Valley. James Lime. Austin Chalk. Just heard of a new hot play? Anadarko probably started it and owns it.
+Bud Brigham is a geophysicist who believed in technology. He rode high and he fell hard.
+Bud Brigham was hammered for exporing, but now he has SIGNIFICANT wells drilling in Matagorda County and Wheeler County.
 Climate scientists are currently neutral as to whether human causes are the the major drivers of Global Warming.
 Climate scientists have little faith in their models, the major tool used to "predict" climate change.
 The consensus is that climate scientists' models are likely wrong, and there has been little movement from that position in the last decade.
@@ -28,9 +30,9 @@ West Texas Crude is a full-tilt trio from Toowoomba, Queensland who are reviving
 West Texas Intermediate (WTI) is a light crude, lighter than Brent Crude. It contains about 0.24% sulfur, rating it a sweet crude.
 The legendary wildcatter Sid Richardson started the family oil business when his mother lent him $40 for train fare to West Texas to "put some deals together."
 Perry Richardson Bass became a favorite nephew of his uncle, legendary wildcatter Sid Richardson, and decided to make his living drilling for oil.
-Perry Richardson Bass, an avid fisherman, never said goodbye. His parting words were always, 'Tight lines and screaming reels.'"
-Perry Richardson Bass called his business a "game," adding, "We'll do anything honest to make a living."
-In 1935, Perry Bass, a student at Yale University, and his uncle form Richardson & Bass, an oil venture.  After two dry holes, Richardson hits with the discovery well of the fabulously rich Keystone Field in West Texas' Winkler County.
+Perry Richardson Bass, an avid fisherman, never said goodbye. His parting words were always, 'Tight lines and screaming reels.'
+Perry Richardson Bass called his business a "game," adding, "We\'ll do anything honest to make a living."
+In 1935, Perry Bass, a student at Yale University, and his uncle form Richardson & Bass, an oil venture.  After two dry holes, Richardson hits with the discovery well of the fabulously rich Keystone Field in West Texas\' Winkler County.
 Sid Williams Richardson was a Texas oilman, cattleman and philanthropist known for his association with the city of Fort Worth.
 Sid Williams Richardson was born on 25th April, 1891, in Athens, Texas.
 In 1919 Sid Richardson established his own oil company in Fort Worth.  In 1921 the oil market collapsed and he lost most of his fortune.

@@ -240,6 +240,7 @@ class GameService:
             raise WildcattingException("Already drilled somewhere else this turn")
 
         game.drill(row, col)
+        game.markSiteUpdated(player, drilledSite)
         well = game.getOilField().getSite(row,col).getWell()
         return well.serialize()
 

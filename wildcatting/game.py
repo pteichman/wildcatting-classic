@@ -330,7 +330,8 @@ class Game:
         for updatePlayer in self._playerUpdates:
             if updatePlayer != player.getUsername():
                 updateSites = self._playerUpdates[updatePlayer]
-                updateSites.append(site)
+                if site not in updateSites:
+                    updateSites.append(site)
 
     def getUpdatedSites(self, player):
         username = player.getUsername()

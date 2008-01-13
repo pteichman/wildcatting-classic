@@ -69,8 +69,7 @@ class WestTexas(Theme):
     def __init__(self):
         Theme.__init__(self)
         self._loadFacts(_rawFacts)
-        self._wellTheory = SimpleWellTheory(self.getMinOutput(),
-                                            self.getMaxOutput())
+        self._wellTheory = SimpleWellTheory(self.getMaxOutput())
         self._prices = TrendingGaussianPrices(4.50, 1.0, 25.0, 8.0, 5.0)
      
     ## literary setting
@@ -88,6 +87,10 @@ class WestTexas(Theme):
     ## extraction
     def getWellTheory(self):
         return self._wellTheory
+    def getMeanSiteReserves(self):
+        return 666
+    def getMaxOutput(self):
+        return 66
 
     ## economics
     def getMinDrillCost(self):
@@ -98,10 +101,6 @@ class WestTexas(Theme):
         return 100
     def getMaxTax(self):
         return 550
-    def getMinOutput(self):
-        return 1
-    def getMaxOutput(self):
-        return 250
     def getOilPrices(self):
         return self._prices
 

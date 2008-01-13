@@ -156,18 +156,23 @@ class ReservoirFiller(Filler):
 
         self.log.info("Created %s reservoirs covering %s sites" % (self._reservoirCount, self._siteCount))
 
+    def _getInitialReserves(self):
+        reserves = int(max(0.1, random.gauss(1,1)) * self._theme.getMeanSiteReserves())
+        return reserves
+
     def _fillSite(self, site, adjacentSites):
         initialDepth = site.getInitialDepthIndex()
         for adjacentSite in adjacentSites:
             if adjacentSite.getInitialDepthIndex() is not None:
                 self._siteCount += 1
                 reservoir = site.getReservoir()
+                initialReserves = self._getInitialReserves()
                 if reservoir is None:
                     self._reservoirCount += 1
-                    reservoir = Reservoir(initialDepth)
+                    reservoir = Reservoir(initialDepth, initialReserves)
                     site.setReservoir(reservoir)
                 
-                reservoir.join(adjacentSite.getInitialDepthIndex())
+                reservoir.join(adjacentSite.getInitialDepthIndex(), initialReserves)
                 adjacentSite.setReservoir(reservoir)
 
 

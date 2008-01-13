@@ -58,6 +58,8 @@ class Theme:
     ## extraction
     def getWellTheory(self):
         raise "UnimplementedAbstractMethod"
+    def getMeanSiteReserves(self):
+        raise "UnimplementedAbstractMethod"
 
     ## economics
     def getMinDrillCost(self):
@@ -67,8 +69,6 @@ class Theme:
     def getMinTax(self):
         raise "UnimplementedAbstractMethod"
     def getMaxTax(self):
-        raise "UnimplementedAbstractMethod"
-    def getMinOutput(self):
         raise "UnimplementedAbstractMethod"
     def getMaxOutput(self):
         raise "UnimplementedAbstractMethod"

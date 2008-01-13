@@ -3,7 +3,9 @@ import curses
 import random
 import time
 
-from view import OilFieldCursesView, WildcattingView, SurveyorsReportView, PregameReportView, WeeklyReportView, DrillView, WeeklySummaryView, FadeInOilFieldCursesAnimator
+from view import OilFieldCursesView, WildcattingView, SurveyorsReportView, \
+     PregameReportView, WeeklyReportView, DrillView, WeeklySummaryView, \
+     FadeInOilFieldCursesAnimator
 from report import WeeklyReport
 from game import Game
 from colors import Colors
@@ -193,7 +195,9 @@ class Client:
     def _runWeeklyReport(self):
         ## FIXME we want to move WeeklyReport generation to the server side.
         ## oil prices and other economic details live there
-        report = WeeklyReport(self._wildcatting.getPlayerField(), self._username, self._symbol, self._wildcatting.getWeek(), self._setting, self._wildcatting.getOilPrice())
+        report = WeeklyReport(self._wildcatting.getPlayerField(), self._username, self._symbol, \
+                              self._wildcatting.getWeek(), self._setting, \
+                              self._wildcatting.getOilPrice())
         reportView = WeeklyReportView(self._stdscr, report, self._wildcatting.getPlayerField())
         reportView.display()
         actions = {}
@@ -209,7 +213,9 @@ class Client:
                 self._wildcatting.updatePlayerField(site)
                 ## FIXME we want to move WeeklyReport generation to the server side
                 ## oil prices and other economic details live there
-                report = WeeklyReport(self._wildcatting.getPlayerField(), self._username, self._symbol, self._wildcatting.getWeek(), self._setting, self._wildcatting.getOilPrice())
+                report = WeeklyReport(self._wildcatting.getPlayerField(), self._username, \
+                                      self._symbol, self._wildcatting.getWeek(), self._setting, \
+                                      self._wildcatting.getOilPrice())
                 reportView.setField(self._wildcatting.getPlayerField())
                 reportView.setReport(report)
                 reportView.display()

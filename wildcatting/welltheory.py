@@ -1,9 +1,9 @@
 import random
 import math
 
+
 class SimpleWellTheory:
-    def __init__(self, minOutput, maxOutput):
-        self._minOutput = minOutput
+    def __init__(self, maxOutput):
         self._maxOutput = maxOutput
 
     def __str__(self):
@@ -13,12 +13,14 @@ class SimpleWellTheory:
         well = site.getWell()
         reservoir = site.getReservoir()
         ratioPumped = reservoir.ratioPumped()
-        output = int(0.001 * well.getCapacity() * reservoir.getReserves())
-        ## FIXME use some kind of above 6th grade level mathmatical
-        ## construct here to make the first half of the oil the easiest
-        ## to pump, and the second half get progressively harder
-        if ratioPumped > 0.5:
-            output -= (ratioPumped - 0.5) * output
+        ## actually the maximum output for one unit of well capacity
+        output = self._maxOutput
+        ## diminishing returns for increased capacity.  not too relevant yet.
+        c = well.getCapacity() * 1.0
+        output += (c - 1) * output - math.pow(c - 1, 2)
+        ## the first oil is the lightest, the sweetest, and the easiest to pump
+        output = (1.0 - ratioPumped) * output
+        
         return output
     
     def start(self, site):
@@ -31,8 +33,8 @@ class SimpleWellTheory:
         well = site.getWell()
         weeksOperational = currentWeek - well.getWeek()
 
-        # well ramp up
-        if weeksOperational <= random.randint(1,3):
+        ## simlulate old well ramp up.
+        if weeksOperational <= 3:
             well.setCapacity(well.getCapacity() + 1)
 
         output = self._getOutput(site)

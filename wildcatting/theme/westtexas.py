@@ -19,7 +19,7 @@ El Paso knocked it out of the park by showing us what the Vicksburg play COULD b
 Wells making 60-70 million cubic feet of gas per day can make you healthy real quick.
 Like 'em or hate 'em, Aubry McClendon and the folks at Chesapeake believe in the drillbit. They have won big, and lost bigger, but they are still around and kicking... drilling some of the most exciting wells around.
 Luis de Moscoso, a survivor of the DeSoto expedition, recorded the first sighting of oil in Texas.
-Prices for WTI are quoted at Cushing, Oklahoma, which is a major crude oil shipment point that has extensive pipeline connections to oil producing areas and Southwest and Gulf Coast-based refining centers.
+Prices for WTI are quoted at Cushing, Oklahoma, which is a major crude oil shipment point.
 Texas Light Sweet Crude is more formally known as West Texas Intermediate (WTI).
 Texas Light Sweet is a type of crude oil used as a benchmark in oil pricing and is the underlying commodity of oil futures contracts.
 The Corsicana oilfield developed gradually and peaked in 1900, when it produced more than 839,000 barrels of oil.

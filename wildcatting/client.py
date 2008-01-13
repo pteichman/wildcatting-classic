@@ -17,6 +17,7 @@ class Wildcatting:
         self._week = 0
         self._oilPrice = 0
         self._playersTurn = None
+        self._pendingPlayers = []
         self._gameFinished = False
     
     def getPlayerField(self):
@@ -43,6 +44,12 @@ class Wildcatting:
     def setPlayersTurn(self, playersTurn):
         self._playersTurn = playersTurn
 
+    def getPendingPlayers(self):
+        return self._pendingPlayers
+
+    def setPendingPlayers(self, players):
+        self._pendingPlayers = players
+
     def isGameFinished(self):
         return self._gameFinished
 
@@ -56,6 +63,7 @@ class Wildcatting:
         gameFinished = updateDict["gameFinished"]
         week = updateDict["week"]
         playersTurn = updateDict["playersTurn"]
+        pendingPlayers = updateDict["pendingPlayers"]
         oilPrice = updateDict["oilPrice"]
         sites = [Site.deserialize(s) for s in updateDict["sites"]]
 
@@ -67,6 +75,7 @@ class Wildcatting:
 
         self._week = week
         self._playersTurn = playersTurn
+        self._pendingPlayers = pendingPlayers
         self._gameFinished = gameFinished
         self._oilPrice = oilPrice
 

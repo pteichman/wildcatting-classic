@@ -271,7 +271,16 @@ class GameService:
     def getPlayersTurn(self, handle):
         game, player = self._readHandle(handle)
 
-        return game.getTurn().getPlayer().getUsername()
+        player = game.getWeek().getSurveyPlayer()
+        if player is not None:
+            return player.getUsername()
+
+    def getPendingPlayers(self, handle):
+        game, player = self._readHandle(handle)
+
+        players = game.getWeek().getPendingPlayers()
+
+        return [p.getUsername() for p in players]
 
     def getUpdateDict(self, handle):
         game, player = self._readHandle(handle)
@@ -280,7 +289,8 @@ class GameService:
         updateDict = {}
         updateDict["week"] = turn.getWeek()
         updateDict["oilPrice"] = game.getOilPrice()
-        updateDict["playersTurn"] = turn.getPlayer().getUsername()
+        updateDict["playersTurn"] = self.getPlayersTurn(handle)
+        updateDict["pendingPlayers"] = self.getPendingPlayers(handle)
         updateDict["gameFinished"] = game.isFinished()
         
         updatedSites = game.getUpdatedSites(player)

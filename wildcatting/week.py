@@ -1,3 +1,4 @@
+from wildcatting.model import Player
 import wildcatting.turn
 
 class Week:
@@ -10,7 +11,7 @@ class Week:
         self._surveysDone = False
 
         self._price = price
-        self._remaining = self._players[:]
+        self._pending = self._players[:]
         self._turns = {}
 
         for player in self._players:
@@ -25,20 +26,25 @@ class Week:
     def getPrice(self):
         return self._price
 
-    def getSurveyTurn(self):
+    def getSurveyPlayer(self):
         if self._surveysDone:
             return None
 
         return self._players[self._surveyPlayerIndex]
 
     def getPlayerTurn(self, player):
+        assert isinstance(player, Player)
+
         return self._turns.get(player)
 
     def isSurveyTurn(self, player):
-        return self.getSurveyTurn() == player
+        assert isinstance(player, Player)
+
+        return self.getSurveyPlayer() == player
 
     def endSurvey(self, player):
-        assert self.getSurveyTurn() == player
+        assert isinstance(player, Player)
+        assert self.isSurveyTurn(player)
 
         self._surveyPlayerIndex = self._surveyPlayerIndex + 1
 
@@ -46,17 +52,22 @@ class Week:
             self._surveysDone = True
 
     def endTurn(self, player):
-        self._remaining.remove(player)
+        assert isinstance(player, Player)
+        self._pending.remove(player)
 
     def isTurnFinished(self, player):
+        assert isinstance(player, Player)
         playerIndex = self._players.index(player)
 
         if playerIndex < self._surveyPlayerIndex \
-               and player not in self._remaining:
+               and player not in self._pending:
             return True
 
         return False
 
+    def getPendingPlayers(self):
+        return self._pending
+
     def isFinished(self):
-        "Checking for finished week: len is %d" % len(self._remaining)
-        return len(self._remaining) == 0
+        "Checking for finished week: len is %d" % len(self._pending)
+        return len(self._pending) == 0

@@ -198,7 +198,12 @@ class TestGameService(unittest.TestCase):
 
         service.start(handle1)
 
+        self.assertEquals(name1, service.getPlayersTurn(handle1))
+        self.assertEquals(name1, service.getPlayersTurn(handle2))
         site1 = Site.deserialize(service.survey(handle1, 0, 0))
+
+        self.assertEquals(name2, service.getPlayersTurn(handle1))
+        self.assertEquals(name2, service.getPlayersTurn(handle2))
         site2 = Site.deserialize(service.survey(handle2, 0, 1))
 
         service.endTurn(handle1)

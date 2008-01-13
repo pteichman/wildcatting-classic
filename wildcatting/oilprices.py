@@ -1,3 +1,4 @@
+import logging
 import datetime
 import math
 import random
@@ -61,6 +62,47 @@ class GaussianPrices:
             sum = sum + num
 
         return math.sqrt(abs(sum/len(nums)))
+
+class TrendingGaussianPrices:
+    log = logging.getLogger("Wildcatting")
+    
+    """Gaussian distribution that trends in a given direction every N or so turns"""
+    def __init__(self, start, minPrice, maxPrice, trendMu, trendSigma):
+        self._initialPrice = self._price = start
+        self._minPrice = minPrice
+        self._maxPrice = maxPrice
+        self._trendMu = trendMu
+        self._trendSigma = trendSigma
+        
+        self._trendWeek = 0
+        self._trendLength = 0
+
+        self._mu = None
+        self._sigma = None
+
+    def _nextTrend(self):
+        self._trendWeek = 0
+        self._trendLength = max(1, int(random.gauss(self._trendMu, self._trendSigma)))
+
+        self._mu = random.gauss(0.0, 3.0)
+        self._sigma = 2.0
+        
+        self.log.debug("New price trend: %d weeks (%.2f %.2f)" % (self._trendLength, self._mu, self._sigma))
+
+    def next(self):
+        if self._trendLength == self._trendWeek:
+            self._nextTrend()
+
+        self._trendWeek = self._trendWeek + 1
+
+        change = random.gauss(self._mu, self._sigma)
+        self._price = self._price + self._price * change/100
+
+        # clamp to our min/max values
+        self._price = max(self._minPrice, min(self._maxPrice, self._price))
+
+        return self._price
+        
 
 class HistoricalGaussianPrices(GaussianPrices):
     """Gaussian distribution based on our historical price data"""

@@ -1,7 +1,7 @@
 from wildcatting.theme.theme import Theme
 
 from wildcatting.welltheory import SimpleWellTheory
-from wildcatting.oilprices import GaussianPrices
+from wildcatting.oilprices import TrendingGaussianPrices
 
 
 # we don't want to send _rawFacts into our importers' namespaces
@@ -71,6 +71,7 @@ class WestTexas(Theme):
         self._loadFacts(_rawFacts)
         self._wellTheory = SimpleWellTheory(self.getMinOutput(),
                                             self.getMaxOutput())
+        self._prices = TrendingGaussianPrices(4.50, 1.0, 25.0, 8.0, 5.0)
      
     ## literary setting
     def getLocation(self):
@@ -102,7 +103,7 @@ class WestTexas(Theme):
     def getMaxOutput(self):
         return 250
     def getOilPrices(self):
-       return GaussianPrices(4.50, 2.0, 5.0)
+        return self._prices
 
     ## oil probability distribution
     def getOilMinDropoff(self):

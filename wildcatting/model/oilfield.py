@@ -60,7 +60,8 @@ class Site(Serializable):
 
         ## don't serialize
         self.__reservoir = None
-        self.__initialDepthIndex = None
+        self.__oilFlag = False
+        self.__potentialOilDepth = None        
 
     def getCol(self):
         return self._col
@@ -71,6 +72,12 @@ class Site(Serializable):
     def setDrillCost(self, drillCost):
         assert isinstance(drillCost, int)
         self._drillCost = drillCost
+
+    def getPotentialOilDepth(self):
+        return self.__potentialOilDepth
+
+    def setPotentialOilDepth(self, potentialOilDepth):
+        self.__potentialOilDepth = potentialOilDepth
 
     def getProbability(self):
         return self._prob
@@ -116,11 +123,11 @@ class Site(Serializable):
     def setReservoir(self, reservoir):
         self.__reservoir = reservoir
 
-    def getInitialDepthIndex(self):
-        return self.__initialDepthIndex
+    def getOilFlag(self):
+        return self.__oilFlag
 
-    def setInitialDepthIndex(self, initialDepthIndex):
-        self.__initialDepthIndex = initialDepthIndex
+    def setOilFlag(self, oilFlag):
+        self.__oilFlag = oilFlag
 
     def week(self, oilPrice, wellTheory, currentWeek):
         if self._well is not None:

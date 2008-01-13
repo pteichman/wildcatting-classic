@@ -85,7 +85,7 @@ class OilFiller(PeakedFiller):
 
         r = random.randint(0, 100)
         if (r < value):
-            site.setInitialDepthIndex(random.randint(1,10))
+            site.setOilFlag(True)
 
     def getMinDropoff(self):
         return self._theme.getOilMinDropoff()
@@ -129,6 +129,35 @@ class DrillCostFiller(PeakedFiller):
     def getLesserPeakFactor(self):
         return self._theme.getDrillCostLesserPeakFactor()
 
+
+class PotentialOilDepthFiller(PeakedFiller):
+    def __init__(self, theme):
+        assert isinstance(theme, Theme)
+        self._theme = theme
+    
+    def getValueRange(self):
+        return (1, 10)
+
+    def fillSite(self, site, value):
+        if site.getOilFlag():
+            site.setPotentialOilDepth(11 - value)
+
+    def getMinDropoff(self):
+        return 0
+    
+    def getMaxDropoff(self):
+        return 0
+    
+    def getMaxPeaks(self):
+        return 10
+    
+    def getFudge(self):
+        return 0
+    
+    def getLesserPeakFactor(self):
+        return 1
+
+
 class ReservoirFiller(Filler):
     log = logging.getLogger("Wildcatting")
     def __init__(self, theme):
@@ -144,7 +173,7 @@ class ReservoirFiller(Filler):
         for row in xrange(field.getHeight()):
             for col in xrange(field.getWidth()):
                 site = field.getSite(row, col)
-                if site.getInitialDepthIndex() is None: continue
+                if not site.getOilFlag(): continue
                 adjacentSites = []
                 for (adjacentRow, adjacentCol) in [(row + 1, col), (row, col + 1)]:
                     if adjacentRow >= height or adjacentCol >= width:
@@ -161,9 +190,9 @@ class ReservoirFiller(Filler):
         return reserves
 
     def _fillSite(self, site, adjacentSites):
-        initialDepth = site.getInitialDepthIndex()
+        initialDepth = site.getPotentialOilDepth()
         for adjacentSite in adjacentSites:
-            if adjacentSite.getInitialDepthIndex() is not None:
+            if initialDepth == adjacentSite.getPotentialOilDepth():
                 self._siteCount += 1
                 reservoir = site.getReservoir()
                 initialReserves = self._getInitialReserves()
@@ -172,7 +201,7 @@ class ReservoirFiller(Filler):
                     reservoir = Reservoir(initialDepth, initialReserves)
                     site.setReservoir(reservoir)
                 
-                reservoir.join(adjacentSite.getInitialDepthIndex(), initialReserves)
+                reservoir.join(adjacentSite.getPotentialOilDepth(), initialReserves)
                 adjacentSite.setReservoir(reservoir)
 
 
@@ -216,6 +245,7 @@ class Game:
         
         self._oilField = wildcatting.model.OilField(width, height)
         OilFiller(theme).fill(self._oilField)
+        PotentialOilDepthFiller(theme).fill(self._oilField)
         ReservoirFiller(theme).fill(self._oilField)
         DrillCostFiller(theme).fill(self._oilField)
         TaxFiller(theme).fill(self._oilField)

@@ -270,9 +270,11 @@ class Client:
         while not self._wildcatting.isGameFinished():
             c = None
             if self._isMyTurn() and not moved:
+                curses.curs_set(0)
                 wildcattingView.indicateTurn()
                 curses.cbreak()
                 c = self._stdscr.getch()
+                curses.curs_set(1)
                 moved = True
             
             actions = wildcattingView.input(c, refresh)

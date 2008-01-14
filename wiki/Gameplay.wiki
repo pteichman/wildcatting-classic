@@ -31,7 +31,7 @@ to a site using the arrow keys and press space to survey, then decide
 if you want to drill.  You cannot survey a site that has already been
 surveyed.
 
-Use the space bar to cycle between views of the oil field.  You get probability, drilling costs, and oil depth.
+Use the tab key to cycle between views of the oil field.  You get probability, drilling costs, and oil depth.
 
 ==Surveyor's Report==
 

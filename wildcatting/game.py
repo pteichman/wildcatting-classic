@@ -210,13 +210,8 @@ class ReservoirFiller(Filler):
                 reservoir.join(adjacentSite.getPotentialOilDepth(), initialReserves)
                 adjacentSite.setReservoir(reservoir)
             else:
-                ## only exceptionally plentiful single site reservoirs have enough oil to pump.
-                ## this lowers the amount of oil in the world, but keeps things visually sane.
-                ## it also makes the surveyors reports optimistic, but that seems in the spirit
-                ## of wildcatting?
-                if initialReserves > 2 * self._theme.getMeanSiteReserves():
-                    self._reservoirCount += 1
-                    site.setReservoir(Reservoir(initialDepth, initialReserves))
+                self._reservoirCount += 1
+                site.setReservoir(Reservoir(initialDepth, initialReserves))
 
 
 class TaxFiller:

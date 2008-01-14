@@ -100,7 +100,10 @@ class Client:
     def _connectToGame(self):
         if self._handle is not None:
             # connecting to a game already in progress
+            username = self._usernames[0]
             self._gameId = self._server.game.getGameId(self._handle)
+            self._symbols[username] = username[0].upper()
+            self._handles[username] = self._handle
             self.log.info("Reconnected to game handle: %s", self._handle)
         elif self._gameId is not None:
             # joining a new game
@@ -286,8 +289,10 @@ class Client:
         
         # make sure we can fit
         availableWidth, availableHeight = self._getAvailableFieldSize()
-        if availableHeight < self._wildcatting.getPlayerField().getHeight() \
-               or availableWidth < self._wildcatting.getPlayerField().getWidth():
+
+        playerField = self._wildcatting.getPlayerField()
+        if availableHeight < playerField.getHeight() \
+               or availableWidth < playerField.getWidth():
             w, h = self._stdscr.getmaxyx()
             raise Exception("Console must be at least %dx%d (is %dx%d)"
                             % (playerField.getWidth() + WildcattingView.SIDE_PADDING,

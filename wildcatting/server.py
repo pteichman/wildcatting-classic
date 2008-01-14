@@ -280,11 +280,11 @@ class GameService:
         week = game.getWeek().getWeekNum()
         oilPrice = game.getOilPrice()
 
-        player = game.getWeek().getSurveyPlayer()
-        if player is None:
+        currentPlayer = game.getWeek().getSurveyPlayer()
+        if currentPlayer is None:
             playersTurn = None
         else:
-            playersTurn = player.getUsername()
+            playersTurn = currentPlayer.getUsername()
 
         pendingPlayers = self.getPendingPlayers(handle)
         gameFinished = game.isFinished()

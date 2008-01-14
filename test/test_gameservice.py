@@ -209,6 +209,53 @@ class TestGameService(unittest.TestCase):
         service.endTurn(handle1)
         service.endTurn(handle2)
 
+    def testGameWithoutSurvey(self):
+        service = GameService(DefaultTheme())
+
+        name1 = "alice"
+        well1 = name1[0].upper()
+
+        name2 = "bob"
+        well2 = name2[0].upper()
+
+        name3 = "carol"
+        well3 = name3[0].upper()
+
+        # create the game, join it
+        gameId = service.new(10, 10, 1)
+        handle1 = service.join(gameId, name1, well1)
+        handle2 = service.join(gameId, name2, well2)
+        handle3 = service.join(gameId, name3, well3)
+
+        game, player1 = service._readHandle(handle1)
+        game, player2 = service._readHandle(handle2)
+        game, player3 = service._readHandle(handle3)
+
+        service.start(handle1)
+
+        self.assertEquals(name1, service.getPlayersTurn(handle1))
+        self.assertEquals(name1, service.getPlayersTurn(handle2))
+        self.assertEquals(name1, service.getPlayersTurn(handle3))
+        site1 = Site.deserialize(service.survey(handle1, 0, 0))
+
+        service.endTurn(handle1)
+
+        self.assertEquals(name2, service.getPlayersTurn(handle1))
+        self.assertEquals(name2, service.getPlayersTurn(handle2))
+        self.assertEquals(name2, service.getPlayersTurn(handle3))
+
+        service.endTurn(handle2)
+
+        self.assertEquals(name3, service.getPlayersTurn(handle1))
+        self.assertEquals(name3, service.getPlayersTurn(handle2))
+        self.assertEquals(name3, service.getPlayersTurn(handle3))
+
+        service.endTurn(handle3)
+
+        self.assertEquals(name1, service.getPlayersTurn(handle1))
+        self.assertEquals(name1, service.getPlayersTurn(handle2))
+        self.assertEquals(name1, service.getPlayersTurn(handle3))
+
 
 if __name__ == "__main__":
     unittest.main()

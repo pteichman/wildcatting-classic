@@ -56,6 +56,11 @@ class Week:
 
     def endTurn(self, player):
         assert isinstance(player, Player)
+        assert player in self._pending
+
+        if self.isSurveyTurn(player):
+            self.endSurvey(player)
+
         self._pending.remove(player)
 
     def isTurnFinished(self, player):

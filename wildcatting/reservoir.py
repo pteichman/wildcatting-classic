@@ -26,10 +26,7 @@ class Reservoir:
         return 1.0 - (self._reserves * 1. / self._initialReserves)
 
     def pump(self, barrels):
-        import logging
-        log = logging.getLogger("Wildcatting")
-        log.info("Pumping %s barrels from %s in reserves" % (barrels, self._reserves))
-        assert 0 < barrels < self._reserves
+        assert 0 <= barrels < self._reserves
 
         self._reserves -= barrels
         

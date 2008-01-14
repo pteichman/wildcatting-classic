@@ -241,3 +241,15 @@ class OilFieldDepthView(OilFieldCursesView):
 
     def getKeyLabel(self):
         return "OIL DEPTH"
+
+    def displaySite(self, site):
+        well = site.getWell()
+        if well is None:
+            # show a "." for surveyed sites
+            symbol = "."
+            color = self._colorChooser.blankColor(site)
+        else:
+            symbol = well.getPlayer().getSymbol()
+            color = self._colorChooser.siteColor(site)
+
+        self.putch(self._win, site.getRow(), site.getCol(), ord(symbol), color)

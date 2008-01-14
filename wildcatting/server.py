@@ -286,12 +286,11 @@ class GameService:
     def getUpdate(self, handle):
         game, player = self._readHandle(handle)
 
-        week = game.getWeek().getPlayerTurn(player).getWeek()
+        week = game.getWeek().getWeekNum()
         oilPrice = game.getOilPrice()
-        playersTurn = self.getPlayersTurn(handle)
+        playersTurn = game.getWeek().getSurveyPlayer().getUsername()
         pendingPlayers = self.getPendingPlayers(handle)
         gameFinished = game.isFinished()
-        #sites = [u.serialize() for u in game.getUpdatedSites(player)]
         sites = game.getUpdatedSites(player)
 
         update = wildcatting.model.Update(week, oilPrice, playersTurn, pendingPlayers, gameFinished, sites)

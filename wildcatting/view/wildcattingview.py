@@ -160,7 +160,6 @@ class WildcattingView(View):
             coordStr = "X=%s   Y=%s" % (str(self._x).rjust(2),
                                         str(self._y).rjust(2))
             self.addCentered(self._border_win, border_h - 2, coordStr, blackOnWhite)
-
             if not self._wildcatting.isGameFinished():
                 self.addRight(self._border_win, border_h - 2,
                               "%s's turn" % turn, blackOnWhite)

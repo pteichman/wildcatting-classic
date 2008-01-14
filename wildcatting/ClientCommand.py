@@ -29,6 +29,8 @@ class ClientCommand(Command):
                         default="localhost", help="server hostname")
         self.add_option("-u", "--username", type="string",
                         default=user, help="username")
+        self.add_option("-m", "--hotseat", action="store_true",
+                        help="hotseat mode")
         self.add_option("-w", "--well", type="string",
                         default=well, help="well")
         self.add_option("-g", "--game", type="string",
@@ -59,7 +61,10 @@ class ClientCommand(Command):
             print textwrap.fill("ERROR: Server at %s requires a %s client" % (url, server_version), os.getenv("COLUMNS", 80) - 5)
             sys.exit(1)
 
-        c = Client(options.game, options.handle, options.username, options.well)
+        usernames = [options.username]
+        if options.hotseat:
+            usernames = []
+        c = Client(options.game, options.handle, usernames)
 
         self.log.info("Wildcatting client start")
         try:

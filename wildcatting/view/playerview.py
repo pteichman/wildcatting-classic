@@ -8,7 +8,7 @@ from view import View
 from wildcatting.colors import Colors
 import wildcatting.model
 
-class PlayerCount(View):
+class PlayerCountView(View):
     def __init__(self, stdscr):
         View.__init__(self, stdscr)
 
@@ -43,7 +43,7 @@ class PlayerCount(View):
             time.sleep(1.0)
             self.display()
 
-class PlayerNames(View):
+class PlayerNamesView(View):
     def __init__(self, stdscr, count):
         View.__init__(self, stdscr)
 
@@ -89,12 +89,12 @@ class PlayerNames(View):
 
 if __name__ == "__main__":
     def main(stdscr):
-        view = PlayerCount(stdscr)
+        view = PlayerCountView(stdscr)
         view.display()
 
         count = view.input()
 
-        view = PlayerNames(stdscr, count)
+        view = PlayerNamesView(stdscr, count)
         view.display()
 
         global names

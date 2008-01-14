@@ -5,7 +5,7 @@ import time
 
 from view import OilFieldCursesView, WildcattingView, SurveyorsReportView, \
      PregameReportView, WeeklyReportView, DrillView, WeeklySummaryView, \
-     FadeInOilFieldCursesAnimator
+     FadeInOilFieldCursesAnimator, PlayerCountView, PlayerNamesView
 from report import WeeklyReport
 from game import Game
 from colors import Colors
@@ -88,11 +88,12 @@ class Wildcatting:
 class Client:
     log = logging.getLogger("Wildcatting")
     
-    def __init__(self, gameId, handle, username, symbol):
+    def __init__(self, gameId, handle, usernames):
         self._gameId = gameId
         self._handle = handle
-        self._username = username
-        self._symbol = symbol
+        self._usernames = usernames
+        self._handles = {}
+        self._symbols = {}
 
         self._wildcatting = Wildcatting()
 
@@ -103,41 +104,53 @@ class Client:
             self.log.info("Reconnected to game handle: %s", self._handle)
         elif self._gameId is not None:
             # joining a new game
-            self._handle = self._server.game.join(self._gameId, self._username, self._symbol)
-            self.log.info("Joined game: %s", self._gameId)
-            self.log.info("To reconnect, run with --handle %s" % self._handle)
+            for username in self._usernames:
+                self._symbols[username] = username[0].upper()
+                self._handles[username] = self._server.game.join(self._gameId, username, self._symbols[username])
+                self.log.info("Joined game: %s (%s)", self._gameId, username)
+                self.log.info("To reconnect, run with --handle %s" % self._handles[username])
         else:
             # creating a new game
             w, h = self._getAvailableFieldSize()
             self._gameId = self._server.game.new(w, h, 13)
-            self._handle = self._server.game.join(self._gameId, self._username, self._symbol)
             self.log.info("Created a new game: ID is %s", self._gameId)
-            self.log.info("To reconnect, run with --handle %s" % self._handle)
+            for username in self._usernames:
+                self._symbols[username] = username[0].upper()
+                self._handles[username] = self._server.game.join(self._gameId, username, self._symbols[username])
+                self.log.info("To reconnect, run with --handle %s (%s)" % (self._handle, username))
 
-    def _runPreGame(self, gameId, username):
-        while not self._server.game.isStarted(self._handle):
-            players = self._server.game.listPlayers(self._handle)
+    def _getCurrentHandle(self):
+        player = self._wildcatting.getPlayersTurn()
+        return self._handles.get(player, self._handle)
+
+    def _runPreGame(self, gameId, usernames):
+        # any handle is good for getting player list
+        handle = self._clientHandle = self._handles.values()[0]
+
+        while not self._server.game.isStarted(handle):
+            players = self._server.game.listPlayers(handle)
 
             isMaster = False
-            if players[0] == username:
+            if players[0] in usernames:
                 isMaster = True
+                masterHandle = self._handles[players[0]]
 
             report = PregameReportView(self._stdscr, gameId, isMaster, players)
             report.display()
 
             start = report.input()
             if start and isMaster:
-                self._server.game.start(self._handle)
+                self._server.game.start(masterHandle)
 
     def _getNewPlayerField(self):
-        playerField = OilField.deserialize(self._server.game.getPlayerField(self._handle))
+        playerField = OilField.deserialize(self._server.game.getPlayerField(self._clientHandle))
         self._wildcatting.setPlayerField(playerField)
 
     def _survey(self, row, col):
         site = self._wildcatting.getPlayerField().getSite(row, col)
         surveyed = site.isSurveyed()
         if not surveyed:
-            site = Site.deserialize(self._server.game.survey(self._handle, row, col))
+            site = Site.deserialize(self._server.game.survey(self._getCurrentHandle(), row, col))
             self._wildcatting.updatePlayerField(site)
 
         report = SurveyorsReportView(self._stdscr, site, surveyed)
@@ -145,7 +158,7 @@ class Client:
         return report.input()
 
     def _drillAWell(self, row, col):
-        site = Site.deserialize(self._server.game.erect(self._handle, row, col))
+        site = Site.deserialize(self._server.game.erect(self._getCurrentHandle(), row, col))
         self._wildcatting.updatePlayerField(site)
         if site.getWell().getOutput() is None:
             self._runDrill(row, col)
@@ -158,7 +171,7 @@ class Client:
             drillView.display()
             actions = drillView.input()
             if "drill" in actions:
-                wellUpdate = self._server.game.drill(self._handle, row, col)
+                wellUpdate = self._server.game.drill(self._getCurrentHandle(), row, col)
                 well = Well.deserialize(wellUpdate)
                 site.setWell(well)
                 drillView.display()
@@ -178,7 +191,7 @@ class Client:
         return site
 
     def _endTurn(self):
-        u, wellUpdates = self._server.game.endTurn(self._handle)
+        u, wellUpdates = self._server.game.endTurn(self._getCurrentHandle())
         update = Update.deserialize(u)
         
         updated, weekUpdated = self._wildcatting.update(update)
@@ -193,13 +206,18 @@ class Client:
             self._runWeeklySummary()
 
     def _runWeeklyReport(self):
-        ## FIXME we want to move WeeklyReport generation to the server side.
-        ## oil prices and other economic details live there
-        report = WeeklyReport(self._wildcatting.getPlayerField(), self._username, self._symbol, \
-                              self._wildcatting.getWeek(), self._setting, \
+        player = self._wildcatting.getPlayersTurn()
+        symbol = self._symbols[player]
+        handle = self._getCurrentHandle()
+
+        report = WeeklyReport(self._wildcatting.getPlayerField(),
+                              player, symbol,
+                              self._wildcatting.getWeek(), self._setting,
                               self._wildcatting.getOilPrice())
-        reportView = WeeklyReportView(self._stdscr, report, self._wildcatting.getPlayerField())
+        reportView = WeeklyReportView(self._stdscr, report,
+                                      self._wildcatting.getPlayerField())
         reportView.display()
+
         actions = {}
         while not "nextPlayer" in actions:
             actions = reportView.input()
@@ -208,20 +226,21 @@ class Client:
                 site = self._wildcatting.getPlayerField().getSite(row, col)
                 if site.getWell().isSold():
                     continue
-                self._server.game.sell(self._handle, row, col)
-                site = Site.deserialize(self._server.game.getPlayerSite(self._handle, row, col))
+                self._server.game.sell(handle, row, col)
+                site = Site.deserialize(self._server.game.getPlayerSite(handle, row, col))
                 self._wildcatting.updatePlayerField(site)
-                ## FIXME we want to move WeeklyReport generation to the server side
-                ## oil prices and other economic details live there
-                report = WeeklyReport(self._wildcatting.getPlayerField(), self._username, \
-                                      self._symbol, self._wildcatting.getWeek(), self._setting, \
+
+                report = WeeklyReport(self._wildcatting.getPlayerField(),
+                                      player, symbol,
+                                      self._wildcatting.getWeek(), self._setting,
                                       self._wildcatting.getOilPrice())
+
                 reportView.setField(self._wildcatting.getPlayerField())
                 reportView.setReport(report)
                 reportView.display()
 
     def _runWeeklySummary(self):
-        report = WeeklySummary.deserialize(self._server.game.getWeeklySummary(self._handle))
+        report = WeeklySummary.deserialize(self._server.game.getWeeklySummary(self._clientHandle))
         weeklySummaryView = WeeklySummaryView(self._stdscr, report)
         weeklySummaryView.display(self._wildcatting.isGameFinished())
         
@@ -230,23 +249,37 @@ class Client:
             actions = weeklySummaryView.input()
 
     def _updateWildcatting(self):
-        update = Update.deserialize(self._server.game.getUpdate(self._handle))
+        update = Update.deserialize(self._server.game.getUpdate(self._clientHandle))
         return self._wildcatting.update(update)
 
     def _isMyTurn(self):
-        return self._wildcatting.getPlayersTurn() == self._username
+        return self._wildcatting.getPlayersTurn() in self._usernames
 
     def _getAvailableFieldSize(self):
         (h, w) = self._stdscr.getmaxyx()
         availableWidth = w - WildcattingView.SIDE_PADDING
         availableHeight = h - WildcattingView.TOP_PADDING
         return availableWidth, availableHeight
+
+    def _inputUserNames(self, stdscr):
+        view = PlayerCountView(stdscr)
+        view.display()
+
+        count = view.input()
+
+        view = PlayerNamesView(stdscr, count)
+        view.display()
+
+        self._usernames = view.input()
         
     def wildcatting(self, stdscr):
         self._stdscr = stdscr
 
+        if len(self._usernames) == 0:
+            self._inputUserNames(stdscr)
+
         self._connectToGame()
-        self._runPreGame(self._gameId, self._username)
+        self._runPreGame(self._gameId, self._usernames)
 
         self._getNewPlayerField()
         self._updateWildcatting()
@@ -293,6 +326,9 @@ class Client:
                     self._drillAWell(row, col)
                 self._runWeeklyReport()
                 self._endTurn()
+                updated, weekUpdated = self._updateWildcatting()
+                if updated:
+                    wildcattingView.display()
 
                 # back to the original refresh interval
                 refresh = origRefresh

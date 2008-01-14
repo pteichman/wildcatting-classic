@@ -1,7 +1,10 @@
+import logging
 from wildcatting.model import Player
 import wildcatting.turn
 
 class Week:
+    log = logging.getLogger("Wildcatting")
+
     def __init__(self, weekNum, players, price):
         self._weekNum = weekNum
 
@@ -69,5 +72,4 @@ class Week:
         return self._pending
 
     def isFinished(self):
-        "Checking for finished week: len is %d" % len(self._pending)
         return len(self._pending) == 0

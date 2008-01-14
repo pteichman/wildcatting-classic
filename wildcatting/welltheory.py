@@ -18,6 +18,8 @@ class SimpleWellTheory:
         ## diminishing returns for increased capacity.  not too relevant yet.
         c = well.getCapacity() * 1.0
         output += (c - 1) * output - math.pow(c - 1, 2)
+        ## the most you can ever get at once is half
+        output = min(output, reservoir.getReserves() / 2.0)
         ## the first oil is the lightest, the sweetest, and the easiest to pump
         output = (1.0 - ratioPumped) * output
         

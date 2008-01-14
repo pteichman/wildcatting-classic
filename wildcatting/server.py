@@ -86,15 +86,6 @@ class GameService:
 
         return (game, player)
 
-    def _getSecret(self, playerId):
-        assert isinstance(playerId, str)
-
-        secret = self._secrets.get(playerId)
-        if secret is None:
-            raise WildcattingException("Unregistered player id: " + gameId)
-        
-        return secret
-
     def _ensureSurveyTurn(self, game, player):
         if game.isFinished():
             raise WildcattingException("Game is over")
@@ -288,7 +279,13 @@ class GameService:
 
         week = game.getWeek().getWeekNum()
         oilPrice = game.getOilPrice()
-        playersTurn = game.getWeek().getSurveyPlayer().getUsername()
+
+        player = game.getWeek().getSurveyPlayer()
+        if player is None:
+            playersTurn = None
+        else:
+            playersTurn = player.getUsername()
+
         pendingPlayers = self.getPendingPlayers(handle)
         gameFinished = game.isFinished()
         sites = game.getUpdatedSites(player)

@@ -209,6 +209,7 @@ class WildcattingView(View):
 
         self._stdscr.move(self._y + 2, self._x + 4)
         self._field_win.refresh()
+        curses.curs_set(0)
         self._drawKeyBar()
             
         dx = 0 ; dy = 0
@@ -216,6 +217,7 @@ class WildcattingView(View):
 
         curses.mousemask(curses.BUTTON1_CLICKED)
         curses.halfdelay(refresh)
+        curses.curs_set(1)
 
         if c is None:
             c = self._stdscr.getch()
@@ -245,7 +247,7 @@ class WildcattingView(View):
 
         if survey:
             actions["survey"] = (self._y, self._x)
-            
+
         return actions
 
     def animateGameEnd(self):

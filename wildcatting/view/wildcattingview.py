@@ -192,6 +192,8 @@ class WildcattingView(View):
             bkgd, text = self.getGreenFGBG()
             self.addCentered(self._border_win, border_h - 2,
                              "." * (border_w - 2), text)
+        else:
+            go = go.center(border_w - 2)
 
         self.addCentered(self._border_win, border_h - 2, go, blackOnGreen)
         self._stdscr.move(self._y + 2, self._x + 4)

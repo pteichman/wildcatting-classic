@@ -187,7 +187,6 @@ class Client:
                 drillView.setMessage("DRY HOLE!")
                 drillView.display()
                 time.sleep(3)
-                curses.flushinp()
         else:
             # extrapolate the site's oil depth rather than hit the
             # server again.  atleast for now.
@@ -331,6 +330,7 @@ class Client:
                 drillAWell = self._survey(row, col)
                 if drillAWell:
                     self._drillAWell(row, col)
+                curses.flushinp()
                 self._runWeeklyReport()
                 self._endTurn()
                 updated, weekUpdated = self._updateWildcatting()
@@ -355,6 +355,7 @@ class Client:
                     curses.halfdelay(refresh)
                 
                 if weekUpdated and not self._wildcatting.isGameFinished():
+                    curses.flushinp()
                     self._runWeeklySummary()                    
                 if updated:
                     wildcattingView.display()
@@ -362,6 +363,7 @@ class Client:
         self._stdscr.refresh()
         self._getNewPlayerField()
         wildcattingView.animateGameEnd()
+        curses.flushinp()
 
         curses.curs_set(0)
         actions = {}

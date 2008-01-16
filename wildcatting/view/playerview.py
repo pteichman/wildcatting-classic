@@ -67,25 +67,44 @@ class PlayerNamesView(View):
             row = i*2+1
             self.addLeft(self._win, row, "%d. " % i, pad=10)
 
-            win = self._win.derwin(1, w-13*2, row, 13)
+            # name field
+            name_w = w-13*2-3
+            win = self._win.derwin(1, name_w, row, 13)
+            textpad = curses.textpad.Textbox(win)
+            self._textpads.append(textpad)
 
+            # symbol field
+            win = self._win.derwin(1, 2, row, 13+name_w+3)
             textpad = curses.textpad.Textbox(win)
             self._textpads.append(textpad)
             
         self._win.refresh()
 
     def input(self):
-        names = []
+        players = []
         for i in xrange(self._count):
-            self._textpads[i].edit()
-            name = self._textpads[i].gather().strip()
+            nameField = self._textpads[2*i]
+            symbolField = self._textpads[2*i+1]
+            
+            nameField.edit()
+            name = nameField.gather().strip()
+
+            defaultSymbol = name[0].upper()
+
+            symbolField.win.addch(0, 0, defaultSymbol)
+            symbolField.edit()
+            symbol = symbolField.gather().strip()
 
             # mac workaround.. we have hidden dots all over the screen
             name = name.strip(".")
-            
-            names.append(name)
+            symbol = symbol.strip(".")
 
-        return names
+            if len(symbol) == 0:
+                symbol = defaultSymbol
+            
+            players.append((name, symbol))
+
+        return players
 
 if __name__ == "__main__":
     def main(stdscr):

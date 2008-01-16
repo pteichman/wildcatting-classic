@@ -88,14 +88,14 @@ class Wildcatting:
 class Client:
     log = logging.getLogger("Wildcatting")
     
-    def __init__(self, weeks, gameId, connectHandle, connectUsername):
+    def __init__(self, weeks, gameId, connectHandle, connectPlayer):
         self._connectGameId = gameId
         self._connectHandle = connectHandle
-        self._connectUsernames = None
+        self._connectPlayers = None
         self._weeks = weeks
 
-        if connectUsername is not None:
-            self._connectUsernames = [connectUsername]
+        if connectPlayer is not None:
+            self._connectPlayers = [connectPlayer]
 
         self._clientInfo = None
 
@@ -113,10 +113,9 @@ class Client:
             self._connectHandle = self._server.game.new(w, h, self._weeks)
             self.log.info("Created a new game with client id: %s", self._connectHandle)
 
-        # joining a new game
-        for username in self._connectUsernames:
-            symbol = username[0].upper()
-            self._server.game.join(self._connectHandle, username, symbol)
+            # joining a new game
+            for (username, symbol) in self._connectPlayers:
+                self._server.game.join(self._connectHandle, username, symbol)
 
         self._clientInfo = ClientInfo.deserialize(self._server.game.getClientInfo(self._connectHandle))
 
@@ -272,12 +271,12 @@ class Client:
         view = PlayerNamesView(stdscr, count)
         view.display()
 
-        self._connectUsernames = view.input()
+        self._connectPlayers = view.input()
         
     def wildcatting(self, stdscr):
         self._stdscr = stdscr
 
-        if self._connectUsernames is None:
+        if self._connectPlayers is None:
             self._inputUserNames(stdscr)
 
         self._connectToGame()

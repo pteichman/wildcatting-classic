@@ -64,11 +64,11 @@ class ClientCommand(Command):
             sys.exit(1)
 
         if options.hotseat:
-            username = None
+            player = None
         else:
-            username = options.username
+            player = (options.username, options.symbol)
 
-        c = Client(options.weeks, options.game, options.handle, username)
+        c = Client(options.weeks, options.game, options.handle, player)
 
         self.log.info("Wildcatting client start")
         try:

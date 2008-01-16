@@ -77,6 +77,7 @@ class WeeklyReportView(View):
 
         # start cursor on nextPlayer prompt
         self._cursorTurn = None
+        self._page = (report.getWeek() - 1) / 13
 
     def setReport(self, report):
         self._report = report
@@ -97,10 +98,10 @@ class WeeklyReportView(View):
         self.addRight(self._win, 0, "WEEK %s" % self._report.getWeek())
         self._win.addstr(1, 1, "  X   Y   COST     TAX     INCOME     P&L")
 
-        sumProfitAndLoss = 0
         week = self._report.getWeek()
         reportDict = self._report.getReportDict()
-        for turn in xrange(1, week + 1):
+        lastWeekOnPage = min(week, 13 * (self._page + 1))
+        for turn in xrange((self._page * 13) + 1, lastWeekOnPage + 1):
             if turn in reportDict:
                 rowDict = reportDict[turn]
                 row = rowDict["row"]
@@ -110,16 +111,16 @@ class WeeklyReportView(View):
                     symbol = " "
                 else:
                     symbol = self._report.getSymbol()
-                self._win.addstr(turn + 1, 0, symbol, self._colorChooser.siteColor(site))
+                self._win.addstr(turn - (self._page * 13) + 1, 0, symbol, self._colorChooser.siteColor(site))
             else:
                 rowDict = {"row": 0, "col":0, "cost":0, "tax":0, "income":0, "profitAndLoss":0}
 
             well_str = " %(col)02s %(row)03s   $%(cost)04s    $%(tax)04s   $%(income)04s      $%(profitAndLoss)7s" % rowDict
-            self._win.addstr(turn + 1, 1, well_str)
-            sumProfitAndLoss += rowDict["profitAndLoss"]
+            self._win.addstr(turn - (self._page * 13) + 1, 1, well_str)
 
         self._win.addstr(15, 0, " NEXT PLAYER")
-        self._win.addstr(15, 35, "$ %s" % str(sumProfitAndLoss).rjust(10))
+        if self._page == (self._report.getWeek() - 1) / 13:
+            self._win.addstr(15, 35, "$ %s" % str(self._report.getProfitAndLoss()).rjust(10))
         self._moveCursor()
         self._win.refresh()
 
@@ -127,7 +128,7 @@ class WeeklyReportView(View):
         if self._cursorTurn is None:
             row = 15
         else:
-            row = self._cursorTurn + 1
+            row = self._cursorTurn - (self._page * 13) + 1
         self._win.move(row, 0)
 
     def _input(self):
@@ -137,9 +138,9 @@ class WeeklyReportView(View):
         c = self._stdscr.getch()
         if c == curses.KEY_UP:
             if self._cursorTurn is None:
-                self._cursorTurn = self._report.getWeek()
+                self._cursorTurn = min(self._report.getWeek(), 13 * (self._page + 1))
                 self._moveCursor()
-            elif self._cursorTurn == 1:
+            elif self._cursorTurn - (self._page * 13) == 1:
                 pass
             else:
                 self._cursorTurn -= 1
@@ -147,12 +148,22 @@ class WeeklyReportView(View):
         elif c == curses.KEY_DOWN:
             if self._cursorTurn is None:
                 pass
-            elif self._cursorTurn == self._report.getWeek():
+            elif self._cursorTurn == min(self._report.getWeek(), 13 * (self._page + 1)):
                 self._cursorTurn = None
                 self._moveCursor()
             else:
                 self._cursorTurn += 1
                 self._moveCursor()
+        elif c == curses.KEY_PPAGE:
+            if self._page > 0:
+                self._page -= 1
+                self._cursorTurn = None
+                self.display()
+        elif c == curses.KEY_NPAGE:
+            if self._page < int((self._report.getWeek() - 1) / 13):
+                self._page += 1
+                self._cursorTurn = None
+                self.display()
         elif c == ord(" ") or c == ord("\n"):
             if self._cursorTurn is None:
                 actions["nextPlayer"] = True

@@ -10,6 +10,8 @@ class WeeklyReport:
         self._week = week
         self._setting = setting
         self._oilPrice = oilPrice
+
+        self._profitAndLoss = 0
         
         self._reportDict = self._buildReportDict(field)
 
@@ -31,7 +33,9 @@ class WeeklyReport:
                         rowDict["cost"] = cost = well.getInitialCost()
                         rowDict["tax"] = tax = site.getTax()
                         rowDict["income"] = income = int(output * self._oilPrice)
-                        rowDict["profitAndLoss"] = well.getProfitAndLoss()
+                        wellProfitAndLoss = well.getProfitAndLoss()
+                        rowDict["profitAndLoss"] = wellProfitAndLoss
+                        self._profitAndLoss += wellProfitAndLoss
                         
                         sites[well.getWeek()] = rowDict
         return sites
@@ -50,3 +54,6 @@ class WeeklyReport:
 
     def getOilPrice(self):
         return self._setting.getPriceFormat() % self._oilPrice
+
+    def getProfitAndLoss(self):
+        return self._profitAndLoss

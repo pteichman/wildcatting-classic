@@ -187,6 +187,7 @@ class Client:
                 drillView.setMessage("DRY HOLE!")
                 drillView.display()
                 time.sleep(3)
+                curses.flushinp()
         else:
             # extrapolate the site's oil depth rather than hit the
             # server again.  atleast for now.

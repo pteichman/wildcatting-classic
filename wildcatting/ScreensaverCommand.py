@@ -4,7 +4,7 @@ import random
 import curses
 
 from wildcatting.cmdparse import Command
-from wildcatting.view import OilFieldTextView, OilFieldCursesView, FadeInOilFieldCursesAnimator
+from wildcatting.view import OilFieldTextView, OilFieldProbabilityView, OilFieldDrillCostView, FadeInOilFieldCursesAnimator
 from wildcatting.game import Game
 from wildcatting.client import Wildcatting
 
@@ -23,6 +23,10 @@ class ScreensaverCommand(Command):
                         help="enable ansi display")
         self.add_option("", "--fade-in", action="store_true",
                         help="fade in mode")
+        self.add_option("", "--probability", action="store_true",
+                        default=True, help="probabilty landscapes")
+        self.add_option("", "--drill-cost", action="store_true",
+                        help="drill cost landscapes")
 
         self.y_border = 2
         self.x_border = 3
@@ -94,7 +98,10 @@ class ScreensaverCommand(Command):
 
             w = Wildcatting()
             w.setPlayerField(field)
-            view = OilFieldCursesView(win, w)
+            if options.drill_cost:
+                view = OilFieldDrillCostView(win, w, 1, 25)
+            elif options.probability:
+                view = OilFieldProbabilityView(win, w)
 
             for row in xrange(field.getHeight()):
                 for col in xrange(field.getWidth()):

@@ -153,7 +153,7 @@ class GameService:
 
         return clientHandle.split(GameService.HANDLE_SEP, 2)
 
-    def _newClientHandle(self, gameId):
+    def newClientHandle(self, gameId):
         game = self._games[gameId]
         clientId = game._newClientId()
         self.log.info("New client handle requested for game %s: %s",
@@ -170,7 +170,7 @@ class GameService:
 
         self._games[gameId] = Game(width, height, turnCount, self._theme)
 
-        return self._newClientHandle(gameId)
+        return self.newClientHandle(gameId)
 
     def join(self, clientHandle, username, symbol):
         assert isinstance(clientHandle, str)

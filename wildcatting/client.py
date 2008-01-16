@@ -104,14 +104,15 @@ class Client:
     def _connectToGame(self):
         if self._connectHandle is not None:
             self.log.info("Reconnecting to handle: %s", self._connectHandle)
-        elif self._connectGameId is not None:
-            # connecting to an existing game
-            self._connectHandle = self._server.game.newClient(self._connectGameId)
         else:
-            # creating a new game
-            w, h = self._getAvailableFieldSize()
-            self._connectHandle = self._server.game.new(w, h, self._weeks)
-            self.log.info("Created a new game with client id: %s", self._connectHandle)
+            if self._connectGameId is not None:
+                # connecting to an existing game
+                self._connectHandle = self._server.game.newClientHandle(self._connectGameId)
+            else:
+                # creating a new game
+                w, h = self._getAvailableFieldSize()
+                self._connectHandle = self._server.game.new(w, h, self._weeks)
+                self.log.info("Created a new game with client id: %s", self._connectHandle)
 
             # joining a new game
             for (username, symbol) in self._connectPlayers:
@@ -127,15 +128,17 @@ class Client:
         gameId = self._clientInfo.getGameId()
         handle = self._clientInfo.getClientHandle()
 
+        self.log.info(self._clientInfo._players)
+
         while not self._server.game.isStarted(handle):
             players = self._server.game.listPlayers(handle)
+            master = players[0]
 
             isMaster = False
-            for player in players:
-                if self._clientInfo.hasPlayer(player):
-                    isMaster = True
+            if self._clientInfo.hasPlayer(master):
+                isMaster = True
 
-            report = PregameReportView(self._stdscr, gameId, True, players)
+            report = PregameReportView(self._stdscr, gameId, isMaster, players)
             report.display()
 
             start = report.input()

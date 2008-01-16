@@ -272,7 +272,7 @@ class Game:
                   for i in xrange(0, 16)])
 
     def getClientPlayers(self, clientId):
-        return self._clients[clientId]
+        return self._clients.get(clientId, [])
 
     def addPlayer(self, clientId, player):
         assert isinstance(player, wildcatting.model.Player)

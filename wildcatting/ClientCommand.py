@@ -20,7 +20,7 @@ class ClientCommand(Command):
         user = os.environ.get("USER")
         if user is None:
             user = "none"
-        well = user[0].upper()
+        symbol = user[0].upper()
 
         self.add_option("", "--no-network", action="store_true") 
         self.add_option("-p", "--port", type="int",
@@ -31,8 +31,10 @@ class ClientCommand(Command):
                         default=user, help="username")
         self.add_option("-m", "--hotseat", action="store_true",
                         help="hotseat mode")
-        self.add_option("-w", "--well", type="string",
-                        default=well, help="well")
+        self.add_option("-s", "--symbol", type="string",
+                        default=symbol, help="well symbol")
+        self.add_option("-w", "--weeks", type="int",
+                         default="13", help="length of game in weeks")
         self.add_option("-g", "--game", type="string",
                         default=None, help="game id")
         self.add_option("-r", "--handle", type="string",
@@ -64,7 +66,7 @@ class ClientCommand(Command):
         usernames = [options.username]
         if options.hotseat:
             usernames = []
-        c = Client(options.game, options.handle, usernames)
+        c = Client(options.game, options.handle, usernames, options.weeks)
 
         self.log.info("Wildcatting client start")
         try:

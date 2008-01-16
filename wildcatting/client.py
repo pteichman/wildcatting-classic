@@ -88,12 +88,13 @@ class Wildcatting:
 class Client:
     log = logging.getLogger("Wildcatting")
     
-    def __init__(self, gameId, handle, usernames):
+    def __init__(self, gameId, handle, usernames, weeks):
         self._gameId = gameId
         self._handle = handle
         self._usernames = usernames
         self._handles = {}
         self._symbols = {}
+        self._weeks = weeks
 
         self._wildcatting = Wildcatting()
 
@@ -115,7 +116,7 @@ class Client:
         else:
             # creating a new game
             w, h = self._getAvailableFieldSize()
-            self._gameId = self._server.game.new(w, h, 13)
+            self._gameId = self._server.game.new(w, h, self._weeks)
             self.log.info("Created a new game: ID is %s", self._gameId)
             for username in self._usernames:
                 self._symbols[username] = username[0].upper()

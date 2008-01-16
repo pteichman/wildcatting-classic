@@ -63,10 +63,12 @@ class ClientCommand(Command):
             print textwrap.fill("ERROR: Server at %s requires a %s client" % (url, server_version), os.getenv("COLUMNS", 80) - 5)
             sys.exit(1)
 
-        usernames = [options.username]
         if options.hotseat:
-            usernames = []
-        c = Client(options.game, options.handle, usernames, options.weeks)
+            username = None
+        else:
+            username = options.username
+
+        c = Client(options.weeks, options.game, options.handle, username)
 
         self.log.info("Wildcatting client start")
         try:

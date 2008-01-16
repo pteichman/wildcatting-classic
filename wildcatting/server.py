@@ -78,13 +78,24 @@ class GameService:
 
     def _readHandle(self, handle):
         assert isinstance(handle, str)
-        
+
+        self.log.debug("Reading handle: %s", handle)
         (gameId, playerName, secret) = self._decodeGameHandle(handle)
 
         game = self._getGame(gameId)
         player = game.getPlayer(playerName, secret)
 
         return (game, player)
+
+    def _readClientHandle(self, handle):
+        assert isinstance(handle, str)
+        
+        (gameId, clientId) = self._decodeClientHandle(handle)
+        self.log.info("gameId: %s, clientId: %s", gameId, clientId)
+
+        game = self._getGame(gameId)
+
+        return (game, clientId)
 
     def _ensureSurveyTurn(self, game, player):
         if game.isFinished():
@@ -124,6 +135,31 @@ class GameService:
 
         return gameHandle.split(GameService.HANDLE_SEP, 2)
 
+    def _encodeClientHandle(self, gameId, clientId):
+        assert isinstance(gameId, str)
+        assert isinstance(clientId, str)
+        
+        handle = GameService.HANDLE_SEP.join((gameId, clientId))
+        return base64.b64encode(handle)
+
+    def _decodeClientHandle(self, clientHandle):
+        assert isinstance(clientHandle, str)
+
+        self.log.debug("Decoding %s", clientHandle)
+        clientHandle = base64.b64decode(clientHandle)
+        self.log.debug("Got %s", clientHandle)
+        
+        assert re.match("\d+::.+", clientHandle) is not None
+
+        return clientHandle.split(GameService.HANDLE_SEP, 2)
+
+    def _newClientHandle(self, gameId):
+        game = self._games[gameId]
+        clientId = game._newClientId()
+        self.log.info("New client handle requested for game %s: %s",
+                      gameId, clientId)
+        return self._encodeClientHandle(gameId, clientId)
+
     def new(self, width, height, turnCount):
         assert isinstance(width, int)
         assert isinstance(height, int)
@@ -133,22 +169,39 @@ class GameService:
         self._nextGameId = self._nextGameId + 1
 
         self._games[gameId] = Game(width, height, turnCount, self._theme)
-        return gameId
 
-    def join(self, gameId, username, symbol):
-        assert isinstance(gameId, str)
+        return self._newClientHandle(gameId)
+
+    def join(self, clientHandle, username, symbol):
+        assert isinstance(clientHandle, str)
         assert isinstance(username, str)
-        
-        game = self._getGame(gameId)
-        player = wildcatting.model.Player(username, symbol)
 
-        secret = game.addPlayer(player)
+        gameId, clientId = self._decodeClientHandle(clientHandle)
+        game = self._games[gameId]
+
+        player = wildcatting.model.Player(username, symbol)
+        secret = game.addPlayer(clientId, player)
 
         handle = self._encodeGameHandle(gameId, player, secret)
 
         self.log.debug("%s joined game %s (%s)", player.getUsername(), gameId, handle)
 
         return handle
+
+    def getClientInfo(self, clientHandle):
+        assert isinstance(clientHandle, str)
+
+        gameId, clientId = self._decodeClientHandle(clientHandle)
+        game = self._games[gameId]
+
+        clientInfo = wildcatting.model.ClientInfo(clientHandle, gameId)
+
+        for player in game.getClientPlayers(clientId):
+            handle = self._encodeGameHandle(gameId, player, player.getSecret())
+            clientInfo.addPlayerInfo(player.getUsername(), handle,
+                                     player.getSymbol())
+
+        return clientInfo.serialize()
 
     def survey(self, handle, row, col):
         game, player = self._readHandle(handle)
@@ -200,23 +253,24 @@ class GameService:
 
         return game.getTurn().getWeek()
 
-    def start(self, handle):
-        game, player = self._readHandle(handle)
+    def start(self, clientHandle):
+        game, clientId = self._readClientHandle(clientHandle)
 
-        if player != game.getMaster():
-            raise WildcattingException("Player is not game master")
+        master = game.getMaster()
+        if master not in game.getClientPlayers(clientId):
+            raise WildcattingException("Client is not game master")
         game.start()
 
-    def isStarted(self, handle):
-        game, player = self._readHandle(handle)
+    def isStarted(self, clientHandle):
+        game, clientId = self._readClientHandle(clientHandle)
         return game.isStarted()
 
-    def isFinished(self, handle):
-        game, player = self._readHandle(handle)
+    def isFinished(self, clientHandle):
+        game, clientId = self._readClientHandle(clientHandle)
         return game.isFinished()
 
-    def listPlayers(self, handle):
-        game, player = self._readHandle(handle)
+    def listPlayers(self, clientHandle):
+        game, clientId = self._readClientHandle(clientHandle)
 
         players = game.getPlayers()
         ret = [player.getUsername() for player in players]
@@ -253,29 +307,29 @@ class GameService:
 
         return well.sell()
 
-    def endTurn(self, handle):
+    def endTurn(self, clientHandle, handle):
         game, player = self._readHandle(handle)
 
         game.endTurn(player)
         
-        return self.getUpdate(handle), self.getWellUpdates(handle)
+        return self.getUpdate(clientHandle), self.getWellUpdates(handle)
 
-    def getPlayersTurn(self, handle):
-        game, player = self._readHandle(handle)
+    def getPlayersTurn(self, clientHandle):
+        game, clientId = self._readClientHandle(clientHandle)
 
         player = game.getWeek().getSurveyPlayer()
         if player is not None:
             return player.getUsername()
 
-    def getPendingPlayers(self, handle):
-        game, player = self._readHandle(handle)
+    def getPendingPlayers(self, clientHandle):
+        game, clientId = self._readClientHandle(clientHandle)
 
         players = game.getWeek().getPendingPlayers()
 
         return [p.getUsername() for p in players]
 
-    def getUpdate(self, handle):
-        game, player = self._readHandle(handle)
+    def getUpdate(self, clientHandle):
+        game, clientId = self._readClientHandle(clientHandle)
 
         week = game.getWeek().getWeekNum()
         oilPrice = game.getOilPrice()
@@ -286,9 +340,9 @@ class GameService:
         else:
             playersTurn = currentPlayer.getUsername()
 
-        pendingPlayers = self.getPendingPlayers(handle)
+        pendingPlayers = self.getPendingPlayers(clientHandle)
         gameFinished = game.isFinished()
-        sites = game.getUpdatedSites(player)
+        sites = game.getUpdatedSites(clientId)
 
         update = wildcatting.model.Update(week, oilPrice, playersTurn, pendingPlayers, gameFinished, sites)
         return update.serialize()
@@ -339,8 +393,8 @@ class GameService:
         if reservoir is not None:
             site.setOilDepth(reservoir.getOilDepth())
 
-    def getPlayerField(self, handle):
-        game, player = self._readHandle(handle)
+    def getPlayerField(self, clientHandle):
+        game, player = self._readClientHandle(clientHandle)
         field = game.getOilField()
 
         width, height = field.getWidth(), field.getHeight()
@@ -361,8 +415,8 @@ class GameService:
 
         return playerField.serialize()
 
-    def getWeeklySummary(self, handle):
-        game, player = self._readHandle(handle)
+    def getWeeklySummary(self, clientHandle):
+        game, clientId = self._readClientHandle(clientHandle)
 
         return wildcatting.model.WeeklySummary.serialize(game.getWeeklySummary())
 

@@ -245,10 +245,11 @@ class Game:
         self._theme = theme
         self._players = {}
         self._playerOrder = []
-        self._playerUpdates = {}
         self._isStarted = False
         self._isFinished = False
         self._weekNum = 0
+        self._clients = {}
+        self._clientUpdates = {}
 
         self._prices = theme.getOilPrices()
         
@@ -259,25 +260,34 @@ class Game:
         DrillCostFiller(theme).fill(self._oilField)
         TaxFiller(theme).fill(self._oilField)
 
-    def _generateSecret(self, player):
+    def _newClientId(self):
+        clientId = self._generateSecret()
+        self._clientUpdates[clientId] = []
+        return clientId
+
+    def _generateSecret(self):
         return "".join([random.choice(("0", "1", "2", "3", "4",
                                        "5", "6", "7", "8", "9",
                                        "A", "B", "C", "D", "E", "F"))
                   for i in xrange(0, 16)])
 
-    def addPlayer(self, player):
+    def getClientPlayers(self, clientId):
+        return self._clients[clientId]
+
+    def addPlayer(self, clientId, player):
         assert isinstance(player, wildcatting.model.Player)
 
         playerNames = [p.getUsername() for p in self._players.values()]
         if player.getUsername() in playerNames:
             raise WildcattingException("A user named %s has already joined this game" % player.getUsername())
 
-        secret = self._generateSecret(player)
+        secret = self._generateSecret()
         player.setSecret(secret)
 
         self._players[secret] = player
         self._playerOrder.append(player)
-        self._playerUpdates[player.getUsername()] = []
+
+        self._clients.setdefault(clientId, []).append(player)
 
         return secret
 
@@ -371,16 +381,15 @@ class Game:
         return wildcatting.model.WeeklySummary(self._playerOrder, self._weekNum)
 
     def markSiteUpdated(self, player, site):
-        for updatePlayer in self._playerUpdates:
-            if updatePlayer != player.getUsername():
-                updateSites = self._playerUpdates[updatePlayer]
+        for updateClient in self._clientUpdates:
+            if player.getUsername() not in self._clients[updateClient]:
+                updateSites = self._clientUpdates[updateClient]
                 if site not in updateSites:
                     updateSites.append(site)
 
-    def getUpdatedSites(self, player):
-        username = player.getUsername()
-        updates = self._playerUpdates[username]
-        self._playerUpdates[username] = []
+    def getUpdatedSites(self, clientId):
+        updates = self._clientUpdates[clientId]
+        self._clientUpdates[clientId] = []
         return updates
 
     def getOilPrice(self):

@@ -11,7 +11,7 @@ from game import Game
 from colors import Colors
 from exceptions import WildcattingException
 
-from wildcatting.model import OilField, Setting, Site, Well, WeeklySummary, Update
+from wildcatting.model import ClientInfo, OilField, Setting, Site, Well, WeeklySummary, Update
 
 class Wildcatting:
     def __init__(self):
@@ -88,66 +88,64 @@ class Wildcatting:
 class Client:
     log = logging.getLogger("Wildcatting")
     
-    def __init__(self, gameId, handle, usernames, weeks):
-        self._gameId = gameId
-        self._handle = handle
-        self._usernames = usernames
-        self._handles = {}
-        self._symbols = {}
+    def __init__(self, weeks, gameId, connectHandle, connectUsername):
+        self._connectGameId = gameId
+        self._connectHandle = connectHandle
+        self._connectUsernames = None
         self._weeks = weeks
+
+        if connectUsername is not None:
+            self._connectUsernames = [connectUsername]
+
+        self._clientInfo = None
 
         self._wildcatting = Wildcatting()
 
     def _connectToGame(self):
-        if self._handle is not None:
-            # connecting to a game already in progress
-            username = self._usernames[0]
-            self._gameId = self._server.game.getGameId(self._handle)
-            self._symbols[username] = username[0].upper()
-            self._handles[username] = self._handle
-            self.log.info("Reconnected to game handle: %s", self._handle)
-        elif self._gameId is not None:
-            # joining a new game
-            for username in self._usernames:
-                self._symbols[username] = username[0].upper()
-                self._handles[username] = self._server.game.join(self._gameId, username, self._symbols[username])
-                self.log.info("Joined game: %s (%s)", self._gameId, username)
-                self.log.info("To reconnect, run with --handle %s" % self._handles[username])
+        if self._connectHandle is not None:
+            self.log.info("Reconnecting to handle: %s", self._connectHandle)
+        elif self._connectGameId is not None:
+            # connecting to an existing game
+            self._connectHandle = self._server.game.newClient(self._connectGameId)
         else:
             # creating a new game
             w, h = self._getAvailableFieldSize()
-            self._gameId = self._server.game.new(w, h, self._weeks)
-            self.log.info("Created a new game: ID is %s", self._gameId)
-            for username in self._usernames:
-                self._symbols[username] = username[0].upper()
-                self._handles[username] = self._server.game.join(self._gameId, username, self._symbols[username])
-                self.log.info("To reconnect, run with --handle %s (%s)" % (self._handle, username))
+            self._connectHandle = self._server.game.new(w, h, self._weeks)
+            self.log.info("Created a new game with client id: %s", self._connectHandle)
+
+        # joining a new game
+        for username in self._connectUsernames:
+            symbol = username[0].upper()
+            self._server.game.join(self._connectHandle, username, symbol)
+
+        self._clientInfo = ClientInfo.deserialize(self._server.game.getClientInfo(self._connectHandle))
 
     def _getCurrentHandle(self):
         player = self._wildcatting.getPlayersTurn()
-        return self._handles.get(player, self._handle)
+        return self._clientInfo.getPlayerHandle(player)
 
-    def _runPreGame(self, gameId, usernames):
-        # any handle is good for getting player list
-        handle = self._clientHandle = self._handles.values()[0]
+    def _runPreGame(self):
+        gameId = self._clientInfo.getGameId()
+        handle = self._clientInfo.getClientHandle()
 
         while not self._server.game.isStarted(handle):
             players = self._server.game.listPlayers(handle)
 
             isMaster = False
-            if players[0] in usernames:
-                isMaster = True
-                masterHandle = self._handles[players[0]]
+            for player in players:
+                if self._clientInfo.hasPlayer(player):
+                    isMaster = True
 
-            report = PregameReportView(self._stdscr, gameId, isMaster, players)
+            report = PregameReportView(self._stdscr, gameId, True, players)
             report.display()
 
             start = report.input()
             if start and isMaster:
-                self._server.game.start(masterHandle)
+                self._server.game.start(handle)
 
     def _getNewPlayerField(self):
-        playerField = OilField.deserialize(self._server.game.getPlayerField(self._clientHandle))
+        handle = self._clientInfo.getClientHandle()
+        playerField = OilField.deserialize(self._server.game.getPlayerField(handle))
         self._wildcatting.setPlayerField(playerField)
 
     def _survey(self, row, col):
@@ -195,7 +193,7 @@ class Client:
         return site
 
     def _endTurn(self):
-        u, wellUpdates = self._server.game.endTurn(self._getCurrentHandle())
+        u, wellUpdates = self._server.game.endTurn(self._clientInfo.getClientHandle(), self._getCurrentHandle())
         update = Update.deserialize(u)
         
         updated, weekUpdated = self._wildcatting.update(update)
@@ -211,8 +209,8 @@ class Client:
 
     def _runWeeklyReport(self):
         player = self._wildcatting.getPlayersTurn()
-        symbol = self._symbols[player]
-        handle = self._getCurrentHandle()
+        handle = self._clientInfo.getPlayerHandle(player)
+        symbol = self._clientInfo.getPlayerSymbol(player)
 
         report = WeeklyReport(self._wildcatting.getPlayerField(),
                               player, symbol,
@@ -244,7 +242,7 @@ class Client:
                 reportView.display()
 
     def _runWeeklySummary(self):
-        report = WeeklySummary.deserialize(self._server.game.getWeeklySummary(self._clientHandle))
+        report = WeeklySummary.deserialize(self._server.game.getWeeklySummary(self._clientInfo.getClientHandle()))
         weeklySummaryView = WeeklySummaryView(self._stdscr, report)
         weeklySummaryView.display(self._wildcatting.isGameFinished())
         
@@ -253,11 +251,11 @@ class Client:
             actions = weeklySummaryView.input()
 
     def _updateWildcatting(self):
-        update = Update.deserialize(self._server.game.getUpdate(self._clientHandle))
+        update = Update.deserialize(self._server.game.getUpdate(self._clientInfo.getClientHandle()))
         return self._wildcatting.update(update)
 
     def _isMyTurn(self):
-        return self._wildcatting.getPlayersTurn() in self._usernames
+        return self._clientInfo.hasPlayer(self._wildcatting.getPlayersTurn())
 
     def _getAvailableFieldSize(self):
         (h, w) = self._stdscr.getmaxyx()
@@ -274,16 +272,16 @@ class Client:
         view = PlayerNamesView(stdscr, count)
         view.display()
 
-        self._usernames = view.input()
+        self._connectUsernames = view.input()
         
     def wildcatting(self, stdscr):
         self._stdscr = stdscr
 
-        if len(self._usernames) == 0:
+        if self._connectUsernames is None:
             self._inputUserNames(stdscr)
 
         self._connectToGame()
-        self._runPreGame(self._gameId, self._usernames)
+        self._runPreGame()
 
         self._getNewPlayerField()
         self._updateWildcatting()
@@ -376,11 +374,11 @@ class Client:
         try:
             curses.wrapper(self.wildcatting)
         except KeyboardInterrupt:
-            self.log.info("To reconnect, run with --handle %s" % self._handle)
-            print "To reconnect, run with --handle %s" % self._handle
+            self.log.info("To reconnect, run with --handle %s" % self._connectHandle)
+            print "To reconnect, run with --handle %s" % self._connectHandle
             raise
         except Exception, e:
             self.log.error(str(e))
             self.log.debug("Uncaught exception in client: %s", e, exc_info=True)
-            if self._handle is not None:
-                print "To reconnect, run with --handle %s" % self._handle
+            if self._connectHandle is not None:
+                print "To reconnect, run with --handle %s" % self._connectHandle

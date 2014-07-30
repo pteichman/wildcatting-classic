@@ -5,7 +5,6 @@ import logging, sys
 from wildcatting.cmdparse import CommandParser
 
 from wildcatting import ClientCommand
-from wildcatting import ConsoleCommand
 from wildcatting import ScreensaverCommand
 from wildcatting import ServerCommand
 from wildcatting import PingCommand
@@ -19,7 +18,6 @@ parser.add_option("", "--version", action="store_true",
                   help="print the version and exit")
 
 parser.add_commands(ClientCommand)
-parser.add_commands(ConsoleCommand)
 parser.add_commands(ScreensaverCommand)
 parser.add_commands(ServerCommand)
 parser.add_commands(PingCommand)

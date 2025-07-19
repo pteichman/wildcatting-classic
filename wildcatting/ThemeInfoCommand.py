@@ -24,7 +24,7 @@ class ThemeInfo(Command):
         themes = []
         for name, member in inspect.getmembers(wildcatting.theme,
                                                inspect.isclass):
-            if name == "DefaultTheme":
+            if name in ("Theme", "DefaultTheme"):
                 continue
 
             bases = inspect.getmro(member)
@@ -86,9 +86,10 @@ class ThemeInfo(Command):
         rows = []
         for (name, theme) in themes:
             obj = theme()
+            display_name = name
             if theme == wildcatting.theme.DefaultTheme:
-                name = "%s (default)" % name
+                display_name = "%s (default)" % name
             
-            rows.append((name, obj.getLocation(), obj.getEra(), str(len(obj.getFacts()))))
+            rows.append((display_name, obj.getLocation(), obj.getEra(), str(len(obj.getFacts()))))
 
         print(wildcatting.table.format_table(cols, rows))

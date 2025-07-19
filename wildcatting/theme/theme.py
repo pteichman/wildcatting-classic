@@ -70,6 +70,8 @@ class Theme:
         raise NotImplementedError
     def getMaxTax(self):
         raise NotImplementedError
+    def getMinOutput(self):
+        raise NotImplementedError
     def getMaxOutput(self):
         raise NotImplementedError
     def getOilPrices(self):

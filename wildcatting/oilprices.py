@@ -100,6 +100,9 @@ class TrendingGaussianPrices:
         self._price = max(self._minPrice, min(self._maxPrice, self._price))
 
         return self._price
+    
+    def getInitialPrice(self):
+        return self._initialPrice
         
 
 class HistoricalGaussianPrices(GaussianPrices):

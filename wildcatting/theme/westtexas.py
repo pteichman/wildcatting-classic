@@ -89,6 +89,8 @@ class WestTexas(Theme):
         return self._wellTheory
     def getMeanSiteReserves(self):
         return 666
+    def getMinOutput(self):
+        return 1
     def getMaxOutput(self):
         return 66
 

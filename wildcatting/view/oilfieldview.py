@@ -4,7 +4,7 @@ import random
 import logging
 import textwrap
 
-from view import View
+from .view import View
 
 from wildcatting.colors import Colors
 import wildcatting.game
@@ -39,11 +39,11 @@ class OilFieldTextView(View):
 
     def ascii(self):
         model = self._model
-        for row in xrange(model.getHeight()):
+        for row in range(model.getHeight()):
             line = ""
-            for col in xrange(model.getWidth()):
+            for col in range(model.getWidth()):
                 line += self.toAscii(model.getSite(row, col))
-            print line
+            print(line)
 
     def toAnsi(self, site):
         b = self.bracket(site) % 9
@@ -52,11 +52,11 @@ class OilFieldTextView(View):
 
     def ansi(self):
         model = self._model
-        for row in xrange(model.getHeight()):
+        for row in range(model.getHeight()):
             line = ""
-            for col in xrange(model.getWidth()):
+            for col in range(model.getWidth()):
                 line += self.toAnsi(model.getSite(row, col))
-            print line
+            print(line)
 
 
 class ColorChooser:
@@ -152,8 +152,8 @@ class FadeInOilFieldCursesAnimator:
     def __init__(self, field):
         self._field = field
 
-        self._coords = [(row, col) for row in xrange(field.getHeight())
-                        for col in xrange(field.getWidth())]
+        self._coords = [(row, col) for row in range(field.getHeight())
+                        for col in range(field.getWidth())]
 
     def isDone(self):
         return len(self._coords) == 0
@@ -175,12 +175,12 @@ class OilFieldCursesView(View):
         self._colorChooser = self._makeColorChooser()
         
     def _makeColorChooser(self):
-        raise "UnimplementedAbstractMethod"
+        raise NotImplementedError("UnimplementedAbstractMethod")
 
     def display(self):
         field = self._wildcatting.getPlayerField()
-        for row in xrange(field.getHeight()):
-            for col in xrange(field.getWidth()):
+        for row in range(field.getHeight()):
+            for col in range(field.getWidth()):
                 site = field.getSite(row, col)
                 if site.isSurveyed():
                     self.displaySite(site)

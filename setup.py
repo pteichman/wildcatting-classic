@@ -1,4 +1,4 @@
-from distutils.core import setup
+from setuptools import setup
 setup(name="wildcatting",
       version="1.5",
       url="http://teichman.org/~peter/wildcatting/",
@@ -9,4 +9,15 @@ setup(name="wildcatting",
                 "wildcatting.model",
                 "wildcatting.theme",
                 "wildcatting.view"],
+      python_requires=">=3.6",
+      classifiers=[
+          "Programming Language :: Python :: 3",
+          "Programming Language :: Python :: 3.6",
+          "Programming Language :: Python :: 3.7",
+          "Programming Language :: Python :: 3.8",
+          "Programming Language :: Python :: 3.9",
+          "Programming Language :: Python :: 3.10",
+          "Programming Language :: Python :: 3.11",
+          "Programming Language :: Python :: 3.12",
+      ],
       )

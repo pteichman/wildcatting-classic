@@ -1,4 +1,4 @@
-from serialize import Serializable
+from .serialize import Serializable
 
 class Player(Serializable):
     def __init__(self, username, symbol):

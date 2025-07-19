@@ -45,56 +45,56 @@ class Theme:
 
     ## literary setting
     def getLocation(self):
-        raise "UnimplementedAbstractMethod"
+        raise NotImplementedError
     def getEra(self):
-        raise "UnimplementedAbstractMethod"
+        raise NotImplementedError
 
     # units
     def getDrillIncrement(self):
-        raise "UnimplementedAbstractMethod"
+        raise NotImplementedError
     def getPriceFormat(self):
-        raise "UnimplementedAbstractMethod"
+        raise NotImplementedError
 
     ## extraction
     def getWellTheory(self):
-        raise "UnimplementedAbstractMethod"
+        raise NotImplementedError
     def getMeanSiteReserves(self):
-        raise "UnimplementedAbstractMethod"
+        raise NotImplementedError
 
     ## economics
     def getMinDrillCost(self):
-        raise "UnimplementedAbstractMethod"
+        raise NotImplementedError
     def getMaxDrillCost(self):
-        raise "UnimplementedAbstractMethod"
+        raise NotImplementedError
     def getMinTax(self):
-        raise "UnimplementedAbstractMethod"
+        raise NotImplementedError
     def getMaxTax(self):
-        raise "UnimplementedAbstractMethod"
+        raise NotImplementedError
     def getMaxOutput(self):
-        raise "UnimplementedAbstractMethod"
+        raise NotImplementedError
     def getOilPrices(self):
-        raise "UnimplementedAbstractMethod"
+        raise NotImplementedError
 
     ## oil probability distribution
     def getOilMinDropoff(self):
-        raise "AbstractMethodNotImplemented"
+        raise NotImplementedError
     def getOilMaxDropoff(self):
-        raise "AbstractMethodNotImplemented"
+        raise NotImplementedError
     def getOilMaxPeaks(self):
-        raise "AbstractMethodNotImplemented"
+        raise NotImplementedError
     def getOilFudge(self):
-        raise "AbstractMethodNotImplemented"
+        raise NotImplementedError
     def getOilLesserPeakFactor(self):
-        raise "AbstractMethodNotImplemented"
+        raise NotImplementedError
 
     ## drill cost distribution
     def getDrillCostMinDropoff(self):
-        raise "AbstractMethodNotImplemented"
+        raise NotImplementedError
     def getDrillCostMaxDropoff(self):
-        raise "AbstractMethodNotImplemented"
+        raise NotImplementedError
     def getDrillCostMaxPeaks(self):
-        raise "AbstractMethodNotImplemented"
+        raise NotImplementedError
     def getDrillCostFudge(self):
-        raise "AbstractMethodNotImplemented"
+        raise NotImplementedError
     def getDrillCostLesserPeakFactor(self):
-        raise "AbstractMethodNotImplemented"
+        raise NotImplementedError

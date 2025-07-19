@@ -3,13 +3,13 @@ import curses
 import random
 import time
 
-from view import OilFieldCursesView, WildcattingView, SurveyorsReportView, \
+from .view import OilFieldCursesView, WildcattingView, SurveyorsReportView, \
      PregameReportView, WeeklyReportView, DrillView, WeeklySummaryView, \
      FadeInOilFieldCursesAnimator, PlayerCountView, PlayerNamesView
-from report import WeeklyReport
-from game import Game
-from colors import Colors
-from exceptions import WildcattingException
+from .report import WeeklyReport
+from .game import Game
+from .colors import Colors
+from .exceptions import WildcattingException
 
 from wildcatting.model import ClientInfo, OilField, Setting, Site, Well, WeeklySummary, Update
 
@@ -380,10 +380,10 @@ class Client:
             curses.wrapper(self.wildcatting)
         except KeyboardInterrupt:
             self.log.info("To reconnect, run with --handle %s" % self._connectHandle)
-            print "To reconnect, run with --handle %s" % self._connectHandle
+            print("To reconnect, run with --handle %s" % self._connectHandle)
             raise
-        except Exception, e:
+        except Exception as e:
             self.log.error(str(e))
             self.log.debug("Uncaught exception in client: %s", e, exc_info=True)
             if self._connectHandle is not None:
-                print "To reconnect, run with --handle %s" % self._connectHandle
+                print("To reconnect, run with --handle %s" % self._connectHandle)

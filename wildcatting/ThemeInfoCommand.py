@@ -5,7 +5,7 @@ import textwrap
 import wildcatting.theme
 import wildcatting.table
 
-from cmdparse import Command
+from .cmdparse import Command
 
 class ThemeInfo(Command):
     log = logging.getLogger("Wildcatting")
@@ -54,29 +54,29 @@ class ThemeInfo(Command):
 
         theme = found()
 
-        print "Name: %s" % themeName
-        print "Location: %s" % theme.getLocation()
-        print "Era: %s" % theme.getEra()
-        print
+        print("Name: %s" % themeName)
+        print("Location: %s" % theme.getLocation())
+        print("Era: %s" % theme.getEra())
+        print()
         prices = theme.getOilPrices()
-        print "Oil price generator: %s" % str(prices)
+        print("Oil price generator: %s" % str(prices))
 
-        print
+        print()
 
-        print "Drilling cost: %s .. %s per %d depth units" \
+        print("Drilling cost: %s .. %s per %d depth units" \
               % (self._formatPrice(theme, theme.getMinDrillCost()),
                  self._formatPrice(theme, theme.getMaxDrillCost()),
-                 theme.getDrillIncrement())
-        print "Taxes: %s .. %s" % (self._formatPrice(theme, theme.getMinTax()),
-                                   self._formatPrice(theme, theme.getMaxTax()))
-        print "Maximum oil output: %d barrels" % theme.getMaxOutput()
-        print "At starting price, well profit is %s .. %s" % (self._formatPrice(theme, theme.getMinOutput()), self._formatPrice(theme, theme.getMaxOutput() * prices.getInitialPrice()))
+                 theme.getDrillIncrement()))
+        print("Taxes: %s .. %s" % (self._formatPrice(theme, theme.getMinTax()),
+                                   self._formatPrice(theme, theme.getMaxTax())))
+        print("Maximum oil output: %d barrels" % theme.getMaxOutput())
+        print("At starting price, well profit is %s .. %s" % (self._formatPrice(theme, theme.getMinOutput()), self._formatPrice(theme, theme.getMaxOutput() * prices.getInitialPrice())))
 
-        print
-        print "Facts:"
+        print()
+        print("Facts:")
 
         for fact in theme.getFacts():
-            print textwrap.fill(fact.strip(), initial_indent="* ", subsequent_indent="  ")
+            print(textwrap.fill(fact.strip(), initial_indent="* ", subsequent_indent="  "))
 
     def printAllThemes(self):
         themes = self._getAllThemes()
@@ -91,4 +91,4 @@ class ThemeInfo(Command):
             
             rows.append((name, obj.getLocation(), obj.getEra(), str(len(obj.getFacts()))))
 
-        print wildcatting.table.format_table(cols, rows)
+        print(wildcatting.table.format_table(cols, rows))

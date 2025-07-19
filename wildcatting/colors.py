@@ -8,7 +8,7 @@ class _Colors:
     def get(self, fg, bg):
         pair = (fg, bg)
 
-        if not self._colors.has_key(pair):
+        if pair not in self._colors:
             num = len(self._colors)
             curses.init_pair(num, fg, bg)
             self._colors[pair] = num

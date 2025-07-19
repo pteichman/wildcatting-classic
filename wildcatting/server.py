@@ -1,19 +1,19 @@
 import logging
 
-import version
+from . import version
 import inspect
 import base64
 import re
 import random
 
-from SimpleXMLRPCServer import SimpleXMLRPCServer
-import xmlrpclib
+from xmlrpc.server import SimpleXMLRPCServer
+import xmlrpc.client
 
 from wildcatting.exceptions import WildcattingException
 from wildcatting.game import Game
 import wildcatting.model
 
-from theme import DefaultTheme
+from .theme import DefaultTheme
 
 class TieredXMLRPCServer(SimpleXMLRPCServer):
     def __init__(self, *args, **kwargs):
@@ -125,13 +125,13 @@ class GameService:
         assert isinstance(secret, str)
         
         handle = GameService.HANDLE_SEP.join((gameId, player.getUsername(), secret))
-        return base64.b64encode(handle)
+        return base64.b64encode(handle.encode('utf-8')).decode('utf-8')
 
     def _decodeGameHandle(self, gameHandle):
         assert isinstance(gameHandle, str)
 
-        gameHandle = base64.b64decode(gameHandle)
-        assert re.match("\d+::.+", gameHandle) is not None
+        gameHandle = base64.b64decode(gameHandle).decode('utf-8')
+        assert re.match(r"\d+::.+", gameHandle) is not None
 
         return gameHandle.split(GameService.HANDLE_SEP, 2)
 
@@ -140,18 +140,18 @@ class GameService:
         assert isinstance(clientId, str)
         
         handle = GameService.HANDLE_SEP.join((gameId, clientId))
-        return base64.b64encode(handle)
+        return base64.b64encode(handle.encode('utf-8')).decode('utf-8')
 
     def _decodeClientHandle(self, clientHandle):
         assert isinstance(clientHandle, str)
 
         self.log.debug("Decoding %s", clientHandle)
-        clientHandle = base64.b64decode(clientHandle)
+        clientHandle = base64.b64decode(clientHandle).decode('utf-8')
         self.log.debug("Got %s", clientHandle)
         
-        assert re.match("\d+::.+", clientHandle) is not None
+        assert re.match(r"\d+::.+", clientHandle) is not None
 
-        return clientHandle.split(GameService.HANDLE_SEP, 2)
+        return clientHandle.split(GameService.HANDLE_SEP, 1)
 
     def newClientHandle(self, gameId):
         game = self._games[gameId]
@@ -253,20 +253,20 @@ class GameService:
 
         return game.getTurn().getWeek()
 
-    def start(self, clientHandle):
-        game, clientId = self._readClientHandle(clientHandle)
+    def start(self, handle):
+        game, player = self._readHandle(handle)
 
         master = game.getMaster()
-        if master not in game.getClientPlayers(clientId):
-            raise WildcattingException("Client is not game master")
+        if player != master:
+            raise WildcattingException("Only the game master can start the game")
         game.start()
 
-    def isStarted(self, clientHandle):
-        game, clientId = self._readClientHandle(clientHandle)
+    def isStarted(self, handle):
+        game, player = self._readHandle(handle)
         return game.isStarted()
 
-    def isFinished(self, clientHandle):
-        game, clientId = self._readClientHandle(clientHandle)
+    def isFinished(self, handle):
+        game, player = self._readHandle(handle)
         return game.isFinished()
 
     def listPlayers(self, clientHandle):
@@ -307,12 +307,10 @@ class GameService:
 
         return well.sell()
 
-    def endTurn(self, clientHandle, handle):
+    def endTurn(self, handle):
         game, player = self._readHandle(handle)
 
         game.endTurn(player)
-        
-        return self.getUpdate(clientHandle), self.getWellUpdates(handle)
 
     def getPlayersTurn(self, clientHandle):
         game, clientId = self._readClientHandle(clientHandle)
@@ -352,8 +350,8 @@ class GameService:
 
         wellUpdates = []
         field = game.getOilField()        
-        for row in xrange(field.getHeight()):
-            for col in xrange(field.getWidth()):
+        for row in range(field.getHeight()):
+            for col in range(field.getWidth()):
                 well = field.getSite(row, col).getWell()
                 if well is not None and well.getPlayer().getUsername() == player.getUsername():
                     wellDict = {"row": row, "col": col, "well": well.serialize()}
@@ -402,8 +400,8 @@ class GameService:
 
         gameFinished = game.isFinished()
 
-        for row in xrange(height):
-            for col in xrange(width):
+        for row in range(height):
+            for col in range(width):
                 site = field.getSite(row, col)
                 playerSite = playerField.getSite(row, col)
 

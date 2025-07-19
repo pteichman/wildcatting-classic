@@ -2,7 +2,7 @@ import logging
 import random
 import curses
 
-from view import View
+from .view import View
 
 from wildcatting.colors import Colors
 import wildcatting.model
@@ -101,7 +101,7 @@ class WeeklyReportView(View):
         week = self._report.getWeek()
         reportDict = self._report.getReportDict()
         lastWeekOnPage = min(week, 13 * (self._page + 1))
-        for turn in xrange((self._page * 13) + 1, lastWeekOnPage + 1):
+        for turn in range((self._page * 13) + 1, lastWeekOnPage + 1):
             if turn in reportDict:
                 rowDict = reportDict[turn]
                 row = rowDict["row"]
@@ -169,7 +169,7 @@ class WeeklyReportView(View):
                 actions["nextPlayer"] = True
             else:
                 report = self._report.getReportDict()
-                if report.has_key(self._cursorTurn):
+                if self._cursorTurn in report:
                     rowDict = report[self._cursorTurn]
                     row = rowDict["row"]
                     col = rowDict["col"]

@@ -11,7 +11,7 @@ def format_row(elts, widths, sep=" | "):
             elt = elts[i]
 
         row.append("%-*s" % (widths[i], elt))
-    return string.join(row, sep)
+    return sep.join(row)
 
 def format_separator(widths):
     elts = [ "-" * width for width in widths ]
@@ -42,4 +42,4 @@ def format_table(labels, rows):
             table.append(format_row(row, widths).rstrip())
 
     import string
-    return string.join(table, "\n")
+    return "\n".join(table)

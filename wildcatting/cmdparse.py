@@ -12,7 +12,7 @@ class Command(OptionParser):
         self.summary = kwargs.get("summary", None)
 
         for key in ("aliases", "summary"):
-            if kwargs.has_key(key):
+            if key in kwargs:
                 del kwargs[key]
 
         OptionParser.__init__(self, *args, **kwargs)
@@ -81,7 +81,7 @@ class Command(OptionParser):
 class CommandParser(OptionParser):
     """Parse command-line options CVS style."""
     def __init__(self, *args, **kwargs):
-        if not kwargs.has_key("usage"):
+        if "usage" not in kwargs:
             kwargs["usage"] = "%prog [options] <command> [command options]"
         OptionParser.__init__(self, *args, **kwargs)
 
@@ -104,7 +104,7 @@ class CommandParser(OptionParser):
         for attr in dir(module):
             cls = getattr(module, attr)
 
-            if not type(cls) is types.ClassType:
+            if not type(cls) is type:
                 continue
 
             if (not cls is Command) \
@@ -136,7 +136,7 @@ class CommandParser(OptionParser):
                 (cmdoptions, args) = cmd.parse_args(args[1:])
 
                 # update options with the values from cmdoptions
-                for (attr, val) in cmdoptions.__dict__.items():
+                for (attr, val) in list(cmdoptions.__dict__.items()):
                     setattr(options, attr, val)
 
         return (cmd, options, args)
@@ -153,7 +153,7 @@ class CommandParser(OptionParser):
     def format_command_help(self):
         result = []
 
-        groups = self.groups.keys()
+        groups = list(self.groups.keys())
         groups.sort()
 
         max_cmd_length = 0
@@ -163,7 +163,7 @@ class CommandParser(OptionParser):
         for group in groups:
             result.append("%s commands:\n" % group)
             commands = self.groups[group]
-            commands.sort(lambda x, y: cmp(x.get_name(), y.get_name()))
+            commands.sort(key=lambda x: x.get_name())
 
             for cmd in commands:
                 result.append("  %s%s  %s\n" % (cmd.helpstr, " "*(max_cmd_length-len(cmd.helpstr)), cmd.summary))

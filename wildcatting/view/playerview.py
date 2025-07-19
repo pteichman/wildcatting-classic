@@ -3,7 +3,7 @@ import curses
 import curses.textpad
 import time
 
-from view import View
+from .view import View
 
 from wildcatting.colors import Colors
 import wildcatting.model
@@ -63,7 +63,7 @@ class PlayerNamesView(View):
 
         self.addCentered(self._win, 1, "PLAYERS")
 
-        for i in xrange(1, self._count+1):
+        for i in range(1, self._count+1):
             row = i*2+1
             self.addLeft(self._win, row, "%d. " % i, pad=10)
 
@@ -82,7 +82,7 @@ class PlayerNamesView(View):
 
     def input(self):
         players = []
-        for i in xrange(self._count):
+        for i in range(self._count):
             nameField = self._textpads[2*i]
             symbolField = self._textpads[2*i+1]
             
@@ -120,4 +120,4 @@ if __name__ == "__main__":
         names = view.input()
 
     curses.wrapper(main)
-    print names
+    print(names)

@@ -3,7 +3,7 @@ import random
 import logging
 import textwrap
 
-from view import View
+from .view import View
 
 from wildcatting.colors import Colors
 import wildcatting.game
@@ -142,7 +142,7 @@ class WildcattingView(View):
         keyStr = " " * (border_w - 2)
         blackOnWhite = Colors.get(curses.COLOR_BLACK, curses.COLOR_WHITE)
         self._border_win.addstr(border_h - 2, 1, keyStr, blackOnWhite)
-        for i in xrange(len(colors)):
+        for i in range(len(colors)):
             color = colors[i]
             self._border_win.addstr(border_h - 2, 1 + i, " ", color)
 

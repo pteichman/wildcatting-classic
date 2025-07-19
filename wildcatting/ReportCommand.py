@@ -3,13 +3,13 @@ import socket
 import sys
 import os
 import curses
-from cmdparse import Command
+from .cmdparse import Command
 
 import wildcatting.util
 import wildcatting.report
 
 
-from xmlrpclib import ServerProxy
+from xmlrpc.client import ServerProxy
 
 class ReportCommand(Command):
     log = logging.getLogger("Wildcatting")

@@ -200,7 +200,7 @@ class Well(Serializable):
 
     def sell(self):
         self._sold = True
-        price = self._initialCost / 2
+        price = self._initialCost // 2
         self._profitAndLoss += price
         self._player.income(price)
         return price

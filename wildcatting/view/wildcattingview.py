@@ -30,7 +30,7 @@ class DrillView(View):
         cost = drillDepth * drillCost
         
         height, width = self._stdscr.getmaxyx()
-        row = (height - 5) / 2
+        row = (height - 5) // 2
 
         if self._msg is not None:
             self.addCentered(self._stdscr, row-2, self._msg)

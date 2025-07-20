@@ -262,11 +262,11 @@ class GameService:
         game.start()
 
     def isStarted(self, handle):
-        game, player = self._readHandle(handle)
+        game, clientId = self._readClientHandle(handle)
         return game.isStarted()
 
     def isFinished(self, handle):
-        game, player = self._readHandle(handle)
+        game, clientId = self._readClientHandle(handle)
         return game.isFinished()
 
     def listPlayers(self, clientHandle):
@@ -311,6 +311,9 @@ class GameService:
         game, player = self._readHandle(handle)
 
         game.endTurn(player)
+        
+        wellUpdates = self.getWellUpdates(handle)
+        return None, wellUpdates
 
     def getPlayersTurn(self, clientHandle):
         game, clientId = self._readClientHandle(clientHandle)

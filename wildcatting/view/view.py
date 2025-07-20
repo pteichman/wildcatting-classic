@@ -26,7 +26,7 @@ class View:
     def addCentered(self, win, row, text, color=None):
         (h, w) = win.getmaxyx()
 
-        col = (w - len(text))/2
+        col = (w - len(text))//2
         if color is None:
             win.addstr(row, col, text)
         else:

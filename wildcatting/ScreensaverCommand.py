@@ -46,7 +46,7 @@ class ScreensaverCommand(Command):
                 OilFieldTextView(field).ansi()
                 time.sleep(.25)
         except:
-            print chr(27) + '[0m'
+            print(chr(27) + '[0m')
 
     def borderWin(self, parent, no_border):
         if no_border:
@@ -103,8 +103,8 @@ class ScreensaverCommand(Command):
             elif options.probability:
                 view = OilFieldProbabilityView(win, w)
 
-            for row in xrange(field.getHeight()):
-                for col in xrange(field.getWidth()):
+            for row in range(field.getHeight()):
+                for col in range(field.getWidth()):
                     site = field.getSite(row, col)
                     site.setSurveyed(True)
 

@@ -15,7 +15,7 @@ class TestWeek(unittest.TestCase):
 
         week = Week(1, players, 5.00)
 
-        self.assertEquals(players[0], week.getSurveyPlayer())
+        self.assertEqual(players[0], week.getSurveyPlayer())
 
     def testTurnProgression(self):
         players = []
@@ -23,7 +23,7 @@ class TestWeek(unittest.TestCase):
         players.append(Player("bob", "B"))
 
         week = Week(1, players, 5.00)
-        self.assertEquals(players[0], week.getSurveyPlayer())
+        self.assertEqual(players[0], week.getSurveyPlayer())
         self.assertTrue(week.isSurveyTurn(players[0]))
         self.assertFalse(week.isSurveyTurn(players[1]))
 
@@ -31,23 +31,23 @@ class TestWeek(unittest.TestCase):
             self.assertFalse(week.isTurnFinished(player))
 
         week.endSurvey(players[0])
-        self.assertEquals(players[1], week.getSurveyPlayer())
+        self.assertEqual(players[1], week.getSurveyPlayer())
         self.assertTrue(week.isSurveyTurn(players[1]))
         self.assertFalse(week.isSurveyTurn(players[0]))
 
         week.endSurvey(players[1])
-        self.assertEquals(None, week.getSurveyPlayer())
+        self.assertEqual(None, week.getSurveyPlayer())
 
         for player in players:
             self.assertFalse(week.isTurnFinished(player))
 
-        self.assert_(players[0] in week.getPendingPlayers())
+        self.assertTrue(players[0] in week.getPendingPlayers())
         week.endTurn(players[0])
-        self.assert_(players[0] not in week.getPendingPlayers())
+        self.assertTrue(players[0] not in week.getPendingPlayers())
 
-        self.assert_(players[1] in week.getPendingPlayers())
+        self.assertTrue(players[1] in week.getPendingPlayers())
         week.endTurn(players[1])
-        self.assert_(players[1] not in week.getPendingPlayers())
+        self.assertTrue(players[1] not in week.getPendingPlayers())
 
         for player in players:
             self.assertTrue(week.isTurnFinished(player))

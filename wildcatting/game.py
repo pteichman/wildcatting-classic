@@ -8,14 +8,14 @@ import wildcatting.model
 import wildcatting.turn
 import wildcatting.week
 
-from oilprices import GaussianPrices
-from theme import DefaultTheme, Theme
-from reservoir import Reservoir
+from .oilprices import GaussianPrices
+from .theme import DefaultTheme, Theme
+from .reservoir import Reservoir
 
 class Filler:
 
     def fill(self, field):
-        raise "UnimplementedAbstractMethod"
+        raise NotImplementedError("UnimplementedAbstractMethod")
 
 
 class PeakedFiller(Filler):
@@ -26,11 +26,11 @@ class PeakedFiller(Filler):
         self._fillModel(field, peaks)
 
     def _fillModel(self, model, peaks):
-        for row in xrange(model.getHeight()):
-            for col in xrange(model.getWidth()):
+        for row in range(model.getHeight()):
+            for col in range(model.getWidth()):
                 # calculate sum of distances from peak
                 minc = 99999
-                for p in xrange(len(peaks)):
+                for p in range(len(peaks)):
                     (y, x) = peaks[p]
 
                     a = row - y
@@ -60,16 +60,16 @@ class PeakedFiller(Filler):
         minValue, maxValue = self.getValueRange()        
         maxPeaks = self.getMaxPeaks()
         peaks = [None]*random.randint(1, maxPeaks)
-        for i in xrange(len(peaks)):
+        for i in range(len(peaks)):
             peaks[i] = (random.randint(0, model.getHeight()),
                         random.randint(0, model.getWidth()))
         return peaks
 
     def getValueRange(self):
-        raise "AbstractMethodNotImplemented"
+        raise NotImplementedError("AbstractMethodNotImplemented")
 
     def fillSite(self, site):
-        raise "AbstractMethodNotImplemented"
+        raise NotImplementedError("AbstractMethodNotImplemented")
 
 
 class OilFiller(PeakedFiller):
@@ -170,8 +170,8 @@ class ReservoirFiller(Filler):
 
     def fill(self, field):
         height, width = field.getHeight(), field.getWidth()
-        for row in xrange(field.getHeight()):
-            for col in xrange(field.getWidth()):
+        for row in range(field.getHeight()):
+            for col in range(field.getWidth()):
                 site = field.getSite(row, col)
                 if not site.getOilFlag(): continue
                 adjacentSites = []
@@ -222,8 +222,8 @@ class TaxFiller:
     def fill(self, field):
         assert isinstance(field, wildcatting.model.OilField)
 
-        for row in xrange(field.getHeight()):
-            for col in xrange(field.getWidth()):
+        for row in range(field.getHeight()):
+            for col in range(field.getWidth()):
                 site = field.getSite(row, col)
                 site.setTax(random.randint(self._theme.getMinTax(), self._theme.getMaxTax()))
 
@@ -269,7 +269,7 @@ class Game:
         return "".join([random.choice(("0", "1", "2", "3", "4",
                                        "5", "6", "7", "8", "9",
                                        "A", "B", "C", "D", "E", "F"))
-                  for i in xrange(0, 16)])
+                  for i in range(0, 16)])
 
     def getClientPlayers(self, clientId):
         return self._clients.get(clientId, [])
@@ -277,7 +277,7 @@ class Game:
     def addPlayer(self, clientId, player):
         assert isinstance(player, wildcatting.model.Player)
 
-        playerNames = [p.getUsername() for p in self._players.values()]
+        playerNames = [p.getUsername() for p in list(self._players.values())]
         if player.getUsername() in playerNames:
             raise WildcattingException("A user named %s has already joined this game" % player.getUsername())
 
@@ -319,7 +319,7 @@ class Game:
     def _nextWeek(self):
         self._weekNum = self._weekNum + 1
 
-        price = self._prices.next()
+        price = next(self._prices)
         self._week = wildcatting.week.Week(self._weekNum, self._playerOrder,
                                            price)
         self._oilField.week(price, self._theme.getWellTheory(),
@@ -337,8 +337,9 @@ class Game:
     def _finish(self):
         self._isFinished = True
 
-        players = self._players.values()
-        players.sort(lambda a, b: cmp(b.getProfitAndLoss(), a.getProfitAndLoss()))
+        players = list(self._players.values())
+        from functools import cmp_to_key
+        players.sort(key=cmp_to_key(lambda a, b: (b.getProfitAndLoss() > a.getProfitAndLoss()) - (b.getProfitAndLoss() < a.getProfitAndLoss())))
 
         playerStrs = ["%s (%d)" % (p.getUsername(), p.getProfitAndLoss())
                       for p in players]

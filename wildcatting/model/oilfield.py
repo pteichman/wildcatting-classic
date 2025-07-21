@@ -1,4 +1,4 @@
-from serialize import Serializable
+from .serialize import Serializable
 
 import random
 import math
@@ -12,8 +12,8 @@ class OilField(Serializable):
         self._width = width
         self._height = height
 
-        self._rows = [ [ Site(row, col) for col in xrange(width) ]
-                       for row in xrange(height) ]
+        self._rows = [ [ Site(row, col) for col in range(width) ]
+                       for row in range(height) ]
 
     def week(self, oilPrice, wellTheory, currentWeek):
         for row in self._rows:
@@ -147,8 +147,11 @@ class Well(Serializable):
         self._profitAndLoss = 0
         self._capacity = 1
 
-    def __cmp__(self, other):
-        return cmp(self._turn, other._turn)
+    def __lt__(self, other):
+        return self._turn < other._turn
+    
+    def __eq__(self, other):
+        return self._turn == other._turn
 
     def getPlayer(self):
         return self._player
@@ -197,7 +200,7 @@ class Well(Serializable):
 
     def sell(self):
         self._sold = True
-        price = self._initialCost / 2
+        price = self._initialCost // 2
         self._profitAndLoss += price
         self._player.income(price)
         return price

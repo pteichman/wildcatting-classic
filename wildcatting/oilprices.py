@@ -41,7 +41,7 @@ class GaussianPrices:
     def getInitialPrice(self):
         return self._initialPrice
 
-    def next(self):
+    def __next__(self):
         change = random.gauss(self._mu, self._sigma)
         self._price = max(0.01, self._price + self._price * change/100)
         return self._price
@@ -87,7 +87,7 @@ class TrendingGaussianPrices:
         self._mu = random.gauss(0.0, 3.0)
         self._sigma = 2.0
 
-    def next(self):
+    def __next__(self):
         if self._trendLength == self._trendWeek:
             self._nextTrend()
 
@@ -100,6 +100,9 @@ class TrendingGaussianPrices:
         self._price = max(self._minPrice, min(self._maxPrice, self._price))
 
         return self._price
+    
+    def getInitialPrice(self):
+        return self._initialPrice
         
 
 class HistoricalGaussianPrices(GaussianPrices):
@@ -5628,9 +5631,9 @@ historical_data = [
 
 if __name__ == "__main__":
     prices = GaussianPrices(10.00)
-    prev = prices.next()
-    print "%.2f" % prev
-    for i in xrange(0, 10):
-        cur = prices.next()
-        print "%.2f (%.2f%%)" % (cur, (cur-prev)/prev*100)
+    prev = next(prices)
+    print("%.2f" % prev)
+    for i in range(0, 10):
+        cur = next(prices)
+        print("%.2f (%.2f%%)" % (cur, (cur-prev)/prev*100))
         prev = cur

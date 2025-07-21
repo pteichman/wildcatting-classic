@@ -40,7 +40,7 @@ class ServerCommand(Command):
         url = "http://%s:%d/" % (host, options.port)
 
         self.log.info("Wildcatting server start")
-        print "%s server listening at %s" % (wildcatting.version.VERSION_STRING, url)
+        print("%s server listening at %s" % (wildcatting.version.VERSION_STRING, url))
         try:
             s.serve_forever()
         finally:

@@ -1,4 +1,4 @@
-from serialize import Serializable
+from .serialize import Serializable
 
 class Player(Serializable):
     def __init__(self, username, symbol):
@@ -19,7 +19,7 @@ class Player(Serializable):
         return self._symbol
 
     def getSecret(self):
-        return self._secret
+        return self._secret or ""
 
     def setSecret(self, secret):
         assert isinstance(secret, str)

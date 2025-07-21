@@ -11,8 +11,8 @@ class TestOilField(unittest.TestCase):
         self.assertEqual(field.getHeight(), rows)
         self.assertEqual(field.getWidth(), cols)
 
-        for row in xrange(rows):
-            for col in xrange(cols):
+        for row in range(rows):
+            for col in range(cols):
                 site = field.getSite(row, col)
 
                 self.assertNotEqual(site, None)

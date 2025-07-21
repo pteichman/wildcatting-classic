@@ -3,13 +3,13 @@ import socket
 import sys
 import os
 
-import version
+from . import version
 
-from client import Client
-from cmdparse import Command
-from util import startLogger
+from .client import Client
+from .cmdparse import Command
+from .util import startLogger
 
-from xmlrpclib import ServerProxy
+from xmlrpc.client import ServerProxy
 
 class ClientCommand(Command):
     log = logging.getLogger("Wildcatting")
@@ -45,22 +45,22 @@ class ClientCommand(Command):
         
         url = "http://%s:%d/" % (options.host, options.port)
         if options.no_network:
-            from theme import DefaultTheme
-            from server import StandaloneServer
+            from .theme import DefaultTheme
+            from .server import StandaloneServer
             s = StandaloneServer()
         else:
             s = ServerProxy(url, allow_none=True)
 
         try:
             server_version = s.version()
-        except socket.error, e:
-            print "Socket error contacting %s" % url
-            print e.args[1]
+        except socket.error as e:
+            print("Socket error contacting %s" % url)
+            print(e.args[1])
             sys.exit(0)
 
         if server_version != version.VERSION_STRING:
             import textwrap
-            print textwrap.fill("ERROR: Server at %s requires a %s client" % (url, server_version), os.getenv("COLUMNS", 80) - 5)
+            print(textwrap.fill("ERROR: Server at %s requires a %s client" % (url, server_version), os.getenv("COLUMNS", 80) - 5))
             sys.exit(1)
 
         if options.hotseat:

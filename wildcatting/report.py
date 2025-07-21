@@ -17,8 +17,8 @@ class WeeklyReport:
 
     def _buildReportDict(self, field):
         sites = {}
-        for row in xrange(field.getHeight()):
-            for col in xrange(field.getWidth()):
+        for row in range(field.getHeight()):
+            for col in range(field.getWidth()):
                 site = field.getSite(row, col)
                 well = site.getWell()
                 if well:

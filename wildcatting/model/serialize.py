@@ -1,4 +1,3 @@
-import new
 import wildcatting.model
 from pprint import PrettyPrinter
 
@@ -23,7 +22,7 @@ class Serializable:
         if clsname != cls.__name__:
             raise Exception("Trying to deserialize a %s as a %s" % (cls.__name__, clsname))
 
-        obj = new.instance(cls)
+        obj = cls.__new__(cls)
         obj.__dict__ = obj.__deserialize_item(state.get(Serializable.STATE_KEY))
         return obj
     deserialize = classmethod(deserialize)
@@ -33,7 +32,7 @@ class Serializable:
                 Serializable.STATE_KEY : item.__serialize_item(item.__dict__)}
 
     def __deserialize_subinstance(self, state):
-        if isinstance(state, dict) and state.has_key(Serializable.CLASS_KEY):
+        if isinstance(state, dict) and Serializable.CLASS_KEY in state:
             clsname = state[Serializable.CLASS_KEY]
 
             cls = getattr(wildcatting.model, clsname)
@@ -53,7 +52,7 @@ class Serializable:
 
     def __deserialize_item(self, item):
         if isinstance(item, dict):
-            if item.has_key(Serializable.CLASS_KEY):
+            if Serializable.CLASS_KEY in item:
                 return self.__deserialize_subinstance(item)
             return self.__deserialize_dict(item)
         elif isinstance(item, list):
@@ -63,14 +62,14 @@ class Serializable:
 
     def __serialize_dict(self, dict):
         ret = {}
-        for key, value in dict.items():
+        for key, value in list(dict.items()):
             if "__" in key: continue
             ret[key] = self.__serialize_item(value)
         return ret
 
     def __deserialize_dict(self, dict):
         ret = {}
-        for key, value in dict.items():
+        for key, value in list(dict.items()):
             ret[key] = self.__deserialize_item(value)
         return ret
 

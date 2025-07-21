@@ -26,7 +26,7 @@ class View:
     def addCentered(self, win, row, text, color=None):
         (h, w) = win.getmaxyx()
 
-        col = (w - len(text))/2
+        col = (w - len(text))//2
         if color is None:
             win.addstr(row, col, text)
         else:
@@ -58,7 +58,7 @@ class View:
         # work around a problem with the MacOS X Terminal - draw the
         # background explicitly by drawing BG on BG "." characters
         if self._mac:
-            for row in xrange(h):
+            for row in range(h):
                 win.addstr(row, 0, "." * (w-1), bg)
         else:
             self._win.clear()            

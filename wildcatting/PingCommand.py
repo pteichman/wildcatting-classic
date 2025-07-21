@@ -3,13 +3,13 @@ import socket
 import sys
 import os
 
-import version
+from . import version
 
-from client import Client
-from cmdparse import Command
-from util import startLogger
+from .client import Client
+from .cmdparse import Command
+from .util import startLogger
 
-from xmlrpclib import ServerProxy
+from xmlrpc.client import ServerProxy
 
 class ClientCommand(Command):
     log = logging.getLogger("Wildcatting")
@@ -29,8 +29,8 @@ class ClientCommand(Command):
         try:
             server_version = s.version()
         except:
-            print "Server at %s is not up." % url
+            print("Server at %s is not up." % url)
             sys.exit(1)
 
-        print "%s server at %s is up." % (server_version, url)
+        print("%s server at %s is up." % (server_version, url))
         sys.exit(0)

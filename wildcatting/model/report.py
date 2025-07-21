@@ -1,4 +1,4 @@
-from serialize import Serializable
+from .serialize import Serializable
 
 import logging
 

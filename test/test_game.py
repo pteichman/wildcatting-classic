@@ -13,13 +13,13 @@ class TestOilFiller(unittest.TestCase):
         filler = OilFiller(DefaultTheme())
         filler.fill(field)
 
-        for row in xrange(field.getHeight()):
-            for col in xrange(field.getWidth()):
+        for row in range(field.getHeight()):
+            for col in range(field.getWidth()):
                 site = field.getSite(row, col)
 
                 self.assertNotEqual(site, None)
-                self.assert_(site.getProbability() >= 0)
-                self.assert_(site.getProbability() <= 100)
+                self.assertTrue(site.getProbability() >= 0)
+                self.assertTrue(site.getProbability() <= 100)
 
 class TestTaxFiller(unittest.TestCase):
     def testFreshField(self):
@@ -29,82 +29,82 @@ class TestTaxFiller(unittest.TestCase):
         OilFiller(DefaultTheme()).fill(field)
         TaxFiller(DefaultTheme()).fill(field)
 
-        for row in xrange(field.getHeight()):
-            for col in xrange(field.getWidth()):
+        for row in range(field.getHeight()):
+            for col in range(field.getWidth()):
                 site = field.getSite(row, col)
 
                 self.assertNotEqual(site, None)
-                self.assert_(site.getTax() >= 0)
+                self.assertTrue(site.getTax() >= 0)
 
 class TestGame(unittest.TestCase):
     def testAddPlayer(self):
         game = Game(10, 10)
 
         player = Player("alice", "A")
-        game.addPlayer(player)
+        game.addPlayer("test_client", player)
 
-        self.assert_(player in game.getPlayers())
+        self.assertTrue(player in game.getPlayers())
 
     def testTwoPlayers(self):
         game = Game(10, 10)
 
         player1 = Player("alice", "A")
-        game.addPlayer(player1)
-        self.assert_(player1 in game.getPlayers())
+        game.addPlayer("test_client", player1)
+        self.assertTrue(player1 in game.getPlayers())
 
         player2 = Player("bob", "B")
-        game.addPlayer(player2)
-        self.assert_(player2 in game.getPlayers())
+        game.addPlayer("test_client", player2)
+        self.assertTrue(player2 in game.getPlayers())
 
-        self.assert_(player1 in game.getPlayers())
+        self.assertTrue(player1 in game.getPlayers())
 
     def testTwoPlayerOrder(self):
         game = Game(10, 10)
 
         player1 = Player("alice", "A")
         player2 = Player("bob", "B")
-        game.addPlayer(player1)
-        game.addPlayer(player2)
+        game.addPlayer("test_client", player1)
+        game.addPlayer("test_client", player2)
 
         players = game.getPlayers()
-        self.assert_(len(players) == 2)
+        self.assertTrue(len(players) == 2)
 
-        self.assertEquals(player1, players[0])
-        self.assertEquals(player2, players[1])
+        self.assertEqual(player1, players[0])
+        self.assertEqual(player2, players[1])
 
     def testRejoin(self):
         game = Game(10, 10)
 
         player1 = Player("alice", "A")
 
-        secret1 = game.addPlayer(player1)
-        self.assert_(player1 in game.getPlayers())
+        secret1 = game.addPlayer("test_client", player1)
+        self.assertTrue(player1 in game.getPlayers())
 
-        self.assertRaises(WildcattingException, game.addPlayer, player1)
+        self.assertRaises(WildcattingException, game.addPlayer, "test_client", player1)
 
     def testStartGame(self):
         game = Game(10, 10)
 
         player1 = Player("alice", "A")
-        game.addPlayer(player1)
+        game.addPlayer("test_client", player1)
 
-        self.assertEquals(False, game.isStarted())
+        self.assertEqual(False, game.isStarted())
         game.start()
-        self.assertEquals(True, game.isStarted())
+        self.assertEqual(True, game.isStarted())
 
     def testFinishGame(self):
         game = Game(10, 10, turnCount=1)
 
         player1 = Player("alice", "A")
-        game.addPlayer(player1)
+        game.addPlayer("test_client", player1)
 
-        self.assertEquals(False, game.isStarted())
+        self.assertEqual(False, game.isStarted())
         game.start()
-        self.assertEquals(True, game.isStarted())
+        self.assertEqual(True, game.isStarted())
 
-        self.assertEquals(False, game.isFinished())
+        self.assertEqual(False, game.isFinished())
         game.endTurn(player1)
-        self.assertEquals(True, game.isFinished())
+        self.assertEqual(True, game.isFinished())
 
     def testWeekIncrement(self):
         game = Game(10, 10)
@@ -112,30 +112,30 @@ class TestGame(unittest.TestCase):
         player1 = Player("alice", "A")
         player2 = Player("bob", "B")
 
-        secret1 = game.addPlayer(player1)
-        self.assert_(player1 in game.getPlayers())
-        secret2 = game.addPlayer(player2)
-        self.assert_(player2 in game.getPlayers())
+        secret1 = game.addPlayer("test_client", player1)
+        self.assertTrue(player1 in game.getPlayers())
+        secret2 = game.addPlayer("test_client", player2)
+        self.assertTrue(player2 in game.getPlayers())
 
         game.start()
         self.assertTrue(game.isStarted())
 
         # Week 1
-        self.assertEquals(1, game.getWeek().getWeekNum())
+        self.assertEqual(1, game.getWeek().getWeekNum())
         game.endTurn(player1)
-        self.assertEquals(1, game.getWeek().getWeekNum())
+        self.assertEqual(1, game.getWeek().getWeekNum())
         game.endTurn(player2)
 
         # Week 2
-        self.assertEquals(2, game.getWeek().getWeekNum())
+        self.assertEqual(2, game.getWeek().getWeekNum())
         game.endTurn(player1)
-        self.assertEquals(2, game.getWeek().getWeekNum())
+        self.assertEqual(2, game.getWeek().getWeekNum())
         game.endTurn(player2)
 
         # Week 3
-        self.assertEquals(3, game.getWeek().getWeekNum())
+        self.assertEqual(3, game.getWeek().getWeekNum())
         game.endTurn(player1)
-        self.assertEquals(3, game.getWeek().getWeekNum())
+        self.assertEqual(3, game.getWeek().getWeekNum())
         game.endTurn(player2)
 
 if __name__ == "__main__":

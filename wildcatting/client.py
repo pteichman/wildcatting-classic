@@ -3,13 +3,13 @@ import curses
 import random
 import time
 
-from view import OilFieldCursesView, WildcattingView, SurveyorsReportView, \
+from .view import OilFieldCursesView, WildcattingView, SurveyorsReportView, \
      PregameReportView, WeeklyReportView, DrillView, WeeklySummaryView, \
      FadeInOilFieldCursesAnimator, PlayerCountView, PlayerNamesView
-from report import WeeklyReport
-from game import Game
-from colors import Colors
-from exceptions import WildcattingException
+from .report import WeeklyReport
+from .game import Game
+from .colors import Colors
+from .exceptions import WildcattingException
 
 from wildcatting.model import ClientInfo, OilField, Setting, Site, Well, WeeklySummary, Update
 
@@ -143,7 +143,8 @@ class Client:
 
             start = report.input()
             if start and isMaster:
-                self._server.game.start(handle)
+                masterHandle = self._clientInfo.getPlayerHandle(master)
+                self._server.game.start(masterHandle)
 
     def _getNewPlayerField(self):
         handle = self._clientInfo.getClientHandle()
@@ -195,10 +196,14 @@ class Client:
         return site
 
     def _endTurn(self):
-        u, wellUpdates = self._server.game.endTurn(self._clientInfo.getClientHandle(), self._getCurrentHandle())
-        update = Update.deserialize(u)
-        
-        updated, weekUpdated = self._wildcatting.update(update)
+        player = self._wildcatting.getPlayersTurn()
+        handle = self._clientInfo.getPlayerHandle(player)
+        u, wellUpdates = self._server.game.endTurn(handle)
+        if u is not None:
+            update = Update.deserialize(u)
+            updated, weekUpdated = self._wildcatting.update(update)
+        else:
+            updated, weekUpdated = False, False
         
         for wellDict in wellUpdates:
             row, col = wellDict["row"], wellDict["col"]
@@ -334,6 +339,9 @@ class Client:
                 self._runWeeklyReport()
                 self._endTurn()
                 updated, weekUpdated = self._updateWildcatting()
+                if weekUpdated and not self._wildcatting.isGameFinished():
+                    curses.flushinp()
+                    self._runWeeklySummary()
                 if updated:
                     wildcattingView.display()
 
@@ -380,10 +388,10 @@ class Client:
             curses.wrapper(self.wildcatting)
         except KeyboardInterrupt:
             self.log.info("To reconnect, run with --handle %s" % self._connectHandle)
-            print "To reconnect, run with --handle %s" % self._connectHandle
+            print("To reconnect, run with --handle %s" % self._connectHandle)
             raise
-        except Exception, e:
+        except Exception as e:
             self.log.error(str(e))
             self.log.debug("Uncaught exception in client: %s", e, exc_info=True)
             if self._connectHandle is not None:
-                print "To reconnect, run with --handle %s" % self._connectHandle
+                print("To reconnect, run with --handle %s" % self._connectHandle)

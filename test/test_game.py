@@ -78,7 +78,7 @@ class TestGame(unittest.TestCase):
 
         player1 = Player("alice", "A")
 
-        secret1 = game.addPlayer("test_client", player1)
+        game.addPlayer("test_client", player1)
         self.assertTrue(player1 in game.getPlayers())
 
         self.assertRaises(WildcattingException, game.addPlayer, "test_client", player1)
@@ -113,9 +113,9 @@ class TestGame(unittest.TestCase):
         player1 = Player("alice", "A")
         player2 = Player("bob", "B")
 
-        secret1 = game.addPlayer("test_client", player1)
+        game.addPlayer("test_client", player1)
         self.assertTrue(player1 in game.getPlayers())
-        secret2 = game.addPlayer("test_client", player2)
+        game.addPlayer("test_client", player2)
         self.assertTrue(player2 in game.getPlayers())
 
         game.start()

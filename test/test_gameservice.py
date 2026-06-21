@@ -61,7 +61,7 @@ class TestGameService(unittest.TestCase):
         self.assertRaises(WildcattingException, service.survey, handle2, 0, 0)
 
         # survey as player 1
-        site1 = Site.deserialize(service.survey(handle1, 0, 0))
+        Site.deserialize(service.survey(handle1, 0, 0))
 
         # make sure player 1 can't survey twice in one turn
         self.assertRaises(WildcattingException, service.survey, handle1, 0, 0)
@@ -77,7 +77,7 @@ class TestGameService(unittest.TestCase):
         self.assertEqual(1, game.getWeek().getWeekNum())
 
         # survey as player 2
-        site2 = Site.deserialize(service.survey(handle2, 0, 1))
+        Site.deserialize(service.survey(handle2, 0, 1))
 
         # end player 2's turn
         service.endTurn(handle2)
@@ -141,7 +141,7 @@ class TestGameService(unittest.TestCase):
         self.assertEqual(True, service.isStarted(handle1))
 
         # survey
-        site1 = Site.deserialize(service.survey(handle1, 0, 0))
+        Site.deserialize(service.survey(handle1, 0, 0))
 
         # make sure we can't erect elsewhere
         self.assertRaises(WildcattingException, service.survey, handle1, 0, 1)
@@ -168,10 +168,10 @@ class TestGameService(unittest.TestCase):
         x, y = 0, 0
 
         # survey
-        site = Site.deserialize(service.survey(handle1, x, y))
-        site = Site.deserialize(service.erect(handle1, x, y))
+        Site.deserialize(service.survey(handle1, x, y))
+        Site.deserialize(service.erect(handle1, x, y))
 
-        well = Well.deserialize(service.drill(handle1, x, y))
+        Well.deserialize(service.drill(handle1, x, y))
         self.assertRaises(WildcattingException, service.drill, handle1, x, y+1)
 
     def testSimultaneousGame(self):
@@ -199,11 +199,11 @@ class TestGameService(unittest.TestCase):
 
         self.assertEqual(name1, service.getPlayersTurn(handle1))
         self.assertEqual(name1, service.getPlayersTurn(handle2))
-        site1 = Site.deserialize(service.survey(handle1, 0, 0))
+        Site.deserialize(service.survey(handle1, 0, 0))
 
         self.assertEqual(name2, service.getPlayersTurn(handle1))
         self.assertEqual(name2, service.getPlayersTurn(handle2))
-        site2 = Site.deserialize(service.survey(handle2, 0, 1))
+        Site.deserialize(service.survey(handle2, 0, 1))
 
         service.endTurn(handle1)
         service.endTurn(handle2)
@@ -235,7 +235,7 @@ class TestGameService(unittest.TestCase):
         self.assertEqual(name1, service.getPlayersTurn(handle1))
         self.assertEqual(name1, service.getPlayersTurn(handle2))
         self.assertEqual(name1, service.getPlayersTurn(handle3))
-        site1 = Site.deserialize(service.survey(handle1, 0, 0))
+        Site.deserialize(service.survey(handle1, 0, 0))
 
         service.endTurn(handle1)
 

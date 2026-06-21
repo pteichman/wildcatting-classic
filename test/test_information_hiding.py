@@ -49,8 +49,12 @@ class TestClientVisibility(unittest.TestCase):
 
         raw = service.getPlayerField(client_handle)
         for key in _all_keys(raw):
-            self.assertNotIn("oilFlag", key, f"oilFlag found in serialized key: {key!r}")
-            self.assertNotIn("oil_flag", key, f"oil_flag found in serialized key: {key!r}")
+            self.assertNotIn(
+                "oilFlag", key, f"oilFlag found in serialized key: {key!r}"
+            )
+            self.assertNotIn(
+                "oil_flag", key, f"oil_flag found in serialized key: {key!r}"
+            )
 
     def test_reservoir_never_serialized(self):
         random.seed(42)
@@ -82,27 +86,35 @@ class TestClientVisibility(unittest.TestCase):
         for row in range(field.getHeight()):
             for col in range(field.getWidth()):
                 site = field.getSite(row, col)
-                if site.getReservoir() is not None and site.getReservoir().getOilDepth() > 1:
+                reservoir = site.getReservoir()
+                if reservoir is not None and reservoir.getOilDepth() > 1:
                     target = (row, col)
                     break
             if target:
                 break
-        self.assertIsNotNone(target, "seed 42 must produce a 10x10 field with oil at depth > 1")
+        self.assertIsNotNone(
+            target, "seed 42 must produce a 10x10 field with oil at depth > 1"
+        )
         row, col = target
 
+        def get_oil_depth():
+            return Site.deserialize(
+                service.getPlayerSite(player_handle, row, col)
+            ).getOilDepth()
+
         service.survey(player_handle, row, col)
-        self.assertIsNone(Site.deserialize(service.getPlayerSite(player_handle, row, col)).getOilDepth())
+        self.assertIsNone(get_oil_depth())
 
         service.erect(player_handle, row, col)
-        self.assertIsNone(Site.deserialize(service.getPlayerSite(player_handle, row, col)).getOilDepth())
+        self.assertIsNone(get_oil_depth())
 
         oil_depth = field.getSite(row, col).getReservoir().getOilDepth()
         for _ in range(oil_depth - 2):  # erect already drilled once
             service.drill(player_handle, row, col)
-            self.assertIsNone(Site.deserialize(service.getPlayerSite(player_handle, row, col)).getOilDepth())
+            self.assertIsNone(get_oil_depth())
 
         service.drill(player_handle, row, col)
-        self.assertIsNotNone(Site.deserialize(service.getPlayerSite(player_handle, row, col)).getOilDepth())
+        self.assertIsNotNone(get_oil_depth())
 
     def test_player_field_reveals_all_sites_after_game_ends(self):
         random.seed(42)

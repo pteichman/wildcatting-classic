@@ -107,7 +107,9 @@ class TestOilDiscovery(unittest.TestCase):
             if oil_site is not None:
                 break
 
-        self.assertIsNotNone(oil_site, "seed 42 must produce at least one oil site on 10x10")
+        self.assertIsNotNone(
+            oil_site, "seed 42 must produce at least one oil site on 10x10"
+        )
 
         player = Player("alice", "A")
         well = Well()

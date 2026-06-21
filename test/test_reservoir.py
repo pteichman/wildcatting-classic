@@ -62,8 +62,10 @@ class TestWellOutputBounds(unittest.TestCase):
             output = well.getOutput()
             if output is not None and output > 0:
                 self.assertLess(
-                    output, reservoir.getReserves(),
-                    f"Week {week_num}: output {output:.2f} >= reserves {reservoir.getReserves():.2f}",
+                    output,
+                    reservoir.getReserves(),
+                    f"Week {week_num}: output {output:.2f} >= reserves "
+                    f"{reservoir.getReserves():.2f}",
                 )
             well.week(site, oilPrice=4.50)
 

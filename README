@@ -30,21 +30,37 @@ increasing supply of abundant oil from other wells, and if your well
 output manages to outstrip the extortionary tax rate, you can get healthy
 real quick playing Wildcatting.
 
+===========
+Development
+===========
+
+Install uv (https://docs.astral.sh/uv/getting-started/installation/),
+then set up the project:
+
+ $ uv sync
+
+Run the tests:
+
+ $ uv run python -m unittest discover test/
+
 ========
 Gameplay
 ========
 
 Wildcatting is a minimally multiplayer networked game.  All
-functionality can be reached from the go-wildcatting script, which
-uses rug/cvs style commands and argument parsing.
+functionality can be reached from the go-wildcatting command, which
+uses cvs-style subcommands.
 
-You run the server on one computer:
+After `uv sync`, run the server on one computer:
 
- $ go-wildcatting server
+ $ uv run go-wildcatting server
 
 And the client on another:
 
- $ go-wildcatting client --host <serverhost> [--game gameid]
+ $ uv run go-wildcatting client --host <serverhost> [--game gameid]
+
+If go-wildcatting is already on your PATH (e.g. after `uv tool install`
+or activating the virtualenv), you can omit the `uv run` prefix.
 
 Running the client with no --game argument will start a new game on
 the server.  You will see a lobby that shows the gameid and the

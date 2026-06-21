@@ -15,7 +15,7 @@ class Turn:
 
     def getPlayer(self):
         return self._player
-        
+
     def getDrilledSite(self):
         return self._drilledSite
 

@@ -1,7 +1,8 @@
-import logging
 import datetime
+import logging
 import math
 import random
+
 
 class HistoricalPrices:
     def __init__(self, length):
@@ -35,7 +36,7 @@ class GaussianPrices:
         lines.append("    1. 68.27%% of price changes will be in the range: %.3f%% .. %.3f%%" % (self._mu - self._sigma, self._mu + self._sigma))
         lines.append("    2. 95.45%% of price changes will be in the range: %.3f%% .. %.3f%%" % (self._mu - self._sigma*2, self._mu + self._sigma*2))
         lines.append("  Initial price +/- one standard deviation: $%.2f .. %.2f" % (self._price + self._price * (self._mu - self._sigma) / 100, self._price + self._price * (self._mu + self._sigma) / 100))
-        
+
         return "\n".join(lines)
 
     def getInitialPrice(self):
@@ -65,7 +66,7 @@ class GaussianPrices:
 
 class TrendingGaussianPrices:
     log = logging.getLogger("Wildcatting")
-    
+
     """Gaussian distribution that trends in a given direction every N or so turns"""
     def __init__(self, start, minPrice, maxPrice, trendMu, trendSigma):
         self._initialPrice = self._price = start
@@ -73,7 +74,7 @@ class TrendingGaussianPrices:
         self._maxPrice = maxPrice
         self._trendMu = trendMu
         self._trendSigma = trendSigma
-        
+
         self._trendWeek = 0
         self._trendLength = 0
 
@@ -100,10 +101,10 @@ class TrendingGaussianPrices:
         self._price = max(self._minPrice, min(self._maxPrice, self._price))
 
         return self._price
-    
+
     def getInitialPrice(self):
         return self._initialPrice
-        
+
 
 class HistoricalGaussianPrices(GaussianPrices):
     """Gaussian distribution based on our historical price data"""

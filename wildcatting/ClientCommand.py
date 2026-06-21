@@ -1,15 +1,13 @@
 import logging
-import socket
-import sys
 import os
+import sys
+from xmlrpc.client import ServerProxy
 
 from . import version
-
 from .client import Client
 from .cmdparse import Command
 from .util import startLogger
 
-from xmlrpc.client import ServerProxy
 
 class ClientCommand(Command):
     log = logging.getLogger("Wildcatting")
@@ -22,7 +20,7 @@ class ClientCommand(Command):
             user = "none"
         symbol = user[0].upper()
 
-        self.add_option("", "--no-network", action="store_true") 
+        self.add_option("", "--no-network", action="store_true")
         self.add_option("-p", "--port", type="int",
                         default="7777", help="server port")
         self.add_option("-n", "--host", type="string",
@@ -42,10 +40,9 @@ class ClientCommand(Command):
 
     def run(self, options, args):
         startLogger("client.log")
-        
+
         url = "http://%s:%d/" % (options.host, options.port)
         if options.no_network:
-            from .theme import DefaultTheme
             from .server import StandaloneServer
             s = StandaloneServer()
         else:
@@ -53,7 +50,7 @@ class ClientCommand(Command):
 
         try:
             server_version = s.version()
-        except socket.error as e:
+        except OSError as e:
             print("Socket error contacting %s" % url)
             print(e.args[1])
             sys.exit(0)

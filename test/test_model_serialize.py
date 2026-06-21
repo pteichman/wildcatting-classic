@@ -1,6 +1,7 @@
 import unittest
 
-from wildcatting.model import OilField, Site, Setting
+from wildcatting.model import OilField, Setting, Site
+
 
 class TestSerializer(unittest.TestCase):
     def testSite(self):
@@ -26,6 +27,6 @@ class TestSerializer(unittest.TestCase):
         obj2 = setting2.serialize()
 
         self.assertEqual(obj1, obj2)
-        
+
 if __name__ == "__main__":
     unittest.main()

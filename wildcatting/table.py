@@ -1,8 +1,7 @@
 # some simple code for formatting text tables
 
 def format_row(elts, widths, sep=" | "):
-    import string
-    
+
     row = []
     for i in range(len(elts)):
         if elts[i] is None:
@@ -41,5 +40,4 @@ def format_table(labels, rows):
         else:
             table.append(format_row(row, widths).rstrip())
 
-    import string
     return "\n".join(table)

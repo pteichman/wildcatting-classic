@@ -1,4 +1,3 @@
-import random
 
 
 class Reservoir:
@@ -29,4 +28,4 @@ class Reservoir:
         assert 0 <= barrels < self._reserves
 
         self._reserves -= barrels
-        
+

@@ -1,17 +1,29 @@
-import logging
 import curses
-import random
+import logging
 import time
 
-from .view import OilFieldCursesView, WildcattingView, SurveyorsReportView, \
-     PregameReportView, WeeklyReportView, DrillView, WeeklySummaryView, \
-     FadeInOilFieldCursesAnimator, PlayerCountView, PlayerNamesView
-from .report import WeeklyReport
-from .game import Game
-from .colors import Colors
-from .exceptions import WildcattingException
+from wildcatting.model import (
+    ClientInfo,
+    OilField,
+    Setting,
+    Site,
+    Update,
+    WeeklySummary,
+    Well,
+)
 
-from wildcatting.model import ClientInfo, OilField, Setting, Site, Well, WeeklySummary, Update
+from .report import WeeklyReport
+from .view import (
+    DrillView,
+    PlayerCountView,
+    PlayerNamesView,
+    PregameReportView,
+    SurveyorsReportView,
+    WeeklyReportView,
+    WeeklySummaryView,
+    WildcattingView,
+)
+
 
 class Wildcatting:
     def __init__(self):
@@ -21,7 +33,7 @@ class Wildcatting:
         self._playersTurn = None
         self._pendingPlayers = []
         self._gameFinished = False
-    
+
     def getPlayerField(self):
         return self._playerField
 
@@ -87,7 +99,7 @@ class Wildcatting:
 
 class Client:
     log = logging.getLogger("Wildcatting")
-    
+
     def __init__(self, weeks, gameId, connectHandle, connectPlayer):
         self._connectGameId = gameId
         self._connectHandle = connectHandle
@@ -167,7 +179,7 @@ class Client:
         self._wildcatting.updatePlayerField(site)
         if site.getWell().getOutput() is None:
             self._runDrill(row, col)
-        
+
     def _runDrill(self, row, col):
         actions = {}
         site = self._wildcatting.getPlayerField().getSite(row, col)
@@ -182,9 +194,9 @@ class Client:
                 drillView.display()
             if "stop" in actions:
                 break
-        
+
         if site.getWell().getOutput() is None:
-            if not "stop" in actions:
+            if "stop" not in actions:
                 drillView.setMessage("DRY HOLE!")
                 drillView.display()
                 time.sleep(3)
@@ -204,7 +216,7 @@ class Client:
             updated, weekUpdated = self._wildcatting.update(update)
         else:
             updated, weekUpdated = False, False
-        
+
         for wellDict in wellUpdates:
             row, col = wellDict["row"], wellDict["col"]
             well = Well.deserialize(wellDict["well"])
@@ -228,7 +240,7 @@ class Client:
         reportView.display()
 
         actions = {}
-        while not "nextPlayer" in actions:
+        while "nextPlayer" not in actions:
             actions = reportView.input()
             if "sell" in actions:
                 row, col = actions["sell"]
@@ -252,9 +264,9 @@ class Client:
         report = WeeklySummary.deserialize(self._server.game.getWeeklySummary(self._clientInfo.getClientHandle()))
         weeklySummaryView = WeeklySummaryView(self._stdscr, report)
         weeklySummaryView.display(self._wildcatting.isGameFinished())
-        
+
         actions = {}
-        while not "done" in actions:
+        while "done" not in actions:
             actions = weeklySummaryView.input()
 
     def _updateWildcatting(self):
@@ -280,7 +292,7 @@ class Client:
         view.display()
 
         self._connectPlayers = view.input()
-        
+
     def wildcatting(self, stdscr):
         self._stdscr = stdscr
 
@@ -292,7 +304,7 @@ class Client:
 
         self._getNewPlayerField()
         self._updateWildcatting()
-        
+
         # make sure we can fit
         availableWidth, availableHeight = self._getAvailableFieldSize()
 
@@ -304,7 +316,7 @@ class Client:
                             % (playerField.getWidth() + WildcattingView.SIDE_PADDING,
                                playerField.getHeight() + WildcattingView.TOP_PADDING,
                                w, h))
-            
+
         self._wildcattingView = wildcattingView = WildcattingView(self._stdscr,
                                                                   self._wildcatting,
                                                                   self._setting)
@@ -315,8 +327,8 @@ class Client:
 
         curses.mousemask(curses.BUTTON1_CLICKED)
         curses.halfdelay(refresh)
-        
-        moved = False 
+
+        moved = False
         while not self._wildcatting.isGameFinished():
             c = None
             if self._isMyTurn() and not moved:
@@ -327,7 +339,7 @@ class Client:
 
                 # redisplay to clear all the turn indication stuff
                 wildcattingView.display()
-            
+
             actions = wildcattingView.input(c, refresh)
 
             if "survey" in actions and self._isMyTurn():
@@ -361,13 +373,13 @@ class Client:
                     self.log.info("Update took %f seconds, backing off to %f",
                                   then-now, refresh)
                     curses.halfdelay(refresh)
-                
+
                 if weekUpdated and not self._wildcatting.isGameFinished():
                     curses.flushinp()
-                    self._runWeeklySummary()                    
+                    self._runWeeklySummary()
                 if updated:
                     wildcattingView.display()
- 
+
         self._stdscr.refresh()
         self._getNewPlayerField()
         wildcattingView.animateGameEnd()
@@ -375,7 +387,7 @@ class Client:
 
         curses.curs_set(0)
         actions = {}
-        while not "survey" in actions:
+        while "survey" not in actions:
             actions = wildcattingView.input()
 
         self._runWeeklySummary()

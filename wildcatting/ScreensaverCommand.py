@@ -1,12 +1,16 @@
+import curses
 import logging
 import time
-import random
-import curses
 
-from wildcatting.cmdparse import Command
-from wildcatting.view import OilFieldTextView, OilFieldProbabilityView, OilFieldDrillCostView, FadeInOilFieldCursesAnimator
-from wildcatting.game import Game
 from wildcatting.client import Wildcatting
+from wildcatting.cmdparse import Command
+from wildcatting.game import Game
+from wildcatting.view import (
+    FadeInOilFieldCursesAnimator,
+    OilFieldDrillCostView,
+    OilFieldProbabilityView,
+    OilFieldTextView,
+)
 
 
 class ScreensaverCommand(Command):

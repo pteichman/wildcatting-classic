@@ -2,10 +2,9 @@ import random
 import unittest
 
 from wildcatting.game import Game
-from wildcatting.model import OilField, Player, Site, Well
+from wildcatting.model import Player, Well
 from wildcatting.server import GameService
 from wildcatting.theme import DefaultTheme
-from wildcatting.welltheory import SimpleWellTheory
 
 
 class TestSeededDeterminism(unittest.TestCase):

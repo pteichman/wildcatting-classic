@@ -1,11 +1,12 @@
 import logging
 import socket
 
-import wildcatting.version
 import wildcatting.server
-import wildcatting.util
 import wildcatting.theme
+import wildcatting.util
+import wildcatting.version
 from wildcatting.cmdparse import Command
+
 
 class ServerCommand(Command):
     log = logging.getLogger("Wildcatting")

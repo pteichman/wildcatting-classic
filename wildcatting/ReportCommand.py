@@ -1,15 +1,11 @@
-import logging
-import socket
-import sys
-import os
 import curses
+import logging
+
+import wildcatting.report
+import wildcatting.util
+
 from .cmdparse import Command
 
-import wildcatting.util
-import wildcatting.report
-
-
-from xmlrpc.client import ServerProxy
 
 class ReportCommand(Command):
     log = logging.getLogger("Wildcatting")

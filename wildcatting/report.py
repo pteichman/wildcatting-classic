@@ -3,7 +3,7 @@ import logging
 
 class WeeklyReport:
     log = logging.getLogger("Wildcatting")
-    
+
     def __init__(self, field, username, symbol, week, setting, oilPrice):
         self._username = username
         self._symbol = symbol
@@ -12,7 +12,7 @@ class WeeklyReport:
         self._oilPrice = oilPrice
 
         self._profitAndLoss = 0
-        
+
         self._reportDict = self._buildReportDict(field)
 
     def _buildReportDict(self, field):
@@ -26,7 +26,7 @@ class WeeklyReport:
                         output = well.getOutput()
                         if output is None:
                             output = 0
-                        
+
                         rowDict = {}
                         rowDict["row"] = row
                         rowDict["col"] = col
@@ -36,7 +36,7 @@ class WeeklyReport:
                         wellProfitAndLoss = well.getProfitAndLoss()
                         rowDict["profitAndLoss"] = wellProfitAndLoss
                         self._profitAndLoss += wellProfitAndLoss
-                        
+
                         sites[well.getWeek()] = rowDict
         return sites
 

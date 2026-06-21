@@ -1,5 +1,6 @@
-import wildcatting.model
 from pprint import PrettyPrinter
+
+import wildcatting.model
 
 # pretty-printer for getting a single line (but sorted nicely)
 # representation of objects
@@ -13,7 +14,7 @@ class Serializable:
         return "<%s instance at 0x%s> %s" % (self.__class__.__name__,
                                              id(self),
                                              _pp.pformat(self.__dict__))
-    
+
     def serialize(self):
         return self.__serialize_instance(self)
 

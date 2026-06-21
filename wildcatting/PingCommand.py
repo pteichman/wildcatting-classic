@@ -1,15 +1,9 @@
 import logging
-import socket
 import sys
-import os
-
-from . import version
-
-from .client import Client
-from .cmdparse import Command
-from .util import startLogger
-
 from xmlrpc.client import ServerProxy
+
+from .cmdparse import Command
+
 
 class ClientCommand(Command):
     log = logging.getLogger("Wildcatting")

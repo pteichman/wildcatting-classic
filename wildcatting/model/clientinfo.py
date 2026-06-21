@@ -1,5 +1,6 @@
 from .serialize import Serializable
 
+
 class ClientInfo(Serializable):
     def __init__(self, clientHandle, gameId):
         self._clientHandle = clientHandle

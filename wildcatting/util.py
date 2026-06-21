@@ -1,6 +1,7 @@
 import logging
 from logging.handlers import RotatingFileHandler
 
+
 def startLogger(filename):
     root = logging.getLogger()
 

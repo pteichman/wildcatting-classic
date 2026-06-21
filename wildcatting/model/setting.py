@@ -1,12 +1,13 @@
 from .serialize import Serializable
 
+
 class Setting(Serializable):
     def getLocation(self):
         return self._location
 
     def setLocation(self, location):
         assert isinstance(location, str)
-        
+
         self._location = location
 
     def getEra(self):
@@ -14,7 +15,7 @@ class Setting(Serializable):
 
     def setEra(self, era):
         assert isinstance(era, str)
-        
+
         self._era = era
 
     def getFacts(self):
@@ -22,7 +23,7 @@ class Setting(Serializable):
 
     def setFacts(self, facts):
         assert isinstance(facts, list)
-        
+
         self._facts = facts
 
     def getMinDrillCost(self):
@@ -42,7 +43,7 @@ class Setting(Serializable):
 
     def setDrillIncrement(self, increment):
         assert isinstance(increment, int)
-    
+
         self._increment = increment
 
     def getPriceFormat(self):
@@ -50,5 +51,5 @@ class Setting(Serializable):
 
     def setPriceFormat(self, priceFormat):
         assert isinstance(priceFormat, str)
-        
+
         self._priceFormat = priceFormat

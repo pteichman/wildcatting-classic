@@ -1,11 +1,12 @@
-import logging
 import inspect
+import logging
 import textwrap
 
-import wildcatting.theme
 import wildcatting.table
+import wildcatting.theme
 
 from .cmdparse import Command
+
 
 class ThemeInfo(Command):
     log = logging.getLogger("Wildcatting")
@@ -89,7 +90,7 @@ class ThemeInfo(Command):
             display_name = name
             if theme == wildcatting.theme.DefaultTheme:
                 display_name = "%s (default)" % name
-            
+
             rows.append((display_name, obj.getLocation(), obj.getEra(), str(len(obj.getFacts()))))
 
         print(wildcatting.table.format_table(cols, rows))

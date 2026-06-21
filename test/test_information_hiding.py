@@ -1,7 +1,7 @@
-import unittest
 import random
+import unittest
 
-from wildcatting.model import OilField, Site, Well, Player, WeeklySummary
+from wildcatting.model import OilField, Player, Site, WeeklySummary, Well
 from wildcatting.server import GameService
 from wildcatting.theme import DefaultTheme
 

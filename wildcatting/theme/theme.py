@@ -1,8 +1,7 @@
-import os
-import os.path
 import logging
 
 import wildcatting.model
+
 
 class Theme:
     log = logging.getLogger("Wildcatting")
@@ -16,14 +15,14 @@ class Theme:
             fact = line.strip()
             if fact == "":
                 continue
-            
+
             if fact[0] == "#":
                 continue
 
             facts.append(fact)
 
         self._facts = facts
-    
+
     def generateSetting(self):
         setting = wildcatting.model.Setting()
         setting.setLocation(self.getLocation())

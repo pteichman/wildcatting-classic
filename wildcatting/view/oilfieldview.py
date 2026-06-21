@@ -1,13 +1,11 @@
 import curses
 import random
-import logging
-import textwrap
 
-from .view import View
-
-from wildcatting.colors import Colors
 import wildcatting.game
 import wildcatting.model
+from wildcatting.colors import Colors
+
+from .view import View
 
 
 class OilFieldTextView(View):
@@ -94,12 +92,12 @@ class ColorChooser:
 
 
 class ProbabilityColorChooser(ColorChooser):
-    
+
     def _chooseColor(self, site, colors):
         p = site.getProbability()
         if p == 100:
             return colors[-1]
-        
+
         return colors[int(p / 100. * len(colors))]
 
 
@@ -129,7 +127,7 @@ class DepthColorChooser(ColorChooser):
             color = colors[idx]
 
         return color
-       
+
 
 class FadeInOilFieldCursesAnimator:
     def __init__(self, field):
@@ -156,7 +154,7 @@ class OilFieldCursesView(View):
         self._wildcatting = wildcatting_
 
         self._colorChooser = self._makeColorChooser()
-        
+
     def _makeColorChooser(self):
         raise NotImplementedError("UnimplementedAbstractMethod")
 
@@ -192,7 +190,7 @@ class OilFieldCursesView(View):
         while not animator.isDone():
             animator.animate()
             self.display()
-        
+
 
 class OilFieldProbabilityView(OilFieldCursesView):
 
@@ -207,7 +205,7 @@ class OilFieldDrillCostView(OilFieldCursesView):
     def __init__(self, win, wildcatting_, minDrillCost, maxDrillCost):
         self._minDrillCost = minDrillCost
         self._maxDrillCost = maxDrillCost
-        
+
         OilFieldCursesView.__init__(self, win, wildcatting_)
 
     def getKeyLabel(self):
@@ -218,7 +216,7 @@ class OilFieldDrillCostView(OilFieldCursesView):
 
 
 class OilFieldDepthView(OilFieldCursesView):
-    
+
     def _makeColorChooser(self):
         return DepthColorChooser()
 

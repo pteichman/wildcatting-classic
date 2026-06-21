@@ -1,24 +1,22 @@
-import logging
-
-from . import version
-import inspect
 import base64
+import inspect
+import logging
 import re
-
 from xmlrpc.server import SimpleXMLRPCServer
-import xmlrpc.client
 
+import wildcatting.model
 from wildcatting.exceptions import WildcattingException
 from wildcatting.game import Game
-import wildcatting.model
 
+from . import version
 from .theme import DefaultTheme
+
 
 class TieredXMLRPCServer(SimpleXMLRPCServer):
     def __init__(self, *args, **kwargs):
         kwargs["allow_none"] = True
         SimpleXMLRPCServer.__init__(self, *args, **kwargs)
-    
+
     log = logging.getLogger("XMLRPCServer")
 
     def register_subinstance(self, tier, instance):
@@ -60,7 +58,7 @@ class GameService:
     HANDLE_SEP = "::"
 
     log = logging.getLogger("Wildcatting")
-    
+
     def __init__(self, theme):
         self._games = {}
         self._nextGameId = 0
@@ -104,7 +102,7 @@ class GameService:
             raise WildcattingException("Game is over")
 
         week = game.getWeek()
-        
+
         if not week.isSurveyTurn(player):
             raise WildcattingException("Not player's turn")
 
@@ -115,7 +113,7 @@ class GameService:
             raise WildcattingException("Game is over")
 
         week = game.getWeek()
-        
+
         if week.isTurnFinished(player):
             raise WildcattingException("Player's turn is finished")
 
@@ -217,7 +215,7 @@ class GameService:
 
         if turn.getSurveyedSite():
             raise WildcattingException("Already surveyed this turn")
-        
+
         field = game.getOilField()
 
         site = field.getSite(row, col)
@@ -229,7 +227,7 @@ class GameService:
 
         game.markSiteUpdated(player, site)
         game.getWeek().endSurvey(player)
-        
+
         return site.serialize()
 
     def erect(self, handle, row, col):
@@ -238,7 +236,7 @@ class GameService:
 
         if turn.getDrilledSite():
             raise WildcattingException("Already drilled this turn")
-        
+
         field = game.getOilField()
 
         site = field.getSite(row, col)
@@ -249,7 +247,7 @@ class GameService:
         game.drill(row, col)
         turn.setDrilledSite(site)
         game.markSiteUpdated(player, site)
-        
+
         return self._makePlayerSite(site).serialize()
 
     def getGameId(self, handle):
@@ -283,7 +281,7 @@ class GameService:
         players = game.getPlayers()
         ret = [player.getUsername() for player in players]
         return ret
-        
+
     def drill(self, handle, row, col):
         game, player = self._readHandle(handle)
         turn = self._ensureTurn(game, player)
@@ -319,7 +317,7 @@ class GameService:
         game, player = self._readHandle(handle)
 
         game.endTurn(player)
-        
+
         wellUpdates = self.getWellUpdates(handle)
         return None, wellUpdates
 
@@ -355,12 +353,12 @@ class GameService:
 
         update = wildcatting.model.Update(week, oilPrice, playersTurn, pendingPlayers, gameFinished, sites)
         return update.serialize()
-        
+
     def getWellUpdates(self, handle):
         game, player = self._readHandle(handle)
 
         wellUpdates = []
-        field = game.getOilField()        
+        field = game.getOilField()
         for row in range(field.getHeight()):
             for col in range(field.getWidth()):
                 well = field.getSite(row, col).getWell()
@@ -377,7 +375,7 @@ class GameService:
         playerSite.setTax(site.getTax())
         playerSite.setSurveyed(site.isSurveyed())
         playerSite.setOilDepth(site.getOilDepth())
-        
+
     def _makePlayerSite(self, site):
         playerSite = wildcatting.model.Site(site.getRow(), site.getCol())
         if site.isSurveyed():

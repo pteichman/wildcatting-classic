@@ -1,7 +1,5 @@
-from .serialize import Serializable
 
-import random
-import math
+from .serialize import Serializable
 
 
 class OilField(Serializable):
@@ -61,7 +59,7 @@ class Site(Serializable):
         ## don't serialize
         self.__reservoir = None
         self.__oilFlag = False
-        self.__potentialOilDepth = None        
+        self.__potentialOilDepth = None
 
     def getCol(self):
         return self._col
@@ -142,7 +140,7 @@ class Well(Serializable):
         self._initialOutput = None
         self._output = None
         self._sold = False
-        self._player = None    
+        self._player = None
         self._initialCost = 0
         self._profitAndLoss = 0
         self._capacity = 1
@@ -215,11 +213,11 @@ class Well(Serializable):
         reservoir = site.getReservoir()
         if reservoir is not None:
             oilDepth = reservoir.getOilDepth()
-  
+
         drillCost = site.getDrillCost()
-        
+
         assert oilDepth == None or self._drillDepth < oilDepth
-        
+
         self._drillDepth += 1
 
         cost = drillCost * drillIncrement
@@ -230,7 +228,7 @@ class Well(Serializable):
         foundOil = (self._drillDepth == oilDepth)
         if foundOil:
             site.setOilDepth(oilDepth)
-            
+
         return foundOil
 
     def week(self, site, oilPrice):
@@ -247,7 +245,7 @@ class Well(Serializable):
 
             tax = site.getTax()
             income = int(output * oilPrice)
-            
+
             self._profitAndLoss -= tax
             self._profitAndLoss += income
 

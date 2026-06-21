@@ -1,11 +1,9 @@
-import logging
-import random
 import curses
+import logging
+
+import wildcatting.model
 
 from .view import View
-
-from wildcatting.colors import Colors
-import wildcatting.model
 
 
 class WeeklySummaryView(View):
@@ -43,7 +41,7 @@ class WeeklySummaryView(View):
             loss = "$ %8d" % profitAndLoss
 
             self.addRight(self._win, row, loss, pad=12)
-            
+
             # support up to 9 or more players
             if len(reportRows) > 5:
                 row += 1
@@ -64,7 +62,7 @@ class WeeklySummaryView(View):
 
 class WeeklyReportView(View):
     log = logging.getLogger("Wildcatting")
-    
+
     def __init__(self, stdscr, report, field):
         View.__init__(self, stdscr)
 
@@ -88,7 +86,7 @@ class WeeklyReportView(View):
     def display(self):
         self._stdscr.clear()
         self._stdscr.refresh()
-        (h, w) = self._win.getmaxyx()        
+        (h, w) = self._win.getmaxyx()
 
         fg, bg = self.getGreenFGBG()
         self.setFGBG(self._win, fg, bg)
@@ -174,7 +172,7 @@ class WeeklyReportView(View):
                     row = rowDict["row"]
                     col = rowDict["col"]
                     actions["sell"] = row, col
-           
+
         self._win.refresh()
 
         return actions

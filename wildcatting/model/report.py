@@ -1,6 +1,5 @@
-from .serialize import Serializable
 
-import logging
+from .serialize import Serializable
 
 
 class WeeklySummary(Serializable):

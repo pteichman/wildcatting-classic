@@ -1,13 +1,15 @@
 import logging
 import sys
 
+from wildcatting import (
+    ClientCommand,
+    PingCommand,
+    ScreensaverCommand,
+    ServerCommand,
+    ThemeInfoCommand,
+    version,
+)
 from wildcatting.cmdparse import CommandParser
-from wildcatting import ClientCommand
-from wildcatting import PingCommand
-from wildcatting import ScreensaverCommand
-from wildcatting import ServerCommand
-from wildcatting import ThemeInfoCommand
-from wildcatting import version
 
 
 def main():

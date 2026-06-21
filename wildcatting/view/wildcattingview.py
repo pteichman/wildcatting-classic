@@ -1,13 +1,13 @@
 import curses
-import random
 import logging
+import random
 import textwrap
 
-from .view import View
-
-from wildcatting.colors import Colors
 import wildcatting.game
 import wildcatting.model
+from wildcatting.colors import Colors
+
+from .view import View
 
 
 class DrillView(View):
@@ -28,7 +28,7 @@ class DrillView(View):
         drillDepth = self._site.getWell().getDrillDepth() * self._setting.getDrillIncrement()
         drillCost = self._site.getDrillCost()
         cost = drillDepth * drillCost
-        
+
         height, width = self._stdscr.getmaxyx()
         row = (height - 5) // 2
 
@@ -62,7 +62,7 @@ class WildcattingView(View):
     SIDE_BORDER = 3
     TOP_PADDING = TOP_BORDER * 2 + 3
     SIDE_PADDING = SIDE_BORDER * 2 + 2
-    
+
     def __init__(self, stdscr, wildcatting_, setting):
         View.__init__(self, stdscr)
 
@@ -102,7 +102,7 @@ class WildcattingView(View):
         topstr = "%s, %s." % (location, era)
         if self._wildcatting.isGameFinished():
             self._stdscr.addstr(0, 4, topstr, curses.A_BOLD)
-        else:            
+        else:
             pricestr = self._setting.getPriceFormat() % self._wildcatting.getOilPrice()
             topstr = topstr + "  Oil is %s" % pricestr
             self._stdscr.addstr(0, 4, topstr, curses.A_BOLD)
@@ -132,7 +132,7 @@ class WildcattingView(View):
         # we only have space for three lines
         if len(lines) > 3:
             lines = lines[:3]
-        
+
         return "\n".join(lines)
 
     def _drawKeyBar(self):
@@ -168,12 +168,12 @@ class WildcattingView(View):
             for view in self._views:
                 if len(view.getKeyLabel()) > longestLabel:
                     longestLabel = len(view.getKeyLabel())
-            
+
             players = self._wildcatting.getPendingPlayers()
             label = " WAITING FOR %s" % (", ".join(players).upper())
             self.addLeft(self._border_win, border_h - 2, label, blackOnWhite,
                          pad=len(colors) + 1 + longestLabel + 4)
-    
+
         self._border_win.refresh()
 
     def _getCurrentView(self):
@@ -213,7 +213,7 @@ class WildcattingView(View):
         self._field_win.refresh()
         curses.curs_set(0)
         self._drawKeyBar()
-            
+
         dx = 0 ; dy = 0
         survey = False
 
@@ -256,4 +256,4 @@ class WildcattingView(View):
         curses.curs_set(0)
         self._drawKeyBar()
         self._getCurrentView().animateGameEnd()
-        
+

@@ -1,11 +1,10 @@
 import unittest
-import base64
 
 from wildcatting.exceptions import WildcattingException
-from wildcatting.server import GameService
-
 from wildcatting.model import Site, Well
+from wildcatting.server import GameService
 from wildcatting.theme import DefaultTheme
+
 
 class TestGameService(unittest.TestCase):
     def testGameStart(self):

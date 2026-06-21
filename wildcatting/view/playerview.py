@@ -1,12 +1,9 @@
-import logging
 import curses
 import curses.textpad
 import time
 
 from .view import View
 
-from wildcatting.colors import Colors
-import wildcatting.model
 
 class PlayerCountView(View):
     def __init__(self, stdscr):
@@ -77,7 +74,7 @@ class PlayerNamesView(View):
             win = self._win.derwin(1, 2, row, 13+name_w+3)
             textpad = curses.textpad.Textbox(win)
             self._textpads.append(textpad)
-            
+
         self._win.refresh()
 
     def input(self):
@@ -85,7 +82,7 @@ class PlayerNamesView(View):
         for i in range(self._count):
             nameField = self._textpads[2*i]
             symbolField = self._textpads[2*i+1]
-            
+
             nameField.edit()
             name = nameField.gather().strip()
 
@@ -101,7 +98,7 @@ class PlayerNamesView(View):
 
             if len(symbol) == 0:
                 symbol = defaultSymbol
-            
+
             players.append((name, symbol))
 
         return players

@@ -1,8 +1,8 @@
-import sys, os
-import types
-
-from optparse import OptionParser, OptionError, SUPPRESS_USAGE
+import os
+import sys
 from gettext import gettext as _
+from optparse import SUPPRESS_USAGE, OptionParser
+
 
 class Command(OptionParser):
     def __init__(self, name, *args, **kwargs):
@@ -104,10 +104,10 @@ class CommandParser(OptionParser):
         for attr in dir(module):
             cls = getattr(module, attr)
 
-            if not type(cls) is type:
+            if type(cls) is not type:
                 continue
 
-            if (not cls is Command) \
+            if (cls is not Command) \
                    and issubclass(getattr(module, attr), Command):
                 self.add_command(cls(), group)
 

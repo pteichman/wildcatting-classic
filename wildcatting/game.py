@@ -1,17 +1,16 @@
 import logging
+import math
 import random
 import secrets
-import math
-
-from wildcatting.exceptions import WildcattingException
 
 import wildcatting.model
 import wildcatting.turn
 import wildcatting.week
+from wildcatting.exceptions import WildcattingException
 
-from .oilprices import GaussianPrices
-from .theme import DefaultTheme, Theme
 from .reservoir import Reservoir
+from .theme import DefaultTheme, Theme
+
 
 class Filler:
 
@@ -58,7 +57,7 @@ class PeakedFiller(Filler):
                 self.fillSite(site, value)
 
     def _generatePeaks(self, model):
-        minValue, maxValue = self.getValueRange()        
+        minValue, maxValue = self.getValueRange()
         maxPeaks = self.getMaxPeaks()
         peaks = [None]*random.randint(1, maxPeaks)
         for i in range(len(peaks)):
@@ -77,7 +76,7 @@ class OilFiller(PeakedFiller):
     def __init__(self, theme):
         assert isinstance(theme, Theme)
         self._theme = theme
-    
+
     def getValueRange(self):
         return (10, 100)
 
@@ -90,16 +89,16 @@ class OilFiller(PeakedFiller):
 
     def getMinDropoff(self):
         return self._theme.getOilMinDropoff()
-    
+
     def getMaxDropoff(self):
         return self._theme.getOilMaxDropoff()
-    
+
     def getMaxPeaks(self):
         return self._theme.getOilMaxPeaks()
-    
+
     def getFudge(self):
         return self._theme.getOilFudge()
-    
+
     def getLesserPeakFactor(self):
         return self._theme.getOilLesserPeakFactor()
 
@@ -108,7 +107,7 @@ class DrillCostFiller(PeakedFiller):
     def __init__(self, theme):
         assert isinstance(theme, Theme)
         self._theme = theme
-    
+
     def getValueRange(self):
         return (self._theme.getMinDrillCost(), self._theme.getMaxDrillCost())
 
@@ -117,16 +116,16 @@ class DrillCostFiller(PeakedFiller):
 
     def getMinDropoff(self):
         return self._theme.getDrillCostMinDropoff()
-    
+
     def getMaxDropoff(self):
         return self._theme.getDrillCostMaxDropoff()
-    
+
     def getMaxPeaks(self):
         return self._theme.getDrillCostMaxPeaks()
-    
+
     def getFudge(self):
         return self._theme.getDrillCostFudge()
-    
+
     def getLesserPeakFactor(self):
         return self._theme.getDrillCostLesserPeakFactor()
 
@@ -135,7 +134,7 @@ class PotentialOilDepthFiller(PeakedFiller):
     def __init__(self, theme):
         assert isinstance(theme, Theme)
         self._theme = theme
-    
+
     def getValueRange(self):
         return (1, 10)
 
@@ -145,16 +144,16 @@ class PotentialOilDepthFiller(PeakedFiller):
 
     def getMinDropoff(self):
         return 0
-    
+
     def getMaxDropoff(self):
         return 0
-    
+
     def getMaxPeaks(self):
         return 10
-    
+
     def getFudge(self):
         return 0
-    
+
     def getLesserPeakFactor(self):
         return 1
 
@@ -179,7 +178,7 @@ class ReservoirFiller(Filler):
                 for (adjacentRow, adjacentCol) in [(row + 1, col), (row, col + 1)]:
                     if adjacentRow >= height or adjacentCol >= width:
                         continue
-                        
+
                     adjacentSite = field.getSite(adjacentRow, adjacentCol)
                     adjacentSites.append(adjacentSite)
                 self._fillSite(site, adjacentSites)
@@ -207,7 +206,7 @@ class ReservoirFiller(Filler):
                     self._reservoirCount += 1
                     reservoir = Reservoir(initialDepth, initialReserves)
                     site.setReservoir(reservoir)
-                
+
                 reservoir.join(adjacentSite.getPotentialOilDepth(), initialReserves)
                 adjacentSite.setReservoir(reservoir)
             else:
@@ -219,7 +218,7 @@ class TaxFiller:
     def __init__(self, theme):
         assert isinstance(theme, Theme)
         self._theme = theme
-    
+
     def fill(self, field):
         assert isinstance(field, wildcatting.model.OilField)
 
@@ -253,7 +252,7 @@ class Game:
         self._clientUpdates = {}
 
         self._prices = theme.getOilPrices()
-        
+
         self._oilField = wildcatting.model.OilField(width, height)
         OilFiller(theme).fill(self._oilField)
         PotentialOilDepthFiller(theme).fill(self._oilField)
@@ -299,7 +298,7 @@ class Game:
             raise WildcattingException("Invalid login")
 
         player = self._players.get(secret)
-        
+
         if player is None or player.getUsername() != username:
             raise WildcattingException("Invalid login")
 

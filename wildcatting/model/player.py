@@ -1,5 +1,6 @@
 from .serialize import Serializable
 
+
 class Player(Serializable):
     def __init__(self, username, symbol):
         assert isinstance(username, str)

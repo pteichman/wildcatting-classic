@@ -1,6 +1,6 @@
 import unittest
 
-from wildcatting.model import Site, Well, Player
+from wildcatting.model import Player, Site, Well
 from wildcatting.oilprices import GaussianPrices
 from wildcatting.reservoir import Reservoir
 from wildcatting.welltheory import SimpleWellTheory

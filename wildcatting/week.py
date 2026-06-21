@@ -1,6 +1,8 @@
 import logging
-from wildcatting.model import Player
+
 import wildcatting.turn
+from wildcatting.model import Player
+
 
 class Week:
     log = logging.getLogger("Wildcatting")

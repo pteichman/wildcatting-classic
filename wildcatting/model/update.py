@@ -1,5 +1,6 @@
 from .serialize import Serializable
 
+
 class Update(Serializable):
     def __init__(self, week, oilPrice, playersTurn, pendingPlayers, gameFinished, sites):
         self._week = week

@@ -2,6 +2,7 @@ import unittest
 
 import wildcatting.model
 
+
 class TestOilField(unittest.TestCase):
     def testEmptySites(self):
         cols = 5

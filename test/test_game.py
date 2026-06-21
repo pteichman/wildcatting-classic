@@ -1,9 +1,10 @@
 import unittest
 
 from wildcatting.exceptions import WildcattingException
+from wildcatting.game import Game, OilFiller, TaxFiller
 from wildcatting.model import OilField, Player
-from wildcatting.game import OilFiller, TaxFiller, Game
 from wildcatting.theme import DefaultTheme
+
 
 class TestOilFiller(unittest.TestCase):
     def testFreshField(self):

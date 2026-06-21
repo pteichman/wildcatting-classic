@@ -1,4 +1,3 @@
-import random
 import math
 
 
@@ -22,9 +21,9 @@ class SimpleWellTheory:
         output = min(output, reservoir.getReserves() / 2.0)
         ## the first oil is the lightest, the sweetest, and the easiest to pump
         output = (1.0 - ratioPumped) * output
-        
+
         return output
-    
+
     def start(self, site):
         output = self._getOutput(site)
         well = site.getWell()

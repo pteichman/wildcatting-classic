@@ -1,7 +1,8 @@
-import logging
 import curses
+import logging
 
 from wildcatting.colors import Colors
+
 
 class View:
     log = logging.getLogger("Wildcatting")

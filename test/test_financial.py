@@ -20,7 +20,8 @@ class TestDrilling(unittest.TestCase):
         drill_increment = 10
         site, well, player = self._make_well_on_site(drill_cost)
 
-        well.drill(site, drill_increment)
+        _, cost = well.drill(site, drill_increment)
+        player.expense(cost)
 
         self.assertEqual(well.getInitialCost(), drill_cost * drill_increment)
         self.assertEqual(player.getProfitAndLoss(), -(drill_cost * drill_increment))
@@ -46,10 +47,13 @@ class TestDrilling(unittest.TestCase):
         site.setWell(well)
 
         for _ in range(oil_depth - 1):
-            self.assertFalse(well.drill(site, 10))
+            found, _ = well.drill(site, 10)
+            self.assertFalse(found)
             self.assertIsNone(site.getOilDepth())
 
-        self.assertTrue(well.drill(site, 10))
+        found, _ = well.drill(site, 10)
+        self.assertTrue(found)
+        site.setOilDepth(well.getDrillDepth())
         self.assertEqual(site.getOilDepth(), oil_depth)
         self.assertEqual(well.getDrillDepth(), oil_depth)
 
@@ -69,11 +73,13 @@ class TestDrilling(unittest.TestCase):
     def test_sell_credits_player_half_initial_cost(self):
         site, well, player = self._make_well_on_site(drill_cost=10)
 
-        well.drill(site, 10)
+        _, cost = well.drill(site, 10)
+        player.expense(cost)
         pnl_after_drill = player.getProfitAndLoss()
 
         initial_cost = well.getInitialCost()
-        well.sell()
+        price = well.sell()
+        player.income(price)
 
         self.assertEqual(player.getProfitAndLoss(), pnl_after_drill + initial_cost // 2)
 

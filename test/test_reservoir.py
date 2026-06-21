@@ -46,7 +46,9 @@ class TestWellOutputBounds(unittest.TestCase):
 
     def test_initial_output_never_exceeds_half_reserves(self):
         site, well, reservoir = self._make_producing_site(reserves=100)
-        SimpleWellTheory(66).start(site)
+        output = SimpleWellTheory(66).start(site)
+        well.setOutput(output)
+        well.setInitialOutput(output)
 
         self.assertIsNotNone(well.getOutput())
         self.assertLessEqual(well.getOutput(), reservoir.getReserves() / 2.0)
@@ -55,11 +57,14 @@ class TestWellOutputBounds(unittest.TestCase):
         # Runs 20 simulated weekly ticks and verifies pump() never raises.
         site, well, reservoir = self._make_producing_site(reserves=1000)
         theory = SimpleWellTheory(66)
-        theory.start(site)
+        output = theory.start(site)
+        well.setOutput(output)
+        well.setInitialOutput(output)
 
         for week_num in range(1, 21):
-            theory.week(site, week_num)
-            output = well.getOutput()
+            output, capacity = theory.week(site, week_num)
+            well.setOutput(output)
+            well.setCapacity(capacity)
             if output is not None and output > 0:
                 self.assertLess(
                     output,

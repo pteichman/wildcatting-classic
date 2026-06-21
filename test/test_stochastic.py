@@ -120,10 +120,13 @@ class TestOilDiscovery(unittest.TestCase):
         oil_depth = oil_site.getReservoir().getOilDepth()
 
         for _ in range(oil_depth - 1):
-            self.assertFalse(well.drill(oil_site, theme.getDrillIncrement()))
+            found, _ = well.drill(oil_site, theme.getDrillIncrement())
+            self.assertFalse(found)
             self.assertIsNone(oil_site.getOilDepth())
 
-        self.assertTrue(well.drill(oil_site, theme.getDrillIncrement()))
+        found, _ = well.drill(oil_site, theme.getDrillIncrement())
+        self.assertTrue(found)
+        oil_site.setOilDepth(well.getDrillDepth())
         self.assertEqual(oil_site.getOilDepth(), oil_depth)
         self.assertEqual(well.getDrillDepth(), oil_depth)
 

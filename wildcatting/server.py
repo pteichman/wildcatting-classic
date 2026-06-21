@@ -187,9 +187,9 @@ class GameService:
         game = self._games[gameId]
 
         player = wildcatting.model.Player(username, symbol)
-        secret = game.addPlayer(clientId, player)
+        game.addPlayer(clientId, player)
 
-        handle = self._encodeGameHandle(gameId, player, secret)
+        handle = self._encodeGameHandle(gameId, player, player.getSecret())
 
         self.log.debug("%s joined game %s (%s)", player.getUsername(), gameId, handle)
 
@@ -314,7 +314,9 @@ class GameService:
         if well.getPlayer().getUsername() != player.getUsername():
             raise WildcattingException("Player does not own well")
 
-        return well.sell()
+        price = well.sell()
+        well.getPlayer().income(price)
+        return price
 
     def endTurn(self, handle):
         game, player = self._readHandle(handle)
@@ -352,7 +354,7 @@ class GameService:
 
         pendingPlayers = self.getPendingPlayers(clientHandle)
         gameFinished = game.isFinished()
-        sites = game.getUpdatedSites(clientId)
+        sites = game.popUpdatedSites(clientId)
 
         update = wildcatting.model.Update(
             week, oilPrice, playersTurn, pendingPlayers, gameFinished, sites)
@@ -400,11 +402,6 @@ class GameService:
         game, player = self._readHandle(handle)
         return game.getOilPrice()
 
-    def _exposeOil(self, site):
-        reservoir = site.getReservoir()
-        if reservoir is not None:
-            site.setOilDepth(reservoir.getOilDepth())
-
     def getPlayerField(self, clientHandle):
         game, player = self._readClientHandle(clientHandle)
         field = game.getOilField()
@@ -419,11 +416,13 @@ class GameService:
                 site = field.getSite(row, col)
                 playerSite = playerField.getSite(row, col)
 
-                if gameFinished:
-                    self._exposeOil(site)
-
                 if site.isSurveyed() or gameFinished:
                     self._updatePlayerSite(playerSite, site)
+
+                if gameFinished:
+                    reservoir = site.getReservoir()
+                    if reservoir is not None:
+                        playerSite.setOilDepth(reservoir.getOilDepth())
 
         return playerField.serialize()
 

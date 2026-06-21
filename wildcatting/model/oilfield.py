@@ -130,7 +130,9 @@ class Site(Serializable):
     def week(self, oilPrice, wellTheory, currentWeek):
         if self._well is not None:
             if self._well.getOutput() is not None and not self._well.isSold():
-                wellTheory.week(self, currentWeek)
+                output, capacity = wellTheory.week(self, currentWeek)
+                self._well.setOutput(output)
+                self._well.setCapacity(capacity)
             self._well.week(self, oilPrice)
 
 
@@ -203,7 +205,6 @@ class Well(Serializable):
         self._sold = True
         price = self._initialCost // 2
         self._profitAndLoss += price
-        self._player.income(price)
         return price
 
     def drill(self, site, drillIncrement):
@@ -223,31 +224,27 @@ class Well(Serializable):
         cost = drillCost * drillIncrement
         self._initialCost += cost
         self._profitAndLoss -= cost
-        self._player.expense(cost)
 
-        foundOil = (self._drillDepth == oilDepth)
-        if foundOil:
-            site.setOilDepth(oilDepth)
+        return self._drillDepth == oilDepth, cost
 
-        return foundOil
+    @staticmethod
+    def _computeWeeklyPnl(output, oilPrice, tax):
+        income = int(output * oilPrice)
+        return income, tax
 
     def week(self, site, oilPrice):
         if not self._sold:
-
-            if self._output is None:
-                output = 0
-            else:
-                output = self._output
+            output = self._output if self._output is not None else 0
 
             reservoir = site.getReservoir()
             if reservoir is not None:
                 reservoir.pump(output)
 
             tax = site.getTax()
-            income = int(output * oilPrice)
+            income, expense = self._computeWeeklyPnl(output, oilPrice, tax)
 
-            self._profitAndLoss -= tax
+            self._profitAndLoss -= expense
             self._profitAndLoss += income
 
-            self._player.expense(tax)
+            self._player.expense(expense)
             self._player.income(income)

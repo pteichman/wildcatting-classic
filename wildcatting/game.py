@@ -25,6 +25,9 @@ class PeakedFiller(Filler):
         peaks = self._generatePeaks(field)
         self._fillModel(field, peaks)
 
+    def _cellRoll(self):
+        return None
+
     def _fillModel(self, model, peaks):
         for row in range(model.getHeight()):
             for col in range(model.getWidth()):
@@ -53,8 +56,9 @@ class PeakedFiller(Filler):
                 value = max(minValue, value)
                 value = min(maxValue, value)
 
+                roll = self._cellRoll()
                 site = model.getSite(row, col)
-                self.fillSite(site, value)
+                self.fillSite(site, value, roll)
 
     def _generatePeaks(self, model):
         minValue, maxValue = self.getValueRange()
@@ -68,7 +72,7 @@ class PeakedFiller(Filler):
     def getValueRange(self):
         raise NotImplementedError("AbstractMethodNotImplemented")
 
-    def fillSite(self, site):
+    def fillSite(self, site, value, roll):
         raise NotImplementedError("AbstractMethodNotImplemented")
 
 
@@ -80,11 +84,12 @@ class OilFiller(PeakedFiller):
     def getValueRange(self):
         return (10, 100)
 
-    def fillSite(self, site, value):
-        site.setProbability(value)
+    def _cellRoll(self):
+        return random.randint(0, 100)
 
-        r = random.randint(0, 100)
-        if (r < value):
+    def fillSite(self, site, value, roll):
+        site.setProbability(value)
+        if roll < value:
             site.setOilFlag(True)
 
     def getMinDropoff(self):
@@ -111,7 +116,7 @@ class DrillCostFiller(PeakedFiller):
     def getValueRange(self):
         return (self._theme.getMinDrillCost(), self._theme.getMaxDrillCost())
 
-    def fillSite(self, site, discount):
+    def fillSite(self, site, discount, roll):
         site.setDrillCost(self._theme.getMaxDrillCost() - discount)
 
     def getMinDropoff(self):
@@ -138,7 +143,7 @@ class PotentialOilDepthFiller(PeakedFiller):
     def getValueRange(self):
         return (1, 10)
 
-    def fillSite(self, site, value):
+    def fillSite(self, site, value, roll):
         if site.getOilFlag():
             site.setPotentialOilDepth(11 - value)
 
@@ -165,11 +170,10 @@ class ReservoirFiller(Filler):
 
         self._theme = theme
 
-        self._reservoirCount = 0
-        self._siteCount = 0
-
     def fill(self, field):
         height, width = field.getHeight(), field.getWidth()
+        reservoir_count = 0
+        site_count = 0
         for row in range(field.getHeight()):
             for col in range(field.getWidth()):
                 site = field.getSite(row, col)
@@ -182,11 +186,13 @@ class ReservoirFiller(Filler):
 
                     adjacentSite = field.getSite(adjacentRow, adjacentCol)
                     adjacentSites.append(adjacentSite)
-                self._fillSite(site, adjacentSites)
+                dr, ds = self._fillSite(site, adjacentSites)
+                reservoir_count += dr
+                site_count += ds
 
         self.log.info(
             "Created %d reservoirs covering %d sites",
-            self._reservoirCount, self._siteCount)
+            reservoir_count, site_count)
 
     def _getInitialReserves(self):
         reserves = int(max(0.1, random.gauss(1,1)) * self._theme.getMeanSiteReserves())
@@ -199,23 +205,27 @@ class ReservoirFiller(Filler):
 
     def _fillSite(self, site, adjacentSites):
         initialDepth = site.getPotentialOilDepth()
+        reservoir_count = 0
+        site_count = 0
 
         for adjacentSite in adjacentSites:
             initialReserves = self._getInitialReserves()
             adj_depth = adjacentSite.getPotentialOilDepth()
             if self._depthBracket(initialDepth) == self._depthBracket(adj_depth):
-                self._siteCount += 1
+                site_count += 1
                 reservoir = site.getReservoir()
                 if reservoir is None:
-                    self._reservoirCount += 1
+                    reservoir_count += 1
                     reservoir = Reservoir(initialDepth, initialReserves)
                     site.setReservoir(reservoir)
 
                 reservoir.join(adjacentSite.getPotentialOilDepth(), initialReserves)
                 adjacentSite.setReservoir(reservoir)
             else:
-                self._reservoirCount += 1
+                reservoir_count += 1
                 site.setReservoir(Reservoir(initialDepth, initialReserves))
+
+        return reservoir_count, site_count
 
 
 class TaxFiller:
@@ -292,8 +302,6 @@ class Game:
 
         self._clients.setdefault(clientId, []).append(player)
 
-        return secret
-
     def getMaster(self):
         if len(self._playerOrder) > 0:
             return self._playerOrder[0]
@@ -353,11 +361,15 @@ class Game:
     def drill(self, row, col):
         site = self._oilField.getSite(row, col)
         well = site.getWell()
-        foundOil = well.drill(site, self._theme.getDrillIncrement())
+        foundOil, cost = well.drill(site, self._theme.getDrillIncrement())
+        well.getPlayer().expense(cost)
 
         if foundOil:
+            site.setOilDepth(well.getDrillDepth())
             theory = self._theme.getWellTheory()
-            theory.start(site)
+            output = theory.start(site)
+            well.setOutput(output)
+            well.setInitialOutput(output)
 
         return foundOil
 
@@ -366,8 +378,6 @@ class Game:
 
         if self._week.isFinished():
             self._nextWeek()
-
-        return self._weekNum
 
     def getWeeklySummary(self):
         return wildcatting.model.WeeklySummary(self._playerOrder, self._weekNum)
@@ -379,7 +389,7 @@ class Game:
                 if site not in updateSites:
                     updateSites.append(site)
 
-    def getUpdatedSites(self, clientId):
+    def popUpdatedSites(self, clientId):
         updates = self._clientUpdates[clientId]
         self._clientUpdates[clientId] = []
         return updates

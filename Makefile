@@ -3,6 +3,7 @@ test:
 
 check:
 	uv run ruff check wildcatting test
+	uv run mypy wildcatting test
 
 fmt:
 	uv run ruff format wildcatting test

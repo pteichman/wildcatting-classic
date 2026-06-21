@@ -1,23 +1,26 @@
+from __future__ import annotations
+
 import datetime
 import logging
 import math
 import random
+from collections.abc import Iterator
 
 
 class HistoricalPrices:
-    def __init__(self, length):
+    def __init__(self, length: int) -> None:
         global historical_data
         start = random.randrange(len(historical_data) - length)
         self._prices = historical_data[start : start + length]
 
-    def __iter__(self):
+    def __iter__(self) -> Iterator[Price]:
         return self._prices.__iter__()
 
 
 class GaussianPrices:
     """Gaussian distribution"""
 
-    def __init__(self, start, mu=None, sigma=None):
+    def __init__(self, start: float, mu: float | None = None, sigma: float | None = None) -> None:
         self._initialPrice = self._price = start
 
         if mu is None:
@@ -29,7 +32,7 @@ class GaussianPrices:
         self._mu = mu
         self._sigma = sigma
 
-    def __str__(self):
+    def __str__(self) -> str:
         lines = [str(self.__class__)]
 
         lines.append(f"  Initial oil price: ${self._price:.2f}")
@@ -51,26 +54,26 @@ class GaussianPrices:
 
         return "\n".join(lines)
 
-    def getInitialPrice(self):
+    def getInitialPrice(self) -> float:
         return self._initialPrice
 
-    def __next__(self):
+    def __next__(self) -> float:
         change = random.gauss(self._mu, self._sigma)
         self._price = max(0.01, self._price + self._price * change / 100)
         return self._price
 
-    def _calculate_mean(self, nums):
-        sum = 0
+    def _calculate_mean(self, nums: list[float]) -> float:
+        sum: float = 0
         for num in nums:
             sum = sum + num
         return sum / len(nums)
 
-    def _calculate_sigma(self, mean, nums):
+    def _calculate_sigma(self, mean: float, nums: list[float]) -> float:
         diffs = []
         for num in nums:
             diffs.append(math.pow(num - mean, 2))
 
-        sum = 0
+        sum: float = 0
         for num in diffs:
             sum = sum + num
 
@@ -82,27 +85,27 @@ class TrendingGaussianPrices:
 
     """Gaussian distribution that trends in a given direction every N or so turns"""
 
-    def __init__(self, start, minPrice, maxPrice, trendMu, trendSigma):
+    def __init__(self, start: float, minPrice: float, maxPrice: float, trendMu: float, trendSigma: float) -> None:
         self._initialPrice = self._price = start
         self._minPrice = minPrice
         self._maxPrice = maxPrice
         self._trendMu = trendMu
         self._trendSigma = trendSigma
 
-        self._trendWeek = 0
-        self._trendLength = 0
+        self._trendWeek: int = 0
+        self._trendLength: int = 0
 
-        self._mu = None
-        self._sigma = None
+        self._mu: float = 0.0
+        self._sigma: float = 2.0
 
-    def _nextTrend(self):
+    def _nextTrend(self) -> None:
         self._trendWeek = 0
         self._trendLength = max(1, int(random.gauss(self._trendMu, self._trendSigma)))
 
         self._mu = random.gauss(0.0, 3.0)
         self._sigma = 2.0
 
-    def __next__(self):
+    def __next__(self) -> float:
         if self._trendLength == self._trendWeek:
             self._nextTrend()
 
@@ -116,14 +119,14 @@ class TrendingGaussianPrices:
 
         return self._price
 
-    def getInitialPrice(self):
+    def getInitialPrice(self) -> float:
         return self._initialPrice
 
 
 class HistoricalGaussianPrices(GaussianPrices):
     """Gaussian distribution based on our historical price data"""
 
-    def __init__(self, start):
+    def __init__(self, start: float) -> None:
         global historical_data
 
         self._changes = self._calculate_changes(historical_data)
@@ -132,7 +135,7 @@ class HistoricalGaussianPrices(GaussianPrices):
 
         GaussianPrices.__init__(self, start, mu, sigma)
 
-    def _calculate_changes(self, prices):
+    def _calculate_changes(self, prices: list[Price]) -> list[float]:
         ret = []
 
         prev = prices[0]
@@ -144,18 +147,18 @@ class HistoricalGaussianPrices(GaussianPrices):
 
 
 class Price:
-    def __init__(self, date, price):
+    def __init__(self, date: datetime.date, price: float) -> None:
         self._date = date
         self._price = price
 
-    def getValue(self):
+    def getValue(self) -> float:
         return self._price
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f"${self._price:.2f} ({self._date.isoformat()})"
 
 
-historical_data = [
+historical_data: list[Price] = [
     Price(datetime.date(1986, 1, 2), 25.560000),
     Price(datetime.date(1986, 1, 3), 26.000000),
     Price(datetime.date(1986, 1, 6), 26.530000),

@@ -1,5 +1,6 @@
 import curses
 import logging
+import platform
 
 from wildcatting.colors import Colors
 
@@ -9,6 +10,7 @@ class View:
 
     def __init__(self, stdscr):
         self._stdscr = stdscr
+        self._mac = platform.system() == "Darwin"
 
     def getGreenFGBG(self):
         color = Colors.get(curses.COLOR_BLACK, curses.COLOR_GREEN)

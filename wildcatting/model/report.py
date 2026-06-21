@@ -18,7 +18,11 @@ class WeeklySummary(Serializable):
                 maxProfitAndLoss = profitAndLoss
         for player in self._playerOrder:
             profitAndLoss = player.getProfitAndLoss()
-            row = {"username": player.getUsername(), "profitAndLoss": profitAndLoss, "leader": (profitAndLoss == maxProfitAndLoss)}
+            row = {
+                "username": player.getUsername(),
+                "profitAndLoss": profitAndLoss,
+                "leader": (profitAndLoss == maxProfitAndLoss),
+            }
             rows.append(row)
         return rows
 

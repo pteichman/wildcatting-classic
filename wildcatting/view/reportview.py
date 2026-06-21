@@ -24,7 +24,7 @@ class WeeklySummaryView(View):
 
         self.addCentered(self._win, 1, "... WILDCATTING ...")
         if not gameFinished:
-            self.addCentered(self._win, 3, "WEEK %03s" % self._report.getWeek())
+            self.addCentered(self._win, 3, f"WEEK {self._report.getWeek()!s:>3}")
         else:
             self.addCentered(self._win, 3, "FINAL REPORT")
         row = 6
@@ -38,7 +38,7 @@ class WeeklySummaryView(View):
             self.addLeft(self._win, row, username, pad=12)
 
             # could be profit, but probably a loss
-            loss = "$ %8d" % profitAndLoss
+            loss = f"$ {profitAndLoss:8d}"
 
             self.addRight(self._win, row, loss, pad=12)
 
@@ -109,16 +109,31 @@ class WeeklyReportView(View):
                     symbol = " "
                 else:
                     symbol = self._report.getSymbol()
-                self._win.addstr(turn - (self._page * 13) + 1, 0, symbol, self._colorChooser.siteColor(site))
+                self._win.addstr(
+                    turn - (self._page * 13) + 1, 0, symbol,
+                    self._colorChooser.siteColor(site))
             else:
-                rowDict = {"row": 0, "col":0, "cost":0, "tax":0, "income":0, "profitAndLoss":0}
+                rowDict = {
+                    "row": 0, "col": 0, "cost": 0, "tax": 0,
+                    "income": 0, "profitAndLoss": 0,
+                }
 
-            well_str = " %(col)02s %(row)03s   $%(cost)04s    $%(tax)04s   $%(income)04s      $%(profitAndLoss)7s" % rowDict
+            col = rowDict["col"]
+            row_num = rowDict["row"]
+            cost = rowDict["cost"]
+            tax = rowDict["tax"]
+            income = rowDict["income"]
+            pl = rowDict["profitAndLoss"]
+            well_str = (
+                f" {col!s:>2} {row_num!s:>3}   ${cost!s:>4}    ${tax!s:>4}"
+                f"   ${income!s:>4}      ${pl!s:>7}"
+            )
             self._win.addstr(turn - (self._page * 13) + 1, 1, well_str)
 
         self._win.addstr(15, 0, " NEXT PLAYER")
         if self._page == (self._report.getWeek() - 1) // 13:
-            self._win.addstr(15, 35, f"$ {str(self._report.getProfitAndLoss()).rjust(10)}")
+            pl = str(self._report.getProfitAndLoss()).rjust(10)
+            self._win.addstr(15, 35, f"$ {pl}")
         self._moveCursor()
         self._win.refresh()
 

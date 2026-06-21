@@ -166,5 +166,6 @@ class CommandParser(OptionParser):
             commands.sort(key=lambda x: x.get_name())
 
             for cmd in commands:
-                result.append("  {}{}  {}\n".format(cmd.helpstr, " "*(max_cmd_length-len(cmd.helpstr)), cmd.summary))
+                padding = " " * (max_cmd_length - len(cmd.helpstr))
+                result.append(f"  {cmd.helpstr}{padding}  {cmd.summary}\n")
         return "".join(result)

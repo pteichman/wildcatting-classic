@@ -165,7 +165,9 @@ class GameService:
         return self._encodeClientHandle(gameId, clientId)
 
     def new(self, width, height, turnCount):
-        if not isinstance(width, int) or not isinstance(height, int) or not isinstance(turnCount, int):
+        if (not isinstance(width, int)
+                or not isinstance(height, int)
+                or not isinstance(turnCount, int)):
             raise WildcattingException("Invalid parameters")
 
         gameId = str(self._nextGameId)
@@ -287,7 +289,8 @@ class GameService:
         turn = self._ensureTurn(game, player)
 
         drilledSite = turn.getDrilledSite()
-        if drilledSite and not (drilledSite.getRow() == row and drilledSite.getCol() == col):
+        if drilledSite and not (
+                drilledSite.getRow() == row and drilledSite.getCol() == col):
             raise WildcattingException("Already drilled somewhere else this turn")
 
         game.drill(row, col)
@@ -351,7 +354,8 @@ class GameService:
         gameFinished = game.isFinished()
         sites = game.getUpdatedSites(clientId)
 
-        update = wildcatting.model.Update(week, oilPrice, playersTurn, pendingPlayers, gameFinished, sites)
+        update = wildcatting.model.Update(
+            week, oilPrice, playersTurn, pendingPlayers, gameFinished, sites)
         return update.serialize()
 
     def getWellUpdates(self, handle):
@@ -362,7 +366,8 @@ class GameService:
         for row in range(field.getHeight()):
             for col in range(field.getWidth()):
                 well = field.getSite(row, col).getWell()
-                if well is not None and well.getPlayer().getUsername() == player.getUsername():
+                if (well is not None
+                        and well.getPlayer().getUsername() == player.getUsername()):
                     wellDict = {"row": row, "col": col, "well": well.serialize()}
                     wellUpdates.append(wellDict)
 

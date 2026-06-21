@@ -64,19 +64,25 @@ class ThemeInfo(Command):
 
         print()
 
-        print("Drilling cost: %s .. %s per %d depth units" \
-              % (self._formatPrice(theme, theme.getMinDrillCost()),
-                 self._formatPrice(theme, theme.getMaxDrillCost()),
-                 theme.getDrillIncrement()))
-        print(f"Taxes: {self._formatPrice(theme, theme.getMinTax())} .. {self._formatPrice(theme, theme.getMaxTax())}")
-        print("Maximum oil output: %d barrels" % theme.getMaxOutput())
-        print(f"At starting price, well profit is {self._formatPrice(theme, theme.getMinOutput())} .. {self._formatPrice(theme, theme.getMaxOutput() * prices.getInitialPrice())}")
+        min_drill = self._formatPrice(theme, theme.getMinDrillCost())
+        max_drill = self._formatPrice(theme, theme.getMaxDrillCost())
+        drill_inc = theme.getDrillIncrement()
+        print(f"Drilling cost: {min_drill} .. {max_drill} per {drill_inc} depth units")
+        min_tax = self._formatPrice(theme, theme.getMinTax())
+        max_tax = self._formatPrice(theme, theme.getMaxTax())
+        print(f"Taxes: {min_tax} .. {max_tax}")
+        print(f"Maximum oil output: {theme.getMaxOutput()} barrels")
+        min_profit = self._formatPrice(theme, theme.getMinOutput())
+        max_profit = self._formatPrice(
+            theme, theme.getMaxOutput() * prices.getInitialPrice())
+        print(f"At starting price, well profit is {min_profit} .. {max_profit}")
 
         print()
         print("Facts:")
 
         for fact in theme.getFacts():
-            print(textwrap.fill(fact.strip(), initial_indent="* ", subsequent_indent="  "))
+            print(textwrap.fill(
+                fact.strip(), initial_indent="* ", subsequent_indent="  "))
 
     def printAllThemes(self):
         themes = self._getAllThemes()
@@ -90,6 +96,7 @@ class ThemeInfo(Command):
             if theme == wildcatting.theme.DefaultTheme:
                 display_name = f"{name} (default)"
 
-            rows.append((display_name, obj.getLocation(), obj.getEra(), str(len(obj.getFacts()))))
+            rows.append((display_name, obj.getLocation(), obj.getEra(),
+                         str(len(obj.getFacts()))))
 
         print(wildcatting.table.format_table(cols, rows))

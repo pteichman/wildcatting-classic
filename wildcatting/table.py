@@ -9,7 +9,7 @@ def format_row(elts, widths, sep=" | "):
         else:
             elt = elts[i]
 
-        row.append("%-*s" % (widths[i], elt))
+        row.append(f"{elt:<{widths[i]}}")
     return sep.join(row)
 
 def format_separator(widths):
@@ -27,7 +27,8 @@ def format_table(labels, rows):
                 else:
                     length = len(row[i])
 
-                if length > widths[i]: widths[i] = length
+                if length > widths[i]:
+                    widths[i] = length
 
     table = []
 

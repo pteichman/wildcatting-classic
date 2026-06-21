@@ -25,7 +25,8 @@ class DrillView(View):
     def display(self):
         self._stdscr.clear()
 
-        drillDepth = self._site.getWell().getDrillDepth() * self._setting.getDrillIncrement()
+        drillDepth = (
+            self._site.getWell().getDrillDepth() * self._setting.getDrillIncrement())
         drillCost = self._site.getDrillCost()
         cost = drillDepth * drillCost
 
@@ -79,10 +80,11 @@ class WildcattingView(View):
         self._field_win = stdscr.derwin(rows, cols, 2, 4)
         bkgd = Colors.get(curses.COLOR_WHITE, curses.COLOR_BLACK)
         self._field_win.bkgdset(" ", bkgd)
-        probView = wildcatting.view.OilFieldProbabilityView(self._field_win, wildcatting_)
-        drillCostView = wildcatting.view.OilFieldDrillCostView(self._field_win, wildcatting_,
-                                                                         setting.getMinDrillCost(),
-                                                                         setting.getMaxDrillCost())
+        probView = wildcatting.view.OilFieldProbabilityView(
+            self._field_win, wildcatting_)
+        drillCostView = wildcatting.view.OilFieldDrillCostView(
+            self._field_win, wildcatting_,
+            setting.getMinDrillCost(), setting.getMaxDrillCost())
         depthView = wildcatting.view.OilFieldDepthView(self._field_win, wildcatting_)
         self._views = [probView, drillCostView, depthView]
         self._currentView = 0
@@ -107,7 +109,7 @@ class WildcattingView(View):
             topstr = topstr + f"  Oil is {pricestr}"
             self._stdscr.addstr(0, 4, topstr, curses.A_BOLD)
 
-            week = "Week %d" % self._wildcatting.getWeek()
+            week = f"Week {self._wildcatting.getWeek()}"
 
             newWeek = False
             if week != self._week:
@@ -115,7 +117,8 @@ class WildcattingView(View):
 
             self._week = week
 
-            self._stdscr.addstr(0, w - self.SIDE_BORDER - len(week) - 1, week, curses.A_BOLD)
+            self._stdscr.addstr(
+                0, w - self.SIDE_BORDER - len(week) - 1, week, curses.A_BOLD)
 
             if newWeek:
                 self._fact = random.choice(self._setting.getFacts())
@@ -149,7 +152,8 @@ class WildcattingView(View):
         if self._mac:
             col = len(colors) + 1
             color = Colors.get(curses.COLOR_WHITE, curses.COLOR_WHITE)
-            self._border_win.addstr(border_h - 2, col, "." * (border_w - col - 1), color)
+            self._border_win.addstr(
+                border_h - 2, col, "." * (border_w - col - 1), color)
 
         label = f" {self._getCurrentView().getKeyLabel()}"
         self.addLeft(self._border_win, border_h - 2, label, blackOnWhite,
@@ -213,7 +217,8 @@ class WildcattingView(View):
         curses.curs_set(0)
         self._drawKeyBar()
 
-        dx = 0 ; dy = 0
+        dx = 0
+        dy = 0
         survey = False
 
         curses.mousemask(curses.BUTTON1_CLICKED)
@@ -224,10 +229,14 @@ class WildcattingView(View):
             c = self._stdscr.getch()
         if c == -1:
             actions["checkForUpdates"] = True
-        elif c == curses.KEY_UP: dy = -1
-        elif c == curses.KEY_DOWN: dy = 1
-        elif c == curses.KEY_LEFT: dx = -1
-        elif c == curses.KEY_RIGHT: dx = 1
+        elif c == curses.KEY_UP:
+            dy = -1
+        elif c == curses.KEY_DOWN:
+            dy = 1
+        elif c == curses.KEY_LEFT:
+            dx = -1
+        elif c == curses.KEY_RIGHT:
+            dx = 1
         elif c == curses.KEY_MOUSE:
             mid, mx, my, mz, bstate = curses.getmouse()
             dx = mx - self._x - 4
@@ -244,7 +253,8 @@ class WildcattingView(View):
                 (self._x + dx) < 0 or (self._y + dy) < 0:
                 return actions
 
-            self._x += dx ; self._y += dy
+            self._x += dx
+            self._y += dy
 
         if survey:
             actions["survey"] = (self._y, self._x)

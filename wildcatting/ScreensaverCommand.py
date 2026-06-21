@@ -7,6 +7,7 @@ from wildcatting.cmdparse import Command
 from wildcatting.game import Game
 from wildcatting.view import (
     FadeInOilFieldCursesAnimator,
+    OilFieldCursesView,
     OilFieldDrillCostView,
     OilFieldProbabilityView,
     OilFieldTextView,
@@ -17,7 +18,8 @@ class ScreensaverCommand(Command):
     log = logging.getLogger("Wildcatting")
 
     def __init__(self):
-        Command.__init__(self, "screensaver", summary="avoid character burn-in on your terminals")
+        Command.__init__(self, "screensaver",
+                         summary="avoid character burn-in on your terminals")
 
         self.add_option("", "--no-border", action="store_true",
                         help="disable border")
@@ -49,7 +51,7 @@ class ScreensaverCommand(Command):
                 field = game.getOilField()
                 OilFieldTextView(field).ansi()
                 time.sleep(.25)
-        except:
+        except Exception:
             print(chr(27) + '[0m')
 
     def borderWin(self, parent, no_border):

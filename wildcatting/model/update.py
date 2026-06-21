@@ -2,7 +2,8 @@ from .serialize import Serializable
 
 
 class Update(Serializable):
-    def __init__(self, week, oilPrice, playersTurn, pendingPlayers, gameFinished, sites):
+    def __init__(self, week, oilPrice, playersTurn, pendingPlayers, gameFinished,
+                 sites):
         self._week = week
         self._oilPrice = oilPrice
         self._playersTurn = playersTurn

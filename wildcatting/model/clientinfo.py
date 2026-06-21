@@ -20,7 +20,7 @@ class ClientInfo(Serializable):
         return self._clientHandle
 
     def setClientHandle(self, clientHandle):
-        assert isinstance(gameId, str)
+        assert isinstance(clientHandle, str)
         return self._clientHandle
 
     def addPlayerInfo(self, username, handle, symbol):

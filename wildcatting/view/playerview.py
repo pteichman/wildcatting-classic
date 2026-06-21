@@ -32,7 +32,7 @@ class PlayerCountView(View):
                 num = int(chr(c))
                 if 0 < num < 5:
                     return num
-            except:
+            except Exception:
                 pass
 
             self.addCentered(self._win, 13, "INVALID INPUT")
@@ -62,7 +62,7 @@ class PlayerNamesView(View):
 
         for i in range(1, self._count+1):
             row = i*2+1
-            self.addLeft(self._win, row, "%d. " % i, pad=10)
+            self.addLeft(self._win, row, f"{i}. ", pad=10)
 
             # name field
             name_w = w-13*2-3

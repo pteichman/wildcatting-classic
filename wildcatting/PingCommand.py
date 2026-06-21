@@ -17,12 +17,12 @@ class ClientCommand(Command):
                         default="localhost", help="server hostname")
 
     def run(self, options, args):
-        url = "http://%s:%d/" % (options.host, options.port)
+        url = f"http://{options.host}:{options.port}/"
         s = ServerProxy(url, allow_none=True)
 
         try:
             server_version = s.version()
-        except:
+        except Exception:
             print(f"Server at {url} is not up.")
             sys.exit(1)
 

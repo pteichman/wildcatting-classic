@@ -1,4 +1,4 @@
-from .theme import Theme
-from .westtexas import *
+from .theme import Theme as Theme
+from .westtexas import *  # noqa: F403
 
-DefaultTheme = WestTexas
+DefaultTheme = WestTexas  # noqa: F405

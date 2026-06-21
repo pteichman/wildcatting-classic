@@ -119,18 +119,21 @@ class Client:
         else:
             if self._connectGameId is not None:
                 # connecting to an existing game
-                self._connectHandle = self._server.game.newClientHandle(self._connectGameId)
+                self._connectHandle = self._server.game.newClientHandle(
+                    self._connectGameId)
             else:
                 # creating a new game
                 w, h = self._getAvailableFieldSize()
                 self._connectHandle = self._server.game.new(w, h, self._weeks)
-                self.log.info("Created a new game with client id: %s", self._connectHandle)
+                self.log.info(
+                    "Created a new game with client id: %s", self._connectHandle)
 
             # joining a new game
             for (username, symbol) in self._connectPlayers:
                 self._server.game.join(self._connectHandle, username, symbol)
 
-        self._clientInfo = ClientInfo.deserialize(self._server.game.getClientInfo(self._connectHandle))
+        self._clientInfo = ClientInfo.deserialize(
+            self._server.game.getClientInfo(self._connectHandle))
 
     def _getCurrentHandle(self):
         player = self._wildcatting.getPlayersTurn()
@@ -167,7 +170,8 @@ class Client:
         site = self._wildcatting.getPlayerField().getSite(row, col)
         surveyed = site.isSurveyed()
         if not surveyed:
-            site = Site.deserialize(self._server.game.survey(self._getCurrentHandle(), row, col))
+            site = Site.deserialize(
+                self._server.game.survey(self._getCurrentHandle(), row, col))
             self._wildcatting.updatePlayerField(site)
 
         report = SurveyorsReportView(self._stdscr, site, surveyed)
@@ -175,7 +179,8 @@ class Client:
         return report.input()
 
     def _drillAWell(self, row, col):
-        site = Site.deserialize(self._server.game.erect(self._getCurrentHandle(), row, col))
+        site = Site.deserialize(
+            self._server.game.erect(self._getCurrentHandle(), row, col))
         self._wildcatting.updatePlayerField(site)
         if site.getWell().getOutput() is None:
             self._runDrill(row, col)
@@ -184,7 +189,8 @@ class Client:
         actions = {}
         site = self._wildcatting.getPlayerField().getSite(row, col)
         drillView = DrillView(self._stdscr, site, self._setting)
-        while site.getWell().getOutput() is None and site.getWell().getDrillDepth() < 10:
+        while (site.getWell().getOutput() is None
+               and site.getWell().getDrillDepth() < 10):
             drillView.display()
             actions = drillView.input()
             if "drill" in actions:
@@ -248,7 +254,8 @@ class Client:
                 if site.getWell().isSold():
                     continue
                 self._server.game.sell(handle, row, col)
-                site = Site.deserialize(self._server.game.getPlayerSite(handle, row, col))
+                site = Site.deserialize(
+                    self._server.game.getPlayerSite(handle, row, col))
                 self._wildcatting.updatePlayerField(site)
 
                 report = WeeklyReport(self._wildcatting.getPlayerField(),
@@ -261,7 +268,8 @@ class Client:
                 reportView.display()
 
     def _runWeeklySummary(self):
-        report = WeeklySummary.deserialize(self._server.game.getWeeklySummary(self._clientInfo.getClientHandle()))
+        report = WeeklySummary.deserialize(
+            self._server.game.getWeeklySummary(self._clientInfo.getClientHandle()))
         weeklySummaryView = WeeklySummaryView(self._stdscr, report)
         weeklySummaryView.display(self._wildcatting.isGameFinished())
 
@@ -270,7 +278,8 @@ class Client:
             actions = weeklySummaryView.input()
 
     def _updateWildcatting(self):
-        update = Update.deserialize(self._server.game.getUpdate(self._clientInfo.getClientHandle()))
+        update = Update.deserialize(
+            self._server.game.getUpdate(self._clientInfo.getClientHandle()))
         return self._wildcatting.update(update)
 
     def _isMyTurn(self):
@@ -312,10 +321,10 @@ class Client:
         if availableHeight < playerField.getHeight() \
                or availableWidth < playerField.getWidth():
             w, h = self._stdscr.getmaxyx()
-            raise Exception("Console must be at least %dx%d (is %dx%d)"
-                            % (playerField.getWidth() + WildcattingView.SIDE_PADDING,
-                               playerField.getHeight() + WildcattingView.TOP_PADDING,
-                               w, h))
+            min_w = playerField.getWidth() + WildcattingView.SIDE_PADDING
+            min_h = playerField.getHeight() + WildcattingView.TOP_PADDING
+            raise Exception(
+                f"Console must be at least {min_w}x{min_h} (is {w}x{h})")
 
         self._wildcattingView = wildcattingView = WildcattingView(self._stdscr,
                                                                   self._wildcatting,

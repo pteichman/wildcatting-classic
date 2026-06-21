@@ -43,11 +43,13 @@ class PeakedFiller(Filler):
                 minValue, maxValue = self.getValueRange()
                 lesserPeakFactor = self.getLesserPeakFactor()
                 fudge = self.getFudge()
-                d = (minc + random.random() * fudge) / math.sqrt(model.getWidth() * model.getHeight())
+                field_size = math.sqrt(model.getWidth() * model.getHeight())
+                d = (minc + random.random() * fudge) / field_size
                 e = max(0.001, d)
                 f = 1 - max(min((math.log(e) + 3) / 3, 1.0), 0)
                 peakHeight = maxValue - minValue
-                value = int(f * peakHeight - closest * random.random() * lesserPeakFactor)
+                value = int(
+                    f * peakHeight - closest * random.random() * lesserPeakFactor)
                 value = max(minValue, value)
                 value = min(maxValue, value)
 
@@ -171,7 +173,8 @@ class ReservoirFiller(Filler):
         for row in range(field.getHeight()):
             for col in range(field.getWidth()):
                 site = field.getSite(row, col)
-                if not site.getOilFlag(): continue
+                if not site.getOilFlag():
+                    continue
                 adjacentSites = []
                 for (adjacentRow, adjacentCol) in [(row + 1, col), (row, col + 1)]:
                     if adjacentRow >= height or adjacentCol >= width:
@@ -181,7 +184,9 @@ class ReservoirFiller(Filler):
                     adjacentSites.append(adjacentSite)
                 self._fillSite(site, adjacentSites)
 
-        self.log.info(f"Created {self._reservoirCount} reservoirs covering {self._siteCount} sites")
+        self.log.info(
+            "Created %d reservoirs covering %d sites",
+            self._reservoirCount, self._siteCount)
 
     def _getInitialReserves(self):
         reserves = int(max(0.1, random.gauss(1,1)) * self._theme.getMeanSiteReserves())
@@ -197,7 +202,8 @@ class ReservoirFiller(Filler):
 
         for adjacentSite in adjacentSites:
             initialReserves = self._getInitialReserves()
-            if self._depthBracket(initialDepth) == self._depthBracket(adjacentSite.getPotentialOilDepth()):
+            adj_depth = adjacentSite.getPotentialOilDepth()
+            if self._depthBracket(initialDepth) == self._depthBracket(adj_depth):
                 self._siteCount += 1
                 reservoir = site.getReservoir()
                 if reservoir is None:
@@ -223,7 +229,8 @@ class TaxFiller:
         for row in range(field.getHeight()):
             for col in range(field.getWidth()):
                 site = field.getSite(row, col)
-                site.setTax(random.randint(self._theme.getMinTax(), self._theme.getMaxTax()))
+                site.setTax(random.randint(
+                    self._theme.getMinTax(), self._theme.getMaxTax()))
 
 
 class Game:
@@ -274,7 +281,8 @@ class Game:
 
         playerNames = [p.getUsername() for p in list(self._players.values())]
         if player.getUsername() in playerNames:
-            raise WildcattingException(f"A user named {player.getUsername()} has already joined this game")
+            raise WildcattingException(
+                f"A user named {player.getUsername()} has already joined this game")
 
         secret = self._generateSecret()
         player.setSecret(secret)
@@ -334,7 +342,7 @@ class Game:
 
         players = sorted(self._players.values(), key=lambda p: -p.getProfitAndLoss())
 
-        playerStrs = ["%s (%d)" % (p.getUsername(), p.getProfitAndLoss())
+        playerStrs = [f"{p.getUsername()} ({p.getProfitAndLoss()})"
                       for p in players]
 
         self.log.info("Game is finished.  Scores: %s", ", ".join(playerStrs))

@@ -11,7 +11,8 @@ class Serializable:
     STATE_KEY = "wildcatting.model.Serializable.state"
 
     def __repr__(self):
-        return f"<{self.__class__.__name__} instance at 0x{id(self):x}> {_pp.pformat(self.__dict__)}"
+        cls = self.__class__.__name__
+        return f"<{cls} instance at 0x{id(self):x}> {_pp.pformat(self.__dict__)}"
 
     def serialize(self):
         return self.__serialize_instance(self)
@@ -62,7 +63,8 @@ class Serializable:
     def __serialize_dict(self, dict):
         ret = {}
         for key, value in list(dict.items()):
-            if "__" in key: continue
+            if "__" in key:
+                continue
             ret[key] = self.__serialize_item(value)
         return ret
 

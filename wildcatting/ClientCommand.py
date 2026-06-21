@@ -41,7 +41,7 @@ class ClientCommand(Command):
     def run(self, options, args):
         startLogger("client.log")
 
-        url = "http://%s:%d/" % (options.host, options.port)
+        url = f"http://{options.host}:{options.port}/"
         if options.no_network:
             from .server import StandaloneServer
             s = StandaloneServer()
@@ -57,7 +57,9 @@ class ClientCommand(Command):
 
         if server_version != version.VERSION_STRING:
             import textwrap
-            print(textwrap.fill(f"ERROR: Server at {url} requires a {server_version} client", int(os.getenv("COLUMNS", 80)) - 5))
+            cols = int(os.getenv("COLUMNS", 80)) - 5
+            print(textwrap.fill(
+                f"ERROR: Server at {url} requires a {server_version} client", cols))
             sys.exit(1)
 
         if options.hotseat:

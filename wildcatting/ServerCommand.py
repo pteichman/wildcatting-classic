@@ -38,7 +38,7 @@ class ServerCommand(Command):
             # to all interfaces
             host = socket.gethostname()
 
-        url = "http://%s:%d/" % (host, options.port)
+        url = f"http://{host}:{options.port}/"
 
         self.log.info("Wildcatting server start")
         print(f"{wildcatting.version.VERSION_STRING} server listening at {url}")

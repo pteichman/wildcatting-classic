@@ -33,9 +33,17 @@ class GaussianPrices:
         lines.append(f"  Initial oil price: ${self._price:.2f}")
         lines.append(f"  Mean change between turns: {self._mu:.3f}%")
         lines.append(f"  Standard deviation: {self._sigma:.3f}%")
-        lines.append(f"    1. 68.27% of price changes will be in the range: {self._mu - self._sigma:.3f}% .. {self._mu + self._sigma:.3f}%")
-        lines.append(f"    2. 95.45% of price changes will be in the range: {self._mu - self._sigma*2:.3f}% .. {self._mu + self._sigma*2:.3f}%")
-        lines.append(f"  Initial price +/- one standard deviation: ${self._price + self._price * (self._mu - self._sigma) / 100:.2f} .. {self._price + self._price * (self._mu + self._sigma) / 100:.2f}")
+        lo1 = f"{self._mu - self._sigma:.3f}"
+        hi1 = f"{self._mu + self._sigma:.3f}"
+        lines.append(
+            f"    1. 68.27% of price changes will be in the range: {lo1}% .. {hi1}%")
+        lo2 = f"{self._mu - self._sigma*2:.3f}"
+        hi2 = f"{self._mu + self._sigma*2:.3f}"
+        lines.append(
+            f"    2. 95.45% of price changes will be in the range: {lo2}% .. {hi2}%")
+        sd_lo = f"${self._price + self._price * (self._mu - self._sigma) / 100:.2f}"
+        sd_hi = f"${self._price + self._price * (self._mu + self._sigma) / 100:.2f}"
+        lines.append(f"  Initial price +/- one standard deviation: {sd_lo} .. {sd_hi}")
 
         return "\n".join(lines)
 

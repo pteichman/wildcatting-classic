@@ -93,6 +93,8 @@ class CommandParser(OptionParser):
 
     def check_required(self, opt):
         option = self.get_option(opt)
+        assert option is not None
+        assert option.dest is not None
 
         # Assumes the options's 'default' is set to None!
         if getattr(self.values, option.dest) is None:
@@ -125,23 +127,23 @@ class CommandParser(OptionParser):
 
     def parse_args(self, *args, **kwargs):
         self.disable_interspersed_args()
-        (options, args) = OptionParser.parse_args(self, *args, **kwargs)
+        (options, remaining) = OptionParser.parse_args(self, *args, **kwargs)
 
         cmd = None
 
-        if len(args) > 0:
-            cmd = self.find_command(args[0])
+        if len(remaining) > 0:
+            cmd = self.find_command(remaining[0])
 
             if cmd is None:
-                self.print_unknown_command(args[0])
+                self.print_unknown_command(remaining[0])
             else:
-                (cmdoptions, args) = cmd.parse_args(args[1:])
+                (cmdoptions, remaining) = cmd.parse_args(remaining[1:])
 
                 # update options with the values from cmdoptions
                 for attr, val in list(cmdoptions.__dict__.items()):
                     setattr(options, attr, val)
 
-        return (cmd, options, args)
+        return (cmd, options, remaining)
 
     def print_unknown_command(self, cmdname, file=None):
         if file is None:

@@ -13,13 +13,11 @@ from .theme import DefaultTheme, Theme
 
 
 class Filler:
-
     def fill(self, field):
         raise NotImplementedError("UnimplementedAbstractMethod")
 
 
 class PeakedFiller(Filler):
-
     def fill(self, field):
         assert isinstance(field, wildcatting.model.OilField)
         peaks = self._generatePeaks(field)
@@ -38,7 +36,7 @@ class PeakedFiller(Filler):
 
                     a = row - y
                     b = col - x
-                    c = math.sqrt(a*a + b*b)
+                    c = math.sqrt(a * a + b * b)
                     minc = min(c, minc)
                     if c == minc:
                         closest = p
@@ -52,7 +50,8 @@ class PeakedFiller(Filler):
                 f = 1 - max(min((math.log(e) + 3) / 3, 1.0), 0)
                 peakHeight = maxValue - minValue
                 value = int(
-                    f * peakHeight - closest * random.random() * lesserPeakFactor)
+                    f * peakHeight - closest * random.random() * lesserPeakFactor
+                )
                 value = max(minValue, value)
                 value = min(maxValue, value)
 
@@ -63,10 +62,12 @@ class PeakedFiller(Filler):
     def _generatePeaks(self, model):
         minValue, maxValue = self.getValueRange()
         maxPeaks = self.getMaxPeaks()
-        peaks = [None]*random.randint(1, maxPeaks)
+        peaks = [None] * random.randint(1, maxPeaks)
         for i in range(len(peaks)):
-            peaks[i] = (random.randint(0, model.getHeight()),
-                        random.randint(0, model.getWidth()))
+            peaks[i] = (
+                random.randint(0, model.getHeight()),
+                random.randint(0, model.getWidth()),
+            )
         return peaks
 
     def getValueRange(self):
@@ -165,6 +166,7 @@ class PotentialOilDepthFiller(PeakedFiller):
 
 class ReservoirFiller(Filler):
     log = logging.getLogger("Wildcatting")
+
     def __init__(self, theme):
         assert isinstance(theme, Theme)
 
@@ -180,7 +182,7 @@ class ReservoirFiller(Filler):
                 if not site.getOilFlag():
                     continue
                 adjacentSites = []
-                for (adjacentRow, adjacentCol) in [(row + 1, col), (row, col + 1)]:
+                for adjacentRow, adjacentCol in [(row + 1, col), (row, col + 1)]:
                     if adjacentRow >= height or adjacentCol >= width:
                         continue
 
@@ -191,11 +193,11 @@ class ReservoirFiller(Filler):
                 site_count += ds
 
         self.log.info(
-            "Created %d reservoirs covering %d sites",
-            reservoir_count, site_count)
+            "Created %d reservoirs covering %d sites", reservoir_count, site_count
+        )
 
     def _getInitialReserves(self):
-        reserves = int(max(0.1, random.gauss(1,1)) * self._theme.getMeanSiteReserves())
+        reserves = int(max(0.1, random.gauss(1, 1)) * self._theme.getMeanSiteReserves())
         return reserves
 
     def _depthBracket(self, depth):
@@ -239,8 +241,9 @@ class TaxFiller:
         for row in range(field.getHeight()):
             for col in range(field.getWidth()):
                 site = field.getSite(row, col)
-                site.setTax(random.randint(
-                    self._theme.getMinTax(), self._theme.getMaxTax()))
+                site.setTax(
+                    random.randint(self._theme.getMinTax(), self._theme.getMaxTax())
+                )
 
 
 class Game:
@@ -292,7 +295,8 @@ class Game:
         playerNames = [p.getUsername() for p in list(self._players.values())]
         if player.getUsername() in playerNames:
             raise WildcattingException(
-                f"A user named {player.getUsername()} has already joined this game")
+                f"A user named {player.getUsername()} has already joined this game"
+            )
 
         secret = self._generateSecret()
         player.setSecret(secret)
@@ -331,10 +335,8 @@ class Game:
         self._weekNum = self._weekNum + 1
 
         price = next(self._prices)
-        self._week = wildcatting.week.Week(self._weekNum, self._playerOrder,
-                                           price)
-        self._oilField.week(price, self._theme.getWellTheory(),
-                            self._weekNum)
+        self._week = wildcatting.week.Week(self._weekNum, self._playerOrder, price)
+        self._oilField.week(price, self._theme.getWellTheory(), self._weekNum)
 
         if self._weekNum > self._turnCount:
             self._finish()
@@ -350,8 +352,7 @@ class Game:
 
         players = sorted(self._players.values(), key=lambda p: -p.getProfitAndLoss())
 
-        playerStrs = [f"{p.getUsername()} ({p.getProfitAndLoss()})"
-                      for p in players]
+        playerStrs = [f"{p.getUsername()} ({p.getProfitAndLoss()})" for p in players]
 
         self.log.info("Game is finished.  Scores: %s", ", ".join(playerStrs))
 

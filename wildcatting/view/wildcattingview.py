@@ -26,7 +26,8 @@ class DrillView(View):
         self._stdscr.clear()
 
         drillDepth = (
-            self._site.getWell().getDrillDepth() * self._setting.getDrillIncrement())
+            self._site.getWell().getDrillDepth() * self._setting.getDrillIncrement()
+        )
         drillCost = self._site.getDrillCost()
         cost = drillDepth * drillCost
 
@@ -34,7 +35,7 @@ class DrillView(View):
         row = (height - 5) // 2
 
         if self._msg is not None:
-            self.addCentered(self._stdscr, row-2, self._msg)
+            self.addCentered(self._stdscr, row - 2, self._msg)
 
         self.addCentered(self._stdscr, row, "PRESS ANY KEY TO DRILL")
         self.addCentered(self._stdscr, row + 1, "PRESS Q TO STOP")
@@ -48,7 +49,7 @@ class DrillView(View):
         c = self._stdscr.getch()
         if c == -1:
             pass
-        elif c == ord('q') or c == ord('Q'):
+        elif c == ord("q") or c == ord("Q"):
             actions["stop"] = True
         else:
             actions["drill"] = True
@@ -81,10 +82,14 @@ class WildcattingView(View):
         bkgd = Colors.get(curses.COLOR_WHITE, curses.COLOR_BLACK)
         self._field_win.bkgdset(" ", bkgd)
         probView = wildcatting.view.OilFieldProbabilityView(
-            self._field_win, wildcatting_)
+            self._field_win, wildcatting_
+        )
         drillCostView = wildcatting.view.OilFieldDrillCostView(
-            self._field_win, wildcatting_,
-            setting.getMinDrillCost(), setting.getMaxDrillCost())
+            self._field_win,
+            wildcatting_,
+            setting.getMinDrillCost(),
+            setting.getMaxDrillCost(),
+        )
         depthView = wildcatting.view.OilFieldDepthView(self._field_win, wildcatting_)
         self._views = [probView, drillCostView, depthView]
         self._currentView = 0
@@ -118,19 +123,25 @@ class WildcattingView(View):
             self._week = week
 
             self._stdscr.addstr(
-                0, w - self.SIDE_BORDER - len(week) - 1, week, curses.A_BOLD)
+                0, w - self.SIDE_BORDER - len(week) - 1, week, curses.A_BOLD
+            )
 
             if newWeek:
                 self._fact = random.choice(self._setting.getFacts())
-            wrapped = self._wrap_fact(self._fact, " "*4, w-8)
-            self._stdscr.addstr(h-3, 0, wrapped)
+            wrapped = self._wrap_fact(self._fact, " " * 4, w - 8)
+            self._stdscr.addstr(h - 3, 0, wrapped)
 
         self._border_win.box()
 
     def _wrap_fact(self, fact, indent, width):
         """Wrap a fact across three lines"""
-        lines = textwrap.wrap(fact, width, initial_indent=indent,
-                              subsequent_indent=indent, break_long_words=True)
+        lines = textwrap.wrap(
+            fact,
+            width,
+            initial_indent=indent,
+            subsequent_indent=indent,
+            break_long_words=True,
+        )
 
         # we only have space for three lines
         if len(lines) > 3:
@@ -153,19 +164,22 @@ class WildcattingView(View):
             col = len(colors) + 1
             color = Colors.get(curses.COLOR_WHITE, curses.COLOR_WHITE)
             self._border_win.addstr(
-                border_h - 2, col, "." * (border_w - col - 1), color)
+                border_h - 2, col, "." * (border_w - col - 1), color
+            )
 
         label = f" {self._getCurrentView().getKeyLabel()}"
-        self.addLeft(self._border_win, border_h - 2, label, blackOnWhite,
-                     pad=len(colors)+1)
+        self.addLeft(
+            self._border_win, border_h - 2, label, blackOnWhite, pad=len(colors) + 1
+        )
 
         turn = self._wildcatting.getPlayersTurn()
         if turn is not None:
             coordStr = f"X={str(self._x).rjust(2)}   Y={str(self._y).rjust(2)}"
             self.addCentered(self._border_win, border_h - 2, coordStr, blackOnWhite)
             if not self._wildcatting.isGameFinished():
-                self.addRight(self._border_win, border_h - 2,
-                              f"{turn}'s turn", blackOnWhite)
+                self.addRight(
+                    self._border_win, border_h - 2, f"{turn}'s turn", blackOnWhite
+                )
         else:
             longestLabel = 0
             for view in self._views:
@@ -174,8 +188,13 @@ class WildcattingView(View):
 
             players = self._wildcatting.getPendingPlayers()
             label = " WAITING FOR {}".format(", ".join(players).upper())
-            self.addLeft(self._border_win, border_h - 2, label, blackOnWhite,
-                         pad=len(colors) + 1 + longestLabel + 4)
+            self.addLeft(
+                self._border_win,
+                border_h - 2,
+                label,
+                blackOnWhite,
+                pad=len(colors) + 1 + longestLabel + 4,
+            )
 
         self._border_win.refresh()
 
@@ -193,8 +212,7 @@ class WildcattingView(View):
         go = f"GO {self._wildcatting.getPlayersTurn().upper()}!"
         if self._mac:
             bkgd, text = self.getGreenFGBG()
-            self.addCentered(self._border_win, border_h - 2,
-                             "." * (border_w - 2), text)
+            self.addCentered(self._border_win, border_h - 2, "." * (border_w - 2), text)
         else:
             go = go.center(border_w - 2)
 
@@ -242,15 +260,19 @@ class WildcattingView(View):
             dx = mx - self._x - 4
             dy = my - self._y - 2
             survey = True
-        elif c == ord(' ') or c == ord('\n'):
+        elif c == ord(" ") or c == ord("\n"):
             survey = True
-        elif c == ord('\t'):
+        elif c == ord("\t"):
             self._nextView()
             self._getCurrentView().display()
 
         if dx != 0 or dy != 0:
-            if (self._x + dx) > self._fw - 1 or (self._y + dy) > self._fh - 1 or \
-                (self._x + dx) < 0 or (self._y + dy) < 0:
+            if (
+                (self._x + dx) > self._fw - 1
+                or (self._y + dy) > self._fh - 1
+                or (self._x + dx) < 0
+                or (self._y + dy) < 0
+            ):
                 return actions
 
             self._x += dx
@@ -265,4 +287,3 @@ class WildcattingView(View):
         curses.curs_set(0)
         self._drawKeyBar()
         self._getCurrentView().animateGameEnd()
-

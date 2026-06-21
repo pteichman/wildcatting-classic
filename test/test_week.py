@@ -55,5 +55,6 @@ class TestWeek(unittest.TestCase):
 
         self.assertTrue(week.isFinished())
 
+
 if __name__ == "__main__":
     unittest.main()

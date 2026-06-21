@@ -22,6 +22,7 @@ class TestOilFiller(unittest.TestCase):
                 self.assertTrue(site.getProbability() >= 0)
                 self.assertTrue(site.getProbability() <= 100)
 
+
 class TestTaxFiller(unittest.TestCase):
     def testFreshField(self):
         rows = cols = 10
@@ -36,6 +37,7 @@ class TestTaxFiller(unittest.TestCase):
 
                 self.assertNotEqual(site, None)
                 self.assertTrue(site.getTax() >= 0)
+
 
 class TestGame(unittest.TestCase):
     def testAddPlayer(self):
@@ -138,6 +140,7 @@ class TestGame(unittest.TestCase):
         game.endTurn(player1)
         self.assertEqual(3, game.getWeek().getWeekNum())
         game.endTurn(player2)
+
 
 if __name__ == "__main__":
     unittest.main()

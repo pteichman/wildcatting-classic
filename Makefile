@@ -1,0 +1,11 @@
+test:
+	uv run python -m unittest discover -s test
+
+check:
+	uv run ruff check wildcatting test
+
+fmt:
+	uv run ruff format wildcatting test
+	uv run ruff check --fix wildcatting test
+
+.PHONY: test check fmt

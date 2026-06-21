@@ -9,8 +9,8 @@ class PlayerCountView(View):
     def __init__(self, stdscr):
         View.__init__(self, stdscr)
 
-        (h,w) = self._stdscr.getmaxyx()
-        self._win = self._stdscr.derwin(16, 48, (h-16)/2, (w-48)/2)
+        (h, w) = self._stdscr.getmaxyx()
+        self._win = self._stdscr.derwin(16, 48, (h - 16) / 2, (w - 48) / 2)
 
     def display(self, gameFinished=False):
         self._stdscr.clear()
@@ -40,6 +40,7 @@ class PlayerCountView(View):
             time.sleep(1.0)
             self.display()
 
+
 class PlayerNamesView(View):
     def __init__(self, stdscr, count):
         View.__init__(self, stdscr)
@@ -47,31 +48,31 @@ class PlayerNamesView(View):
         self._count = count
         self._textpads = []
 
-        (h,w) = self._stdscr.getmaxyx()
-        self._win = self._stdscr.derwin(16, 48, (h-16)/2, (w-48)/2)
+        (h, w) = self._stdscr.getmaxyx()
+        self._win = self._stdscr.derwin(16, 48, (h - 16) / 2, (w - 48) / 2)
 
     def display(self, gameFinished=False):
         self._stdscr.clear()
         self._stdscr.refresh()
-        (h,w) = self._win.getmaxyx()
+        (h, w) = self._win.getmaxyx()
 
         fg, bg = self.getGreenFGBG()
         self.setFGBG(self._win, fg, bg)
 
         self.addCentered(self._win, 1, "PLAYERS")
 
-        for i in range(1, self._count+1):
-            row = i*2+1
+        for i in range(1, self._count + 1):
+            row = i * 2 + 1
             self.addLeft(self._win, row, f"{i}. ", pad=10)
 
             # name field
-            name_w = w-13*2-3
+            name_w = w - 13 * 2 - 3
             win = self._win.derwin(1, name_w, row, 13)
             textpad = curses.textpad.Textbox(win)
             self._textpads.append(textpad)
 
             # symbol field
-            win = self._win.derwin(1, 2, row, 13+name_w+3)
+            win = self._win.derwin(1, 2, row, 13 + name_w + 3)
             textpad = curses.textpad.Textbox(win)
             self._textpads.append(textpad)
 
@@ -80,8 +81,8 @@ class PlayerNamesView(View):
     def input(self):
         players = []
         for i in range(self._count):
-            nameField = self._textpads[2*i]
-            symbolField = self._textpads[2*i+1]
+            nameField = self._textpads[2 * i]
+            symbolField = self._textpads[2 * i + 1]
 
             nameField.edit()
             name = nameField.gather().strip()
@@ -103,7 +104,9 @@ class PlayerNamesView(View):
 
         return players
 
+
 if __name__ == "__main__":
+
     def main(stdscr):
         view = PlayerCountView(stdscr)
         view.display()

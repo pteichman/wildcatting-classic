@@ -6,6 +6,7 @@ import wildcatting.model
 # representation of objects
 _pp = PrettyPrinter(width=100000)
 
+
 class Serializable:
     CLASS_KEY = "wildcatting.model.Serializable.class"
     STATE_KEY = "wildcatting.model.Serializable.state"
@@ -25,11 +26,14 @@ class Serializable:
         obj = cls.__new__(cls)
         obj.__dict__ = obj.__deserialize_item(state.get(Serializable.STATE_KEY))
         return obj
+
     deserialize = classmethod(deserialize)
 
     def __serialize_instance(self, item):
-        return {Serializable.CLASS_KEY : item.__class__.__name__,
-                Serializable.STATE_KEY : item.__serialize_item(item.__dict__)}
+        return {
+            Serializable.CLASS_KEY: item.__class__.__name__,
+            Serializable.STATE_KEY: item.__serialize_item(item.__dict__),
+        }
 
     def __deserialize_subinstance(self, state):
         if isinstance(state, dict) and Serializable.CLASS_KEY in state:
@@ -85,4 +89,3 @@ class Serializable:
         for item in items:
             ret.append(self.__deserialize_item(item))
         return ret
-

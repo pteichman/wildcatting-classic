@@ -23,8 +23,7 @@ class ThemeInfo(Command):
 
     def _getAllThemes(self):
         themes = []
-        for name, member in inspect.getmembers(wildcatting.theme,
-                                               inspect.isclass):
+        for name, member in inspect.getmembers(wildcatting.theme, inspect.isclass):
             if name in ("Theme", "DefaultTheme"):
                 continue
 
@@ -74,15 +73,17 @@ class ThemeInfo(Command):
         print(f"Maximum oil output: {theme.getMaxOutput()} barrels")
         min_profit = self._formatPrice(theme, theme.getMinOutput())
         max_profit = self._formatPrice(
-            theme, theme.getMaxOutput() * prices.getInitialPrice())
+            theme, theme.getMaxOutput() * prices.getInitialPrice()
+        )
         print(f"At starting price, well profit is {min_profit} .. {max_profit}")
 
         print()
         print("Facts:")
 
         for fact in theme.getFacts():
-            print(textwrap.fill(
-                fact.strip(), initial_indent="* ", subsequent_indent="  "))
+            print(
+                textwrap.fill(fact.strip(), initial_indent="* ", subsequent_indent="  ")
+            )
 
     def printAllThemes(self):
         themes = self._getAllThemes()
@@ -90,13 +91,19 @@ class ThemeInfo(Command):
         cols = ("Name", "Location", "Era", "Facts")
 
         rows = []
-        for (name, theme) in themes:
+        for name, theme in themes:
             obj = theme()
             display_name = name
             if theme == wildcatting.theme.DefaultTheme:
                 display_name = f"{name} (default)"
 
-            rows.append((display_name, obj.getLocation(), obj.getEra(),
-                         str(len(obj.getFacts()))))
+            rows.append(
+                (
+                    display_name,
+                    obj.getLocation(),
+                    obj.getEra(),
+                    str(len(obj.getFacts())),
+                )
+            )
 
         print(wildcatting.table.format_table(cols, rows))

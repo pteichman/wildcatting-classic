@@ -1,4 +1,3 @@
-
 from .serialize import Serializable
 
 

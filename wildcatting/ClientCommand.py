@@ -21,22 +21,24 @@ class ClientCommand(Command):
         symbol = user[0].upper()
 
         self.add_option("", "--no-network", action="store_true")
-        self.add_option("-p", "--port", type="int",
-                        default="7777", help="server port")
-        self.add_option("-n", "--host", type="string",
-                        default="localhost", help="server hostname")
-        self.add_option("-u", "--username", type="string",
-                        default=user, help="username")
-        self.add_option("-m", "--hotseat", action="store_true",
-                        help="hotseat mode")
-        self.add_option("-s", "--symbol", type="string",
-                        default=symbol, help="well symbol")
-        self.add_option("-w", "--weeks", type="int",
-                         default="13", help="length of game in weeks")
-        self.add_option("-g", "--game", type="string",
-                        default=None, help="game id")
-        self.add_option("-r", "--handle", type="string",
-                        default=None, help="game handle")
+        self.add_option("-p", "--port", type="int", default="7777", help="server port")
+        self.add_option(
+            "-n", "--host", type="string", default="localhost", help="server hostname"
+        )
+        self.add_option(
+            "-u", "--username", type="string", default=user, help="username"
+        )
+        self.add_option("-m", "--hotseat", action="store_true", help="hotseat mode")
+        self.add_option(
+            "-s", "--symbol", type="string", default=symbol, help="well symbol"
+        )
+        self.add_option(
+            "-w", "--weeks", type="int", default="13", help="length of game in weeks"
+        )
+        self.add_option("-g", "--game", type="string", default=None, help="game id")
+        self.add_option(
+            "-r", "--handle", type="string", default=None, help="game handle"
+        )
 
     def run(self, options, args):
         startLogger("client.log")
@@ -44,6 +46,7 @@ class ClientCommand(Command):
         url = f"http://{options.host}:{options.port}/"
         if options.no_network:
             from .server import StandaloneServer
+
             s = StandaloneServer()
         else:
             s = ServerProxy(url, allow_none=True)
@@ -57,9 +60,13 @@ class ClientCommand(Command):
 
         if server_version != version.VERSION_STRING:
             import textwrap
+
             cols = int(os.getenv("COLUMNS", 80)) - 5
-            print(textwrap.fill(
-                f"ERROR: Server at {url} requires a {server_version} client", cols))
+            print(
+                textwrap.fill(
+                    f"ERROR: Server at {url} requires a {server_version} client", cols
+                )
+            )
             sys.exit(1)
 
         if options.hotseat:

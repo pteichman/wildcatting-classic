@@ -7,14 +7,16 @@ import random
 class HistoricalPrices:
     def __init__(self, length):
         global historical_data
-        start = random.randrange(len(historical_data)-length)
-        self._prices = historical_data[start:start+length]
+        start = random.randrange(len(historical_data) - length)
+        self._prices = historical_data[start : start + length]
 
     def __iter__(self):
         return self._prices.__iter__()
 
+
 class GaussianPrices:
     """Gaussian distribution"""
+
     def __init__(self, start, mu=None, sigma=None):
         self._initialPrice = self._price = start
 
@@ -36,11 +38,13 @@ class GaussianPrices:
         lo1 = f"{self._mu - self._sigma:.3f}"
         hi1 = f"{self._mu + self._sigma:.3f}"
         lines.append(
-            f"    1. 68.27% of price changes will be in the range: {lo1}% .. {hi1}%")
-        lo2 = f"{self._mu - self._sigma*2:.3f}"
-        hi2 = f"{self._mu + self._sigma*2:.3f}"
+            f"    1. 68.27% of price changes will be in the range: {lo1}% .. {hi1}%"
+        )
+        lo2 = f"{self._mu - self._sigma * 2:.3f}"
+        hi2 = f"{self._mu + self._sigma * 2:.3f}"
         lines.append(
-            f"    2. 95.45% of price changes will be in the range: {lo2}% .. {hi2}%")
+            f"    2. 95.45% of price changes will be in the range: {lo2}% .. {hi2}%"
+        )
         sd_lo = f"${self._price + self._price * (self._mu - self._sigma) / 100:.2f}"
         sd_hi = f"${self._price + self._price * (self._mu + self._sigma) / 100:.2f}"
         lines.append(f"  Initial price +/- one standard deviation: {sd_lo} .. {sd_hi}")
@@ -52,7 +56,7 @@ class GaussianPrices:
 
     def __next__(self):
         change = random.gauss(self._mu, self._sigma)
-        self._price = max(0.01, self._price + self._price * change/100)
+        self._price = max(0.01, self._price + self._price * change / 100)
         return self._price
 
     def _calculate_mean(self, nums):
@@ -64,18 +68,20 @@ class GaussianPrices:
     def _calculate_sigma(self, mean, nums):
         diffs = []
         for num in nums:
-            diffs.append(math.pow(num-mean, 2))
+            diffs.append(math.pow(num - mean, 2))
 
         sum = 0
         for num in diffs:
             sum = sum + num
 
-        return math.sqrt(abs(sum/len(nums)))
+        return math.sqrt(abs(sum / len(nums)))
+
 
 class TrendingGaussianPrices:
     log = logging.getLogger("Wildcatting")
 
     """Gaussian distribution that trends in a given direction every N or so turns"""
+
     def __init__(self, start, minPrice, maxPrice, trendMu, trendSigma):
         self._initialPrice = self._price = start
         self._minPrice = minPrice
@@ -103,7 +109,7 @@ class TrendingGaussianPrices:
         self._trendWeek = self._trendWeek + 1
 
         change = random.gauss(self._mu, self._sigma)
-        self._price = self._price + self._price * change/100
+        self._price = self._price + self._price * change / 100
 
         # clamp to our min/max values
         self._price = max(self._minPrice, min(self._maxPrice, self._price))
@@ -116,6 +122,7 @@ class TrendingGaussianPrices:
 
 class HistoricalGaussianPrices(GaussianPrices):
     """Gaussian distribution based on our historical price data"""
+
     def __init__(self, start):
         global historical_data
 
@@ -130,10 +137,11 @@ class HistoricalGaussianPrices(GaussianPrices):
 
         prev = prices[0]
         for cur in prices:
-            change = (cur.getValue()-prev.getValue())/prev.getValue()
+            change = (cur.getValue() - prev.getValue()) / prev.getValue()
             ret.append(change)
 
         return ret
+
 
 class Price:
     def __init__(self, date, price):
@@ -145,6 +153,7 @@ class Price:
 
     def __str__(self):
         return f"${self._price:.2f} ({self._date.isoformat()})"
+
 
 historical_data = [
     Price(datetime.date(1986, 1, 2), 25.560000),
@@ -5636,7 +5645,7 @@ historical_data = [
     Price(datetime.date(2007, 9, 28), 81.640000),
     Price(datetime.date(2007, 10, 1), 80.310000),
     Price(datetime.date(2007, 10, 2), 80.000000),
-    ]
+]
 
 if __name__ == "__main__":
     prices = GaussianPrices(10.00)
@@ -5644,5 +5653,5 @@ if __name__ == "__main__":
     print(f"{prev:.2f}")
     for i in range(0, 10):
         cur = next(prices)
-        print(f"{cur:.2f} ({(cur-prev)/prev*100:.2f}%)")
+        print(f"{cur:.2f} ({(cur - prev) / prev * 100:.2f}%)")
         prev = cur

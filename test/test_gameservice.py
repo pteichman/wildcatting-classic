@@ -172,7 +172,7 @@ class TestGameService(unittest.TestCase):
         Site.deserialize(service.erect(handle1, x, y))
 
         Well.deserialize(service.drill(handle1, x, y))
-        self.assertRaises(WildcattingException, service.drill, handle1, x, y+1)
+        self.assertRaises(WildcattingException, service.drill, handle1, x, y + 1)
 
     def testSimultaneousGame(self):
         # start a game, survey once by each player

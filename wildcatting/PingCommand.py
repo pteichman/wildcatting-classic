@@ -11,10 +11,10 @@ class ClientCommand(Command):
     def __init__(self):
         Command.__init__(self, "ping", summary="Ping a Wildcatting server")
 
-        self.add_option("-p", "--port", type="int",
-                        default="7777", help="server port")
-        self.add_option("-n", "--host", type="string",
-                        default="localhost", help="server hostname")
+        self.add_option("-p", "--port", type="int", default="7777", help="server port")
+        self.add_option(
+            "-n", "--host", type="string", default="localhost", help="server hostname"
+        )
 
     def run(self, options, args):
         url = f"http://{options.host}:{options.port}/"

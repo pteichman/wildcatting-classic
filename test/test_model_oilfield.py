@@ -18,5 +18,6 @@ class TestOilField(unittest.TestCase):
 
                 self.assertNotEqual(site, None)
 
+
 if __name__ == "__main__":
     unittest.main()

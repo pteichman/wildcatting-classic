@@ -135,7 +135,8 @@ class TestClientVisibility(unittest.TestCase):
             for col in range(field.getWidth()):
                 site = field.getSite(row, col)
                 self.assertGreater(
-                    site.getProbability(), 0,
+                    site.getProbability(),
+                    0,
                     f"site ({row},{col}) has zero probability after game ended",
                 )
 

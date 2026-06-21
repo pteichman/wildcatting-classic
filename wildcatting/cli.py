@@ -14,10 +14,12 @@ from wildcatting.cmdparse import CommandParser
 
 def main():
     parser = CommandParser()
-    parser.add_option("", "--debug", action="store_true",
-                      help="enable debugging output")
-    parser.add_option("", "--version", action="store_true",
-                      help="print the version and exit")
+    parser.add_option(
+        "", "--debug", action="store_true", help="enable debugging output"
+    )
+    parser.add_option(
+        "", "--version", action="store_true", help="print the version and exit"
+    )
 
     parser.add_commands(ClientCommand)
     parser.add_commands(ScreensaverCommand)

@@ -1,5 +1,3 @@
-
-
 class Reservoir:
     def __init__(self, initialDepth, initialReserves):
         self._totalDepth = initialDepth
@@ -22,10 +20,9 @@ class Reservoir:
         return self._reserves
 
     def ratioPumped(self):
-        return 1.0 - (self._reserves * 1. / self._initialReserves)
+        return 1.0 - (self._reserves * 1.0 / self._initialReserves)
 
     def pump(self, barrels):
         assert 0 <= barrels < self._reserves
 
         self._reserves -= barrels
-

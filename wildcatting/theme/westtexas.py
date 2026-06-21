@@ -73,57 +73,74 @@ class WestTexas(Theme):
     ## literary setting
     def getLocation(self):
         return "West Texas"
+
     def getEra(self):
         return "Turn of The Century"
 
     ## units
     def getDrillIncrement(self):
         return 10
+
     def getPriceFormat(self):
         return "$%.2f"
 
     ## extraction
     def getWellTheory(self):
         return self._wellTheory
+
     def getMeanSiteReserves(self):
         return 666
+
     def getMinOutput(self):
         return 1
+
     def getMaxOutput(self):
         return 66
 
     ## economics
     def getMinDrillCost(self):
         return 1
+
     def getMaxDrillCost(self):
         return 25
+
     def getMinTax(self):
         return 100
+
     def getMaxTax(self):
         return 550
+
     def getOilPrices(self):
         return self._prices
 
     ## oil probability distribution
     def getOilMinDropoff(self):
         return 5
+
     def getOilMaxDropoff(self):
         return 10
+
     def getOilMaxPeaks(self):
         return 5
+
     def getOilFudge(self):
         return 4
+
     def getOilLesserPeakFactor(self):
         return 5
 
     ## drill cost distribution
     def getDrillCostMinDropoff(self):
         return 5
+
     def getDrillCostMaxDropoff(self):
         return 6
+
     def getDrillCostMaxPeaks(self):
         return 10
+
     def getDrillCostFudge(self):
         return 1
+
     def getDrillCostLesserPeakFactor(self):
         return 1

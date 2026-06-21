@@ -45,57 +45,74 @@ class Theme:
     ## literary setting
     def getLocation(self):
         raise NotImplementedError
+
     def getEra(self):
         raise NotImplementedError
 
     # units
     def getDrillIncrement(self):
         raise NotImplementedError
+
     def getPriceFormat(self):
         raise NotImplementedError
 
     ## extraction
     def getWellTheory(self):
         raise NotImplementedError
+
     def getMeanSiteReserves(self):
         raise NotImplementedError
 
     ## economics
     def getMinDrillCost(self):
         raise NotImplementedError
+
     def getMaxDrillCost(self):
         raise NotImplementedError
+
     def getMinTax(self):
         raise NotImplementedError
+
     def getMaxTax(self):
         raise NotImplementedError
+
     def getMinOutput(self):
         raise NotImplementedError
+
     def getMaxOutput(self):
         raise NotImplementedError
+
     def getOilPrices(self):
         raise NotImplementedError
 
     ## oil probability distribution
     def getOilMinDropoff(self):
         raise NotImplementedError
+
     def getOilMaxDropoff(self):
         raise NotImplementedError
+
     def getOilMaxPeaks(self):
         raise NotImplementedError
+
     def getOilFudge(self):
         raise NotImplementedError
+
     def getOilLesserPeakFactor(self):
         raise NotImplementedError
 
     ## drill cost distribution
     def getDrillCostMinDropoff(self):
         raise NotImplementedError
+
     def getDrillCostMaxDropoff(self):
         raise NotImplementedError
+
     def getDrillCostMaxPeaks(self):
         raise NotImplementedError
+
     def getDrillCostFudge(self):
         raise NotImplementedError
+
     def getDrillCostLesserPeakFactor(self):
         raise NotImplementedError

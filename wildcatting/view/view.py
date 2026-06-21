@@ -17,7 +17,7 @@ class View:
     def addCentered(self, win, row, text, color=None):
         (h, w) = win.getmaxyx()
 
-        col = (w - len(text))//2
+        col = (w - len(text)) // 2
         if color is None:
             win.addstr(row, col, text)
         else:
@@ -48,8 +48,8 @@ class View:
     def putch(self, win, y, x, ch, attr=None):
         # workaround so we can write things to the bottom corner
         # or otherwise with the same method call
-        (h,w) = win.getmaxyx()
-        if y == h-1 and x == w-1:
+        (h, w) = win.getmaxyx()
+        if y == h - 1 and x == w - 1:
             f = win.insch
         else:
             f = win.addch

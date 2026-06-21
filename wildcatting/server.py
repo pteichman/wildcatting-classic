@@ -20,7 +20,7 @@ class TieredXMLRPCServer(SimpleXMLRPCServer):
     log = logging.getLogger("XMLRPCServer")
 
     def register_subinstance(self, tier, instance):
-        for (name, method) in inspect.getmembers(instance, inspect.ismethod):
+        for name, method in inspect.getmembers(instance, inspect.ismethod):
             if not name.startswith("_"):
                 self.register_function(method, f"{tier}.{name}")
 
@@ -33,9 +33,11 @@ class TieredXMLRPCServer(SimpleXMLRPCServer):
             raise
         return response
 
+
 class AdminService:
     def ping(self):
         return True
+
 
 class BaseService:
     def echo(self, s):
@@ -47,12 +49,14 @@ class BaseService:
     def version(self):
         return version.VERSION_STRING
 
+
 class SettingService:
     def __init__(self, theme):
         self._setting = theme.generateSetting()
 
     def getSetting(self):
         return self._setting.serialize()
+
 
 class GameService:
     HANDLE_SEP = "::"
@@ -121,14 +125,14 @@ class GameService:
 
     def _encodeGameHandle(self, gameId, player, secret):
         handle = GameService.HANDLE_SEP.join((gameId, player.getUsername(), secret))
-        return base64.b64encode(handle.encode('utf-8')).decode('utf-8')
+        return base64.b64encode(handle.encode("utf-8")).decode("utf-8")
 
     def _decodeGameHandle(self, gameHandle):
         if not isinstance(gameHandle, str):
             raise WildcattingException("Invalid handle")
 
         try:
-            gameHandle = base64.b64decode(gameHandle).decode('utf-8')
+            gameHandle = base64.b64decode(gameHandle).decode("utf-8")
         except Exception:
             raise WildcattingException("Malformed handle")
 
@@ -139,7 +143,7 @@ class GameService:
 
     def _encodeClientHandle(self, gameId, clientId):
         handle = GameService.HANDLE_SEP.join((gameId, clientId))
-        return base64.b64encode(handle.encode('utf-8')).decode('utf-8')
+        return base64.b64encode(handle.encode("utf-8")).decode("utf-8")
 
     def _decodeClientHandle(self, clientHandle):
         if not isinstance(clientHandle, str):
@@ -147,7 +151,7 @@ class GameService:
 
         self.log.debug("Decoding %s", clientHandle)
         try:
-            clientHandle = base64.b64decode(clientHandle).decode('utf-8')
+            clientHandle = base64.b64decode(clientHandle).decode("utf-8")
         except Exception:
             raise WildcattingException("Malformed handle")
         self.log.debug("Got %s", clientHandle)
@@ -160,14 +164,15 @@ class GameService:
     def newClientHandle(self, gameId):
         game = self._games[gameId]
         clientId = game._newClientId()
-        self.log.info("New client handle requested for game %s: %s",
-                      gameId, clientId)
+        self.log.info("New client handle requested for game %s: %s", gameId, clientId)
         return self._encodeClientHandle(gameId, clientId)
 
     def new(self, width, height, turnCount):
-        if (not isinstance(width, int)
-                or not isinstance(height, int)
-                or not isinstance(turnCount, int)):
+        if (
+            not isinstance(width, int)
+            or not isinstance(height, int)
+            or not isinstance(turnCount, int)
+        ):
             raise WildcattingException("Invalid parameters")
 
         gameId = str(self._nextGameId)
@@ -206,8 +211,7 @@ class GameService:
 
         for player in game.getClientPlayers(clientId):
             handle = self._encodeGameHandle(gameId, player, player.getSecret())
-            clientInfo.addPlayerInfo(player.getUsername(), handle,
-                                     player.getSymbol())
+            clientInfo.addPlayerInfo(player.getUsername(), handle, player.getSymbol())
 
         return clientInfo.serialize()
 
@@ -290,7 +294,8 @@ class GameService:
 
         drilledSite = turn.getDrilledSite()
         if drilledSite and not (
-                drilledSite.getRow() == row and drilledSite.getCol() == col):
+            drilledSite.getRow() == row and drilledSite.getCol() == col
+        ):
             raise WildcattingException("Already drilled somewhere else this turn")
 
         game.drill(row, col)
@@ -357,7 +362,8 @@ class GameService:
         sites = game.popUpdatedSites(clientId)
 
         update = wildcatting.model.Update(
-            week, oilPrice, playersTurn, pendingPlayers, gameFinished, sites)
+            week, oilPrice, playersTurn, pendingPlayers, gameFinished, sites
+        )
         return update.serialize()
 
     def getWellUpdates(self, handle):
@@ -368,8 +374,10 @@ class GameService:
         for row in range(field.getHeight()):
             for col in range(field.getWidth()):
                 well = field.getSite(row, col).getWell()
-                if (well is not None
-                        and well.getPlayer().getUsername() == player.getUsername()):
+                if (
+                    well is not None
+                    and well.getPlayer().getUsername() == player.getUsername()
+                ):
                     wellDict = {"row": row, "col": col, "well": well.serialize()}
                     wellUpdates.append(wellDict)
 
@@ -430,6 +438,7 @@ class GameService:
         game, clientId = self._readClientHandle(clientHandle)
 
         return wildcatting.model.WeeklySummary.serialize(game.getWeeklySummary())
+
 
 class StandaloneServer:
     def __init__(self):

@@ -12,8 +12,8 @@ class WeeklySummaryView(View):
 
         self._report = report
 
-        (h,w) = self._stdscr.getmaxyx()
-        self._win = self._stdscr.derwin(16, 48, (h-16)//2, (w-48)//2)
+        (h, w) = self._stdscr.getmaxyx()
+        self._win = self._stdscr.derwin(16, 48, (h - 16) // 2, (w - 48) // 2)
 
     def display(self, gameFinished=False):
         self._stdscr.clear()
@@ -60,6 +60,7 @@ class WeeklySummaryView(View):
 
         return actions
 
+
 class WeeklyReportView(View):
     log = logging.getLogger("Wildcatting")
 
@@ -69,8 +70,8 @@ class WeeklyReportView(View):
         self._report = report
         self._field = field
 
-        (h,w) = self._stdscr.getmaxyx()
-        self._win = self._stdscr.derwin(16, 48, (h-16)//2, (w-48)//2)
+        (h, w) = self._stdscr.getmaxyx()
+        self._win = self._stdscr.derwin(16, 48, (h - 16) // 2, (w - 48) // 2)
         self._colorChooser = wildcatting.view.ProbabilityColorChooser()
 
         # start cursor on nextPlayer prompt
@@ -110,12 +111,19 @@ class WeeklyReportView(View):
                 else:
                     symbol = self._report.getSymbol()
                 self._win.addstr(
-                    turn - (self._page * 13) + 1, 0, symbol,
-                    self._colorChooser.siteColor(site))
+                    turn - (self._page * 13) + 1,
+                    0,
+                    symbol,
+                    self._colorChooser.siteColor(site),
+                )
             else:
                 rowDict = {
-                    "row": 0, "col": 0, "cost": 0, "tax": 0,
-                    "income": 0, "profitAndLoss": 0,
+                    "row": 0,
+                    "col": 0,
+                    "cost": 0,
+                    "tax": 0,
+                    "income": 0,
+                    "profitAndLoss": 0,
                 }
 
             col = rowDict["col"]
@@ -206,8 +214,8 @@ class SurveyorsReportView(View):
 
         self._site = site
         self._surveyed = surveyed
-        (h,w) = self._stdscr.getmaxyx()
-        self._win = self._stdscr.derwin(16, 48, (h-16)//2, (w-48)//2)
+        (h, w) = self._stdscr.getmaxyx()
+        self._win = self._stdscr.derwin(16, 48, (h - 16) // 2, (w - 48) // 2)
 
     def display(self):
         self._stdscr.clear()
@@ -243,7 +251,7 @@ class SurveyorsReportView(View):
         (h, w) = self._stdscr.getmaxyx()
         (wh, ww) = self._win.getmaxyx()
         done = False
-        cur = 'n'
+        cur = "n"
         self._win.keypad(1)
         self._win.move(15, 30)
         self._win.refresh()
@@ -255,37 +263,37 @@ class SurveyorsReportView(View):
                 break
 
             if c == curses.KEY_UP or c == curses.KEY_LEFT:
-                cur = 'y'
+                cur = "y"
             elif c == curses.KEY_DOWN or c == curses.KEY_RIGHT:
-                cur = 'n'
-            elif c == ord('y'):
-                cur = 'y'
+                cur = "n"
+            elif c == ord("y"):
+                cur = "y"
                 done = True
-            elif c == ord('n'):
-                cur = 'n'
+            elif c == ord("n"):
+                cur = "n"
                 done = True
-            elif (c == ord(' ')) or (c == 10):
+            elif (c == ord(" ")) or (c == 10):
                 done = True
             elif c == curses.KEY_MOUSE:
                 mid, mx, my, mz, bstate = curses.getmouse()
-                x = mx - (w-ww)//2
-                y = my - (h-wh)//2
+                x = mx - (w - ww) // 2
+                y = my - (h - wh) // 2
 
                 if y == 15 and x == 28:
-                    cur = 'y'
+                    cur = "y"
                     done = True
                 if y == 15 and x == 30:
-                    cur = 'n'
+                    cur = "n"
                     done = True
 
-            if cur == 'y':
+            if cur == "y":
                 self._win.move(15, 28)
             else:
                 self._win.move(15, 30)
 
             self._win.refresh()
 
-        return cur == 'y'
+        return cur == "y"
 
 
 class PregameReportView(View):
@@ -298,8 +306,8 @@ class PregameReportView(View):
         self._isMaster = isMaster
         self._players = players
 
-        (h,w) = self._stdscr.getmaxyx()
-        self._win = self._stdscr.derwin(16, 48, (h-16)//2, (w-48)//2)
+        (h, w) = self._stdscr.getmaxyx()
+        self._win = self._stdscr.derwin(16, 48, (h - 16) // 2, (w - 48) // 2)
 
     def display(self):
         self._stdscr.clear()
@@ -318,7 +326,7 @@ class PregameReportView(View):
             row = row + 1
 
         if self._isMaster:
-            self.addCentered(self._win, h-1, "ANY KEY TO START")
+            self.addCentered(self._win, h - 1, "ANY KEY TO START")
 
         self._win.refresh()
 
@@ -346,4 +354,3 @@ class PregameReportView(View):
             curses.cbreak()
 
         return True
-

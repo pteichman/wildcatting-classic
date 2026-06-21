@@ -28,5 +28,6 @@ class TestSerializer(unittest.TestCase):
 
         self.assertEqual(obj1, obj2)
 
+
 if __name__ == "__main__":
     unittest.main()

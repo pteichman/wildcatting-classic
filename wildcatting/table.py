@@ -1,5 +1,6 @@
 # some simple code for formatting text tables
 
+
 def format_row(elts, widths, sep=" | "):
 
     row = []
@@ -12,12 +13,14 @@ def format_row(elts, widths, sep=" | "):
         row.append(f"{elt:<{widths[i]}}")
     return sep.join(row)
 
+
 def format_separator(widths):
-    elts = [ "-" * width for width in widths ]
+    elts = ["-" * width for width in widths]
     return format_row(elts, widths, "-+-")
 
+
 def format_table(labels, rows):
-    widths = [ len(label) for label in labels ]
+    widths = [len(label) for label in labels]
 
     for row in rows:
         if row is not None:

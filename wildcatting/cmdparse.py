@@ -45,7 +45,8 @@ class Command(OptionParser):
     def get_usage(self):
         if self.usage:
             return self.formatter.format_usage(
-                self.expand_cmd_name(self.expand_prog_name(self.usage)))
+                self.expand_cmd_name(self.expand_prog_name(self.usage))
+            )
         else:
             return ""
 
@@ -69,7 +70,7 @@ class Command(OptionParser):
 
         s = "no such option: "
         if msg and msg.startswith(s):
-            msg = _("no such %s option: %s") % (self.name, msg[len(s):])
+            msg = _("no such %s option: %s") % (self.name, msg[len(s) :])
         self.exit(1, msg)
 
     def exit(self, status=0, msg=None):
@@ -78,8 +79,10 @@ class Command(OptionParser):
             sys.stderr.write("\n")
         sys.exit(status)
 
+
 class CommandParser(OptionParser):
     """Parse command-line options CVS style."""
+
     def __init__(self, *args, **kwargs):
         if "usage" not in kwargs:
             kwargs["usage"] = "%prog [options] <command> [command options]"
@@ -107,8 +110,7 @@ class CommandParser(OptionParser):
             if type(cls) is not type:
                 continue
 
-            if (cls is not Command) \
-                   and issubclass(getattr(module, attr), Command):
+            if (cls is not Command) and issubclass(getattr(module, attr), Command):
                 self.add_command(cls(), group)
 
     def find_command(self, alias):
@@ -136,7 +138,7 @@ class CommandParser(OptionParser):
                 (cmdoptions, args) = cmd.parse_args(args[1:])
 
                 # update options with the values from cmdoptions
-                for (attr, val) in list(cmdoptions.__dict__.items()):
+                for attr, val in list(cmdoptions.__dict__.items()):
                     setattr(options, attr, val)
 
         return (cmd, options, args)

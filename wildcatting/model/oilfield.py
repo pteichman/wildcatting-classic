@@ -1,4 +1,3 @@
-
 from .serialize import Serializable
 
 
@@ -10,8 +9,7 @@ class OilField(Serializable):
         self._width = width
         self._height = height
 
-        self._rows = [ [ Site(row, col) for col in range(width) ]
-                       for row in range(height) ]
+        self._rows = [[Site(row, col) for col in range(width)] for row in range(height)]
 
     def week(self, oilPrice, wellTheory, currentWeek):
         for row in self._rows:

@@ -18,21 +18,29 @@ class ScreensaverCommand(Command):
     log = logging.getLogger("Wildcatting")
 
     def __init__(self):
-        Command.__init__(self, "screensaver",
-                         summary="avoid character burn-in on your terminals")
+        Command.__init__(
+            self, "screensaver", summary="avoid character burn-in on your terminals"
+        )
 
-        self.add_option("", "--no-border", action="store_true",
-                        help="disable border")
-        self.add_option("", "--ascii", action="store_true",
-                        help="enable advanced ascii display (recommended)")
-        self.add_option("", "--ansi", action="store_true",
-                        help="enable ansi display")
-        self.add_option("", "--fade-in", action="store_true",
-                        help="fade in mode")
-        self.add_option("", "--probability", action="store_true",
-                        default=True, help="probabilty landscapes")
-        self.add_option("", "--drill-cost", action="store_true",
-                        help="drill cost landscapes")
+        self.add_option("", "--no-border", action="store_true", help="disable border")
+        self.add_option(
+            "",
+            "--ascii",
+            action="store_true",
+            help="enable advanced ascii display (recommended)",
+        )
+        self.add_option("", "--ansi", action="store_true", help="enable ansi display")
+        self.add_option("", "--fade-in", action="store_true", help="fade in mode")
+        self.add_option(
+            "",
+            "--probability",
+            action="store_true",
+            default=True,
+            help="probabilty landscapes",
+        )
+        self.add_option(
+            "", "--drill-cost", action="store_true", help="drill cost landscapes"
+        )
 
         self.y_border = 2
         self.x_border = 3
@@ -42,7 +50,7 @@ class ScreensaverCommand(Command):
             game = Game(80, 23)
             field = game.getOilField()
             OilFieldTextView(field).ascii()
-            time.sleep(.25)
+            time.sleep(0.25)
 
     def ansiScreensaver(self):
         try:
@@ -50,9 +58,9 @@ class ScreensaverCommand(Command):
                 game = Game(80, 23)
                 field = game.getOilField()
                 OilFieldTextView(field).ansi()
-                time.sleep(.25)
+                time.sleep(0.25)
         except Exception:
-            print(chr(27) + '[0m')
+            print(chr(27) + "[0m")
 
     def borderWin(self, parent, no_border):
         if no_border:
@@ -60,9 +68,12 @@ class ScreensaverCommand(Command):
             border = 0
         else:
             h, w = parent.getmaxyx()
-            win = parent.derwin(h - self.y_border * 2,
-                                w - self.x_border * 2,
-                                self.y_border, self.x_border)
+            win = parent.derwin(
+                h - self.y_border * 2,
+                w - self.x_border * 2,
+                self.y_border,
+                self.x_border,
+            )
             win.box()
             border = 1
         win.refresh()

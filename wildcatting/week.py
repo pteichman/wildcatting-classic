@@ -69,8 +69,7 @@ class Week:
         assert isinstance(player, Player)
         playerIndex = self._players.index(player)
 
-        if playerIndex < self._surveyPlayerIndex \
-               and player not in self._pending:
+        if playerIndex < self._surveyPlayerIndex and player not in self._pending:
             return True
 
         return False

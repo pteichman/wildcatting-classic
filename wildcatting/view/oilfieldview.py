@@ -44,7 +44,7 @@ class OilFieldTextView(View):
 
     def toAnsi(self, site):
         b = self.bracket(site) % 9
-        ansi = chr(27) + '['+ str(32+b) +'m' + "O"
+        ansi = chr(27) + "[" + str(32 + b) + "m" + "O"
         return ansi
 
     def ansi(self):
@@ -66,7 +66,7 @@ class ColorChooser:
             Colors.get(curses.COLOR_WHITE, curses.COLOR_YELLOW),
             Colors.get(curses.COLOR_WHITE, curses.COLOR_MAGENTA),
             Colors.get(curses.COLOR_WHITE, curses.COLOR_RED),
-            ]
+        ]
 
     def _chooseColor(self, site, colors):
         return "UnimplementedAbstractMethod"
@@ -92,13 +92,12 @@ class ColorChooser:
 
 
 class ProbabilityColorChooser(ColorChooser):
-
     def _chooseColor(self, site, colors):
         p = site.getProbability()
         if p == 100:
             return colors[-1]
 
-        return colors[int(p / 100. * len(colors))]
+        return colors[int(p / 100.0 * len(colors))]
 
 
 class DrillCostColorChooser(ColorChooser):
@@ -133,8 +132,11 @@ class FadeInOilFieldCursesAnimator:
     def __init__(self, field):
         self._field = field
 
-        self._coords = [(row, col) for row in range(field.getHeight())
-                        for col in range(field.getWidth())]
+        self._coords = [
+            (row, col)
+            for row in range(field.getHeight())
+            for col in range(field.getWidth())
+        ]
 
     def isDone(self):
         return len(self._coords) == 0
@@ -193,7 +195,6 @@ class OilFieldCursesView(View):
 
 
 class OilFieldProbabilityView(OilFieldCursesView):
-
     def _makeColorChooser(self):
         return ProbabilityColorChooser()
 
@@ -216,7 +217,6 @@ class OilFieldDrillCostView(OilFieldCursesView):
 
 
 class OilFieldDepthView(OilFieldCursesView):
-
     def _makeColorChooser(self):
         return DepthColorChooser()
 

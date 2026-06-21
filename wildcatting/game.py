@@ -41,8 +41,6 @@ class PeakedFiller(Filler):
                         closest = p
 
                 minValue, maxValue = self.getValueRange()
-                minDropoff = self.getMinDropoff()
-                maxDropoff = self.getMaxDropoff()
                 lesserPeakFactor = self.getLesserPeakFactor()
                 fudge = self.getFudge()
                 d = (minc + random.random() * fudge) / math.sqrt(model.getWidth() * model.getHeight())
@@ -183,7 +181,7 @@ class ReservoirFiller(Filler):
                     adjacentSites.append(adjacentSite)
                 self._fillSite(site, adjacentSites)
 
-        self.log.info("Created %s reservoirs covering %s sites" % (self._reservoirCount, self._siteCount))
+        self.log.info(f"Created {self._reservoirCount} reservoirs covering {self._siteCount} sites")
 
     def _getInitialReserves(self):
         reserves = int(max(0.1, random.gauss(1,1)) * self._theme.getMeanSiteReserves())
@@ -276,7 +274,7 @@ class Game:
 
         playerNames = [p.getUsername() for p in list(self._players.values())]
         if player.getUsername() in playerNames:
-            raise WildcattingException("A user named %s has already joined this game" % player.getUsername())
+            raise WildcattingException(f"A user named {player.getUsername()} has already joined this game")
 
         secret = self._generateSecret()
         player.setSecret(secret)

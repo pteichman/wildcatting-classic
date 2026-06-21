@@ -215,7 +215,7 @@ class Client:
             update = Update.deserialize(u)
             updated, weekUpdated = self._wildcatting.update(update)
         else:
-            updated, weekUpdated = False, False
+            _updated, weekUpdated = False, False
 
         for wellDict in wellUpdates:
             row, col = wellDict["row"], wellDict["col"]
@@ -399,11 +399,11 @@ class Client:
         try:
             curses.wrapper(self.wildcatting)
         except KeyboardInterrupt:
-            self.log.info("To reconnect, run with --handle %s" % self._connectHandle)
-            print("To reconnect, run with --handle %s" % self._connectHandle)
+            self.log.info(f"To reconnect, run with --handle {self._connectHandle}")
+            print(f"To reconnect, run with --handle {self._connectHandle}")
             raise
         except Exception as e:
             self.log.error(str(e))
             self.log.debug("Uncaught exception in client: %s", e, exc_info=True)
             if self._connectHandle is not None:
-                print("To reconnect, run with --handle %s" % self._connectHandle)
+                print(f"To reconnect, run with --handle {self._connectHandle}")

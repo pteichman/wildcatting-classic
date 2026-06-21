@@ -18,7 +18,7 @@ class Command(OptionParser):
         OptionParser.__init__(self, *args, **kwargs)
 
         if len(self.aliases) > 0:
-            self.helpstr = self.name + " (%s)" % ", ".join(self.aliases)
+            self.helpstr = self.name + " ({})".format(", ".join(self.aliases))
         else:
             self.helpstr = self.name
 
@@ -93,7 +93,7 @@ class CommandParser(OptionParser):
 
         # Assumes the options's 'default' is set to None!
         if getattr(self.values, option.dest) is None:
-            self.error("%s option not supplied" % option)
+            self.error(f"{option} option not supplied")
 
     def add_command(self, command, group="Other"):
         self.commands.append(command)
@@ -144,7 +144,7 @@ class CommandParser(OptionParser):
     def print_unknown_command(self, cmdname, file=None):
         if file is None:
             file = sys.stdout
-        file.write("Unknown command '%s'\n" % cmdname)
+        file.write(f"Unknown command '{cmdname}'\n")
 
     def format_help(self, *args, **kwargs):
         help = OptionParser.format_help(self, *args, **kwargs)
@@ -161,10 +161,10 @@ class CommandParser(OptionParser):
             max_cmd_length = max(max_cmd_length, len(cmd.helpstr))
 
         for group in groups:
-            result.append("%s commands:\n" % group)
+            result.append(f"{group} commands:\n")
             commands = self.groups[group]
             commands.sort(key=lambda x: x.get_name())
 
             for cmd in commands:
-                result.append("  %s%s  %s\n" % (cmd.helpstr, " "*(max_cmd_length-len(cmd.helpstr)), cmd.summary))
+                result.append("  {}{}  {}\n".format(cmd.helpstr, " "*(max_cmd_length-len(cmd.helpstr)), cmd.summary))
         return "".join(result)

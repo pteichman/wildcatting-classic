@@ -51,16 +51,16 @@ class ThemeInfo(Command):
                 found = theme
 
         if found is None:
-            self.error("Unknown theme: %s" % themeName)
+            self.error(f"Unknown theme: {themeName}")
 
         theme = found()
 
-        print("Name: %s" % themeName)
-        print("Location: %s" % theme.getLocation())
-        print("Era: %s" % theme.getEra())
+        print(f"Name: {themeName}")
+        print(f"Location: {theme.getLocation()}")
+        print(f"Era: {theme.getEra()}")
         print()
         prices = theme.getOilPrices()
-        print("Oil price generator: %s" % str(prices))
+        print(f"Oil price generator: {str(prices)}")
 
         print()
 
@@ -68,10 +68,9 @@ class ThemeInfo(Command):
               % (self._formatPrice(theme, theme.getMinDrillCost()),
                  self._formatPrice(theme, theme.getMaxDrillCost()),
                  theme.getDrillIncrement()))
-        print("Taxes: %s .. %s" % (self._formatPrice(theme, theme.getMinTax()),
-                                   self._formatPrice(theme, theme.getMaxTax())))
+        print(f"Taxes: {self._formatPrice(theme, theme.getMinTax())} .. {self._formatPrice(theme, theme.getMaxTax())}")
         print("Maximum oil output: %d barrels" % theme.getMaxOutput())
-        print("At starting price, well profit is %s .. %s" % (self._formatPrice(theme, theme.getMinOutput()), self._formatPrice(theme, theme.getMaxOutput() * prices.getInitialPrice())))
+        print(f"At starting price, well profit is {self._formatPrice(theme, theme.getMinOutput())} .. {self._formatPrice(theme, theme.getMaxOutput() * prices.getInitialPrice())}")
 
         print()
         print("Facts:")
@@ -89,7 +88,7 @@ class ThemeInfo(Command):
             obj = theme()
             display_name = name
             if theme == wildcatting.theme.DefaultTheme:
-                display_name = "%s (default)" % name
+                display_name = f"{name} (default)"
 
             rows.append((display_name, obj.getLocation(), obj.getEra(), str(len(obj.getFacts()))))
 

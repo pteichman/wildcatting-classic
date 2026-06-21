@@ -216,7 +216,7 @@ class Well(Serializable):
 
         drillCost = site.getDrillCost()
 
-        assert oilDepth == None or self._drillDepth < oilDepth
+        assert oilDepth is None or self._drillDepth < oilDepth
 
         self._drillDepth += 1
 

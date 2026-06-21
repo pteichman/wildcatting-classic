@@ -30,9 +30,9 @@ class WeeklyReport:
                         rowDict = {}
                         rowDict["row"] = row
                         rowDict["col"] = col
-                        rowDict["cost"] = cost = well.getInitialCost()
-                        rowDict["tax"] = tax = site.getTax()
-                        rowDict["income"] = income = int(output * self._oilPrice)
+                        rowDict["cost"] = well.getInitialCost()
+                        rowDict["tax"] = site.getTax()
+                        rowDict["income"] = int(output * self._oilPrice)
                         wellProfitAndLoss = well.getProfitAndLoss()
                         rowDict["profitAndLoss"] = wellProfitAndLoss
                         self._profitAndLoss += wellProfitAndLoss

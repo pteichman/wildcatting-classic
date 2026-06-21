@@ -51,13 +51,13 @@ class ClientCommand(Command):
         try:
             server_version = s.version()
         except OSError as e:
-            print("Socket error contacting %s" % url)
+            print(f"Socket error contacting {url}")
             print(e.args[1])
             sys.exit(0)
 
         if server_version != version.VERSION_STRING:
             import textwrap
-            print(textwrap.fill("ERROR: Server at %s requires a %s client" % (url, server_version), int(os.getenv("COLUMNS", 80)) - 5))
+            print(textwrap.fill(f"ERROR: Server at {url} requires a {server_version} client", int(os.getenv("COLUMNS", 80)) - 5))
             sys.exit(1)
 
         if options.hotseat:

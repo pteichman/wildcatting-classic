@@ -22,7 +22,7 @@ class TieredXMLRPCServer(SimpleXMLRPCServer):
     def register_subinstance(self, tier, instance):
         for (name, method) in inspect.getmembers(instance, inspect.ismethod):
             if not name.startswith("_"):
-                self.register_function(method, "%s.%s" % (tier, name))
+                self.register_function(method, f"{tier}.{name}")
 
     def _dispatch(self, *args, **kwargs):
         """Log all Exceptions raised by XML-RPC handlers"""

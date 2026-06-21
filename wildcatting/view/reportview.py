@@ -92,8 +92,8 @@ class WeeklyReportView(View):
         self.setFGBG(self._win, fg, bg)
 
         self._win.addstr(0, 0, self._report.getUsername().upper())
-        self.addCentered(self._win, 0, "%s PER BARREL" % self._report.getOilPrice())
-        self.addRight(self._win, 0, "WEEK %s" % self._report.getWeek())
+        self.addCentered(self._win, 0, f"{self._report.getOilPrice()} PER BARREL")
+        self.addRight(self._win, 0, f"WEEK {self._report.getWeek()}")
         self._win.addstr(1, 1, "  X   Y   COST     TAX     INCOME     P&L")
 
         week = self._report.getWeek()
@@ -118,7 +118,7 @@ class WeeklyReportView(View):
 
         self._win.addstr(15, 0, " NEXT PLAYER")
         if self._page == (self._report.getWeek() - 1) // 13:
-            self._win.addstr(15, 35, "$ %s" % str(self._report.getProfitAndLoss()).rjust(10))
+            self._win.addstr(15, 35, f"$ {str(self._report.getProfitAndLoss()).rjust(10)}")
         self._moveCursor()
         self._win.refresh()
 
@@ -199,7 +199,7 @@ class SurveyorsReportView(View):
         self._stdscr.refresh()
 
         (h, w) = self._win.getmaxyx()
-        coord_str = "X=%s  Y=%s" % (self._site.getCol(), self._site.getRow())
+        coord_str = f"X={self._site.getCol()}  Y={self._site.getRow()}"
         prob_str = str(self._site.getProbability()).rjust(2) + "%"
         cost_str = "$" + str(self._site.getDrillCost()).rjust(4)
         tax_str = "$" + str(self._site.getTax()).rjust(4)
@@ -295,7 +295,7 @@ class PregameReportView(View):
         fg, bg = self.getGreenFGBG()
         self.setFGBG(self._win, fg, bg)
 
-        self.addCentered(self._win, 1, "PLAYERS: GAME %s" % self._gameId)
+        self.addCentered(self._win, 1, f"PLAYERS: GAME {self._gameId}")
 
         row = 3
         for player in self._players:

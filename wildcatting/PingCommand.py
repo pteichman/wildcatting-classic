@@ -23,8 +23,8 @@ class ClientCommand(Command):
         try:
             server_version = s.version()
         except:
-            print("Server at %s is not up." % url)
+            print(f"Server at {url} is not up.")
             sys.exit(1)
 
-        print("%s server at %s is up." % (server_version, url))
+        print(f"{server_version} server at {url} is up.")
         sys.exit(0)

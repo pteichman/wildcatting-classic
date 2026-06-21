@@ -37,8 +37,8 @@ class DrillView(View):
 
         self.addCentered(self._stdscr, row, "PRESS ANY KEY TO DRILL")
         self.addCentered(self._stdscr, row + 1, "PRESS Q TO STOP")
-        self.addCentered(self._stdscr, row + 3, "DEPTH: %s" % drillDepth)
-        self.addCentered(self._stdscr, row + 4, " COST: %s" % cost)
+        self.addCentered(self._stdscr, row + 3, f"DEPTH: {drillDepth}")
+        self.addCentered(self._stdscr, row + 4, f" COST: {cost}")
         self._stdscr.refresh()
 
     def input(self):
@@ -99,12 +99,12 @@ class WildcattingView(View):
         location = self._setting.getLocation()
         era = self._setting.getEra()
 
-        topstr = "%s, %s." % (location, era)
+        topstr = f"{location}, {era}."
         if self._wildcatting.isGameFinished():
             self._stdscr.addstr(0, 4, topstr, curses.A_BOLD)
         else:
             pricestr = self._setting.getPriceFormat() % self._wildcatting.getOilPrice()
-            topstr = topstr + "  Oil is %s" % pricestr
+            topstr = topstr + f"  Oil is {pricestr}"
             self._stdscr.addstr(0, 4, topstr, curses.A_BOLD)
 
             week = "Week %d" % self._wildcatting.getWeek()
@@ -151,18 +151,17 @@ class WildcattingView(View):
             color = Colors.get(curses.COLOR_WHITE, curses.COLOR_WHITE)
             self._border_win.addstr(border_h - 2, col, "." * (border_w - col - 1), color)
 
-        label = " %s" % self._getCurrentView().getKeyLabel()
+        label = f" {self._getCurrentView().getKeyLabel()}"
         self.addLeft(self._border_win, border_h - 2, label, blackOnWhite,
                      pad=len(colors)+1)
 
         turn = self._wildcatting.getPlayersTurn()
         if turn is not None:
-            coordStr = "X=%s   Y=%s" % (str(self._x).rjust(2),
-                                        str(self._y).rjust(2))
+            coordStr = f"X={str(self._x).rjust(2)}   Y={str(self._y).rjust(2)}"
             self.addCentered(self._border_win, border_h - 2, coordStr, blackOnWhite)
             if not self._wildcatting.isGameFinished():
                 self.addRight(self._border_win, border_h - 2,
-                              "%s's turn" % turn, blackOnWhite)
+                              f"{turn}'s turn", blackOnWhite)
         else:
             longestLabel = 0
             for view in self._views:
@@ -170,7 +169,7 @@ class WildcattingView(View):
                     longestLabel = len(view.getKeyLabel())
 
             players = self._wildcatting.getPendingPlayers()
-            label = " WAITING FOR %s" % (", ".join(players).upper())
+            label = " WAITING FOR {}".format(", ".join(players).upper())
             self.addLeft(self._border_win, border_h - 2, label, blackOnWhite,
                          pad=len(colors) + 1 + longestLabel + 4)
 
@@ -187,7 +186,7 @@ class WildcattingView(View):
 
         blackOnGreen = Colors.get(curses.COLOR_BLACK, curses.COLOR_GREEN)
 
-        go = "GO %s!" % self._wildcatting.getPlayersTurn().upper()
+        go = f"GO {self._wildcatting.getPlayersTurn().upper()}!"
         if self._mac:
             bkgd, text = self.getGreenFGBG()
             self.addCentered(self._border_win, border_h - 2,

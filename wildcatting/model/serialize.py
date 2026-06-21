@@ -11,9 +11,7 @@ class Serializable:
     STATE_KEY = "wildcatting.model.Serializable.state"
 
     def __repr__(self):
-        return "<%s instance at 0x%s> %s" % (self.__class__.__name__,
-                                             id(self),
-                                             _pp.pformat(self.__dict__))
+        return f"<{self.__class__.__name__} instance at 0x{id(self):x}> {_pp.pformat(self.__dict__)}"
 
     def serialize(self):
         return self.__serialize_instance(self)
@@ -21,7 +19,7 @@ class Serializable:
     def deserialize(cls, state):
         clsname = state.get(Serializable.CLASS_KEY)
         if clsname != cls.__name__:
-            raise Exception("Trying to deserialize a %s as a %s" % (cls.__name__, clsname))
+            raise Exception(f"Trying to deserialize a {cls.__name__} as a {clsname}")
 
         obj = cls.__new__(cls)
         obj.__dict__ = obj.__deserialize_item(state.get(Serializable.STATE_KEY))

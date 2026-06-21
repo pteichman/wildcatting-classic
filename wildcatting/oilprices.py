@@ -30,12 +30,12 @@ class GaussianPrices:
     def __str__(self):
         lines = [str(self.__class__)]
 
-        lines.append("  Initial oil price: $%.2f" % self._price)
-        lines.append("  Mean change between turns: %.3f%%" % self._mu)
-        lines.append("  Standard deviation: %.3f%%" % self._sigma)
-        lines.append("    1. 68.27%% of price changes will be in the range: %.3f%% .. %.3f%%" % (self._mu - self._sigma, self._mu + self._sigma))
-        lines.append("    2. 95.45%% of price changes will be in the range: %.3f%% .. %.3f%%" % (self._mu - self._sigma*2, self._mu + self._sigma*2))
-        lines.append("  Initial price +/- one standard deviation: $%.2f .. %.2f" % (self._price + self._price * (self._mu - self._sigma) / 100, self._price + self._price * (self._mu + self._sigma) / 100))
+        lines.append(f"  Initial oil price: ${self._price:.2f}")
+        lines.append(f"  Mean change between turns: {self._mu:.3f}%")
+        lines.append(f"  Standard deviation: {self._sigma:.3f}%")
+        lines.append(f"    1. 68.27% of price changes will be in the range: {self._mu - self._sigma:.3f}% .. {self._mu + self._sigma:.3f}%")
+        lines.append(f"    2. 95.45% of price changes will be in the range: {self._mu - self._sigma*2:.3f}% .. {self._mu + self._sigma*2:.3f}%")
+        lines.append(f"  Initial price +/- one standard deviation: ${self._price + self._price * (self._mu - self._sigma) / 100:.2f} .. {self._price + self._price * (self._mu + self._sigma) / 100:.2f}")
 
         return "\n".join(lines)
 
@@ -136,7 +136,7 @@ class Price:
         return self._price
 
     def __str__(self):
-        return "$%.2f (%s)" % (self._price, self._date.isoformat())
+        return f"${self._price:.2f} ({self._date.isoformat()})"
 
 historical_data = [
     Price(datetime.date(1986, 1, 2), 25.560000),
@@ -5633,8 +5633,8 @@ historical_data = [
 if __name__ == "__main__":
     prices = GaussianPrices(10.00)
     prev = next(prices)
-    print("%.2f" % prev)
+    print(f"{prev:.2f}")
     for i in range(0, 10):
         cur = next(prices)
-        print("%.2f (%.2f%%)" % (cur, (cur-prev)/prev*100))
+        print(f"{cur:.2f} ({(cur-prev)/prev*100:.2f}%)")
         prev = cur

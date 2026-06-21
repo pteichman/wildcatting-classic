@@ -1,29 +1,28 @@
-#!/usr/bin/env python3
-
-import logging, sys
+import logging
+import sys
 
 from wildcatting.cmdparse import CommandParser
-
 from wildcatting import ClientCommand
+from wildcatting import PingCommand
 from wildcatting import ScreensaverCommand
 from wildcatting import ServerCommand
-from wildcatting import PingCommand
 from wildcatting import ThemeInfoCommand
 from wildcatting import version
 
-parser = CommandParser()
-parser.add_option("", "--debug", action="store_true",
-                  help="enable debugging output")
-parser.add_option("", "--version", action="store_true",
-                  help="print the version and exit")
 
-parser.add_commands(ClientCommand)
-parser.add_commands(ScreensaverCommand)
-parser.add_commands(ServerCommand)
-parser.add_commands(PingCommand)
-parser.add_commands(ThemeInfoCommand)
+def main():
+    parser = CommandParser()
+    parser.add_option("", "--debug", action="store_true",
+                      help="enable debugging output")
+    parser.add_option("", "--version", action="store_true",
+                      help="print the version and exit")
 
-if __name__ == "__main__":
+    parser.add_commands(ClientCommand)
+    parser.add_commands(ScreensaverCommand)
+    parser.add_commands(ServerCommand)
+    parser.add_commands(PingCommand)
+    parser.add_commands(ThemeInfoCommand)
+
     (command, options, args) = parser.parse_args()
 
     formatter = logging.Formatter("%(levelname)s: %(message)s")

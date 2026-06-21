@@ -1,0 +1,13 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "wildcatting"
+version = "1.5"
+requires-python = ">=3.11"
+dependencies = []
+
+[project.scripts]
+go-wildcatting = "wildcatting.cli:main"
+

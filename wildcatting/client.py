@@ -71,6 +71,7 @@ class Wildcatting:
         self._gameFinished = gameFinished
 
     def updatePlayerField(self, site):
+        assert self._playerField is not None
         self._playerField.setSite(site.getRow(), site.getCol(), site)
 
     def update(self, update):
@@ -136,6 +137,7 @@ class Client:
                 )
 
             # joining a new game
+            assert self._connectPlayers is not None
             for username, symbol in self._connectPlayers:
                 self._server.game.join(self._connectHandle, username, symbol)
 
@@ -144,10 +146,12 @@ class Client:
         )
 
     def _getCurrentHandle(self):
+        assert self._clientInfo is not None
         player = self._wildcatting.getPlayersTurn()
         return self._clientInfo.getPlayerHandle(player)
 
     def _runPreGame(self):
+        assert self._clientInfo is not None
         gameId = self._clientInfo.getGameId()
         handle = self._clientInfo.getClientHandle()
 
@@ -170,6 +174,7 @@ class Client:
                 self._server.game.start(masterHandle)
 
     def _getNewPlayerField(self):
+        assert self._clientInfo is not None
         handle = self._clientInfo.getClientHandle()
         playerField = OilField.deserialize(self._server.game.getPlayerField(handle))
         self._wildcatting.setPlayerField(playerField)
@@ -225,6 +230,7 @@ class Client:
         return site
 
     def _endTurn(self):
+        assert self._clientInfo is not None
         player = self._wildcatting.getPlayersTurn()
         handle = self._clientInfo.getPlayerHandle(player)
         u, wellUpdates = self._server.game.endTurn(handle)
@@ -244,6 +250,7 @@ class Client:
             self._runWeeklySummary()
 
     def _runWeeklyReport(self):
+        assert self._clientInfo is not None
         player = self._wildcatting.getPlayersTurn()
         handle = self._clientInfo.getPlayerHandle(player)
         symbol = self._clientInfo.getPlayerSymbol(player)
@@ -289,6 +296,7 @@ class Client:
                 reportView.display()
 
     def _runWeeklySummary(self):
+        assert self._clientInfo is not None
         report = WeeklySummary.deserialize(
             self._server.game.getWeeklySummary(self._clientInfo.getClientHandle())
         )
@@ -300,12 +308,14 @@ class Client:
             actions = weeklySummaryView.input()
 
     def _updateWildcatting(self):
+        assert self._clientInfo is not None
         update = Update.deserialize(
             self._server.game.getUpdate(self._clientInfo.getClientHandle())
         )
         return self._wildcatting.update(update)
 
     def _isMyTurn(self):
+        assert self._clientInfo is not None
         return self._clientInfo.hasPlayer(self._wildcatting.getPlayersTurn())
 
     def _getAvailableFieldSize(self):
@@ -315,15 +325,15 @@ class Client:
         return availableWidth, availableHeight
 
     def _inputUserNames(self, stdscr):
-        view = PlayerCountView(stdscr)
-        view.display()
+        countView = PlayerCountView(stdscr)
+        countView.display()
 
-        count = view.input()
+        count = countView.input()
 
-        view = PlayerNamesView(stdscr, count)
-        view.display()
+        namesView = PlayerNamesView(stdscr, count)
+        namesView.display()
 
-        self._connectPlayers = view.input()
+        self._connectPlayers = namesView.input()
 
     def wildcatting(self, stdscr):
         self._stdscr = stdscr

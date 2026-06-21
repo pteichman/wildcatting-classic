@@ -95,6 +95,7 @@ class TestClientVisibility(unittest.TestCase):
         self.assertIsNotNone(
             target, "seed 42 must produce a 10x10 field with oil at depth > 1"
         )
+        assert target is not None
         row, col = target
 
         def get_oil_depth():

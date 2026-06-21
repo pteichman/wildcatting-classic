@@ -106,18 +106,19 @@ class PlayerNamesView(View):
 
 
 if __name__ == "__main__":
+    names = None
 
     def main(stdscr):
-        view = PlayerCountView(stdscr)
-        view.display()
+        countView = PlayerCountView(stdscr)
+        countView.display()
 
-        count = view.input()
+        count = countView.input()
 
-        view = PlayerNamesView(stdscr, count)
-        view.display()
+        namesView = PlayerNamesView(stdscr, count)
+        namesView.display()
 
         global names
-        names = view.input()
+        names = namesView.input()
 
     curses.wrapper(main)
     print(names)

@@ -20,7 +20,9 @@ class HistoricalPrices:
 class GaussianPrices:
     """Gaussian distribution"""
 
-    def __init__(self, start: float, mu: float | None = None, sigma: float | None = None) -> None:
+    def __init__(
+        self, start: float, mu: float | None = None, sigma: float | None = None
+    ) -> None:
         self._initialPrice = self._price = start
 
         if mu is None:
@@ -85,7 +87,14 @@ class TrendingGaussianPrices:
 
     """Gaussian distribution that trends in a given direction every N or so turns"""
 
-    def __init__(self, start: float, minPrice: float, maxPrice: float, trendMu: float, trendSigma: float) -> None:
+    def __init__(
+        self,
+        start: float,
+        minPrice: float,
+        maxPrice: float,
+        trendMu: float,
+        trendSigma: float,
+    ) -> None:
         self._initialPrice = self._price = start
         self._minPrice = minPrice
         self._maxPrice = maxPrice

@@ -92,8 +92,13 @@ class ScreensaverCommand(Command):
             game = Game(win_w, win_h)
             field = game.getOilField()
 
-            view = OilFieldCursesView(win)
-            view.setField(field)
+            w = Wildcatting()
+            w.setPlayerField(field)
+            view: OilFieldCursesView
+            if options.drill_cost:
+                view = OilFieldDrillCostView(win, w, 1, 25)
+            else:
+                view = OilFieldProbabilityView(win, w)
 
             win.clear()
             animator = FadeInOilFieldCursesAnimator(field)
@@ -115,9 +120,10 @@ class ScreensaverCommand(Command):
 
             w = Wildcatting()
             w.setPlayerField(field)
+            view: OilFieldCursesView
             if options.drill_cost:
                 view = OilFieldDrillCostView(win, w, 1, 25)
-            elif options.probability:
+            else:
                 view = OilFieldProbabilityView(win, w)
 
             for row in range(field.getHeight()):

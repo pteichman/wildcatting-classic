@@ -18,6 +18,7 @@ class Serializable:
     def serialize(self):
         return self.__serialize_instance(self)
 
+    @classmethod
     def deserialize(cls, state):
         clsname = state.get(Serializable.CLASS_KEY)
         if clsname != cls.__name__:
@@ -26,8 +27,6 @@ class Serializable:
         obj = cls.__new__(cls)
         obj.__dict__ = obj.__deserialize_item(state.get(Serializable.STATE_KEY))
         return obj
-
-    deserialize = classmethod(deserialize)
 
     def __serialize_instance(self, item):
         return {

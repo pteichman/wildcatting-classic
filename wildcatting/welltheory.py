@@ -7,7 +7,7 @@ class SimpleWellTheory:
         self._maxOutput = maxOutput
 
     def __str__(self):
-        pass
+        return "SimpleWellTheory(maxOutput=%s)" % self._maxOutput
 
     def _getOutput(self, site):
         well = site.getWell()

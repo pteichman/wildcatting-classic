@@ -4,7 +4,6 @@ from . import version
 import inspect
 import base64
 import re
-import random
 
 from xmlrpc.server import SimpleXMLRPCServer
 import xmlrpc.client
@@ -68,16 +67,18 @@ class GameService:
         self._theme = theme
 
     def _getGame(self, gameId):
-        assert isinstance(gameId, str)
+        if not isinstance(gameId, str):
+            raise WildcattingException("Invalid game id")
 
         game = self._games.get(gameId)
         if game is None:
             raise WildcattingException("Unknown game id: " + gameId)
-        
+
         return game
 
     def _readHandle(self, handle):
-        assert isinstance(handle, str)
+        if not isinstance(handle, str):
+            raise WildcattingException("Invalid handle")
 
         self.log.debug("Reading handle: %s", handle)
         (gameId, playerName, secret) = self._decodeGameHandle(handle)
@@ -88,8 +89,9 @@ class GameService:
         return (game, player)
 
     def _readClientHandle(self, handle):
-        assert isinstance(handle, str)
-        
+        if not isinstance(handle, str):
+            raise WildcattingException("Invalid handle")
+
         (gameId, clientId) = self._decodeClientHandle(handle)
         self.log.info("gameId: %s, clientId: %s", gameId, clientId)
 
@@ -120,36 +122,40 @@ class GameService:
         return week.getPlayerTurn(player)
 
     def _encodeGameHandle(self, gameId, player, secret):
-        assert isinstance(gameId, str)
-        assert isinstance(player, wildcatting.model.Player)
-        assert isinstance(secret, str)
-        
         handle = GameService.HANDLE_SEP.join((gameId, player.getUsername(), secret))
         return base64.b64encode(handle.encode('utf-8')).decode('utf-8')
 
     def _decodeGameHandle(self, gameHandle):
-        assert isinstance(gameHandle, str)
+        if not isinstance(gameHandle, str):
+            raise WildcattingException("Invalid handle")
 
-        gameHandle = base64.b64decode(gameHandle).decode('utf-8')
-        assert re.match(r"\d+::.+", gameHandle) is not None
+        try:
+            gameHandle = base64.b64decode(gameHandle).decode('utf-8')
+        except Exception:
+            raise WildcattingException("Malformed handle")
+
+        if not re.match(r"\d+::.+", gameHandle):
+            raise WildcattingException("Malformed handle")
 
         return gameHandle.split(GameService.HANDLE_SEP, 2)
 
     def _encodeClientHandle(self, gameId, clientId):
-        assert isinstance(gameId, str)
-        assert isinstance(clientId, str)
-        
         handle = GameService.HANDLE_SEP.join((gameId, clientId))
         return base64.b64encode(handle.encode('utf-8')).decode('utf-8')
 
     def _decodeClientHandle(self, clientHandle):
-        assert isinstance(clientHandle, str)
+        if not isinstance(clientHandle, str):
+            raise WildcattingException("Invalid handle")
 
         self.log.debug("Decoding %s", clientHandle)
-        clientHandle = base64.b64decode(clientHandle).decode('utf-8')
+        try:
+            clientHandle = base64.b64decode(clientHandle).decode('utf-8')
+        except Exception:
+            raise WildcattingException("Malformed handle")
         self.log.debug("Got %s", clientHandle)
-        
-        assert re.match(r"\d+::.+", clientHandle) is not None
+
+        if not re.match(r"\d+::.+", clientHandle):
+            raise WildcattingException("Malformed handle")
 
         return clientHandle.split(GameService.HANDLE_SEP, 1)
 
@@ -161,10 +167,9 @@ class GameService:
         return self._encodeClientHandle(gameId, clientId)
 
     def new(self, width, height, turnCount):
-        assert isinstance(width, int)
-        assert isinstance(height, int)
-        assert isinstance(turnCount, int)
-        
+        if not isinstance(width, int) or not isinstance(height, int) or not isinstance(turnCount, int):
+            raise WildcattingException("Invalid parameters")
+
         gameId = str(self._nextGameId)
         self._nextGameId = self._nextGameId + 1
 
@@ -173,8 +178,10 @@ class GameService:
         return self.newClientHandle(gameId)
 
     def join(self, clientHandle, username, symbol):
-        assert isinstance(clientHandle, str)
-        assert isinstance(username, str)
+        if not isinstance(clientHandle, str):
+            raise WildcattingException("Invalid handle")
+        if not isinstance(username, str):
+            raise WildcattingException("Invalid username")
 
         gameId, clientId = self._decodeClientHandle(clientHandle)
         game = self._games[gameId]
@@ -189,7 +196,8 @@ class GameService:
         return handle
 
     def getClientInfo(self, clientHandle):
-        assert isinstance(clientHandle, str)
+        if not isinstance(clientHandle, str):
+            raise WildcattingException("Invalid handle")
 
         gameId, clientId = self._decodeClientHandle(clientHandle)
         game = self._games[gameId]
@@ -279,15 +287,15 @@ class GameService:
     def drill(self, handle, row, col):
         game, player = self._readHandle(handle)
         turn = self._ensureTurn(game, player)
-        
+
         drilledSite = turn.getDrilledSite()
         if drilledSite and not (drilledSite.getRow() == row and drilledSite.getCol() == col):
             raise WildcattingException("Already drilled somewhere else this turn")
 
         game.drill(row, col)
-        game.markSiteUpdated(player, drilledSite)
-        well = game.getOilField().getSite(row,col).getWell()
-        return well.serialize()
+        site = game.getOilField().getSite(row, col)
+        game.markSiteUpdated(player, site)
+        return site.getWell().serialize()
 
     def sell(self, handle, row, col):
         game, player = self._readHandle(handle)

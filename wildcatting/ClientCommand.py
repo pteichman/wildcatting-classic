@@ -60,7 +60,7 @@ class ClientCommand(Command):
 
         if server_version != version.VERSION_STRING:
             import textwrap
-            print(textwrap.fill("ERROR: Server at %s requires a %s client" % (url, server_version), os.getenv("COLUMNS", 80) - 5))
+            print(textwrap.fill("ERROR: Server at %s requires a %s client" % (url, server_version), int(os.getenv("COLUMNS", 80)) - 5))
             sys.exit(1)
 
         if options.hotseat:

@@ -1,6 +1,5 @@
 import logging
 import curses
-import os
 
 from wildcatting.colors import Colors
 
@@ -10,18 +9,9 @@ class View:
     def __init__(self, stdscr):
         self._stdscr = stdscr
 
-        # for mac terminal workarounds - lazy mac check
-        self._mac = os.path.exists("/mach_kernel")
-
     def getGreenFGBG(self):
-        if self._mac:
-            bkgd = Colors.get(curses.COLOR_GREEN, curses.COLOR_GREEN)
-            text = Colors.get(curses.COLOR_BLACK, curses.COLOR_GREEN)
-        else:
-            bkgd = Colors.get(curses.COLOR_BLACK, curses.COLOR_GREEN)
-            text = Colors.get(curses.COLOR_BLACK, curses.COLOR_GREEN)
-
-        return text, bkgd
+        color = Colors.get(curses.COLOR_BLACK, curses.COLOR_GREEN)
+        return color, color
 
     def addCentered(self, win, row, text, color=None):
         (h, w) = win.getmaxyx()
@@ -51,17 +41,8 @@ class View:
             win.addstr(row, col, text, color)
 
     def setFGBG(self, win, fg, bg):
-        (h, w) = win.getmaxyx()
-        
         win.bkgdset(" ", fg)
-
-        # work around a problem with the MacOS X Terminal - draw the
-        # background explicitly by drawing BG on BG "." characters
-        if self._mac:
-            for row in range(h):
-                win.addstr(row, 0, "." * (w-1), bg)
-        else:
-            self._win.clear()            
+        win.clear()
 
     def putch(self, win, y, x, ch, attr=None):
         # workaround so we can write things to the bottom corner

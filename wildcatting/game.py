@@ -1,5 +1,6 @@
 import logging
 import random
+import secrets
 import math
 
 from wildcatting.exceptions import WildcattingException
@@ -266,10 +267,7 @@ class Game:
         return clientId
 
     def _generateSecret(self):
-        return "".join([random.choice(("0", "1", "2", "3", "4",
-                                       "5", "6", "7", "8", "9",
-                                       "A", "B", "C", "D", "E", "F"))
-                  for i in range(0, 16)])
+        return secrets.token_hex(8).upper()
 
     def getClientPlayers(self, clientId):
         return self._clients.get(clientId, [])
@@ -297,8 +295,8 @@ class Game:
         return None
 
     def getPlayer(self, username, secret):
-        assert isinstance(username, str)
-        assert isinstance(secret, str)
+        if not isinstance(username, str) or not isinstance(secret, str):
+            raise WildcattingException("Invalid login")
 
         player = self._players.get(secret)
         
@@ -337,9 +335,7 @@ class Game:
     def _finish(self):
         self._isFinished = True
 
-        players = list(self._players.values())
-        from functools import cmp_to_key
-        players.sort(key=cmp_to_key(lambda a, b: (b.getProfitAndLoss() > a.getProfitAndLoss()) - (b.getProfitAndLoss() < a.getProfitAndLoss())))
+        players = sorted(self._players.values(), key=lambda p: -p.getProfitAndLoss())
 
         playerStrs = ["%s (%d)" % (p.getUsername(), p.getProfitAndLoss())
                       for p in players]

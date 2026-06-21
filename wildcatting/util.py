@@ -1,4 +1,5 @@
 import logging
+from logging.handlers import RotatingFileHandler
 
 def startLogger(filename):
     root = logging.getLogger()
@@ -14,7 +15,7 @@ def startLogger(filename):
 
     format = "%(asctime)s [%(levelname)s] %(message)s"
 
-    fileHandler = logging.FileHandler(filename)
+    fileHandler = RotatingFileHandler(filename, maxBytes=10 * 1024 * 1024, backupCount=3)
     fileHandler.setLevel(logging.DEBUG)
     formatter = logging.Formatter(format, "%Y-%m-%d %T")
     fileHandler.setFormatter(formatter)

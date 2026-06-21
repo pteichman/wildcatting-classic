@@ -1,4 +1,3 @@
-import os
 import curses
 import random
 import logging
@@ -61,9 +60,6 @@ class OilFieldTextView(View):
 
 class ColorChooser:
     def __init__(self):
-        # for mac terminal workarounds - lazy mac check
-        self._mac = os.path.exists("/mach_kernel")
-
         # increasing order of hotness
         self._colors = [
             Colors.get(curses.COLOR_WHITE, curses.COLOR_BLUE),
@@ -72,15 +68,6 @@ class ColorChooser:
             Colors.get(curses.COLOR_WHITE, curses.COLOR_YELLOW),
             Colors.get(curses.COLOR_WHITE, curses.COLOR_MAGENTA),
             Colors.get(curses.COLOR_WHITE, curses.COLOR_RED),
-            ]
-
-        self._blankColors = [
-            Colors.get(curses.COLOR_BLUE, curses.COLOR_BLUE),
-            Colors.get(curses.COLOR_CYAN, curses.COLOR_CYAN),
-            Colors.get(curses.COLOR_GREEN, curses.COLOR_GREEN),
-            Colors.get(curses.COLOR_YELLOW, curses.COLOR_YELLOW),
-            Colors.get(curses.COLOR_MAGENTA, curses.COLOR_MAGENTA),
-            Colors.get(curses.COLOR_RED, curses.COLOR_RED),
             ]
 
     def _chooseColor(self, site, colors):
@@ -103,11 +90,7 @@ class ColorChooser:
 
         assert isinstance(site, wildcatting.model.Site)
 
-        colors = self._colors
-        if self._mac:
-            colors = self._blankColors
-            
-        return self._chooseColor(site, colors)
+        return self._chooseColor(site, self._colors)
 
 
 class ProbabilityColorChooser(ColorChooser):

@@ -148,10 +148,13 @@ class Well(Serializable):
         self._capacity = 1
 
     def __lt__(self, other):
-        return self._turn < other._turn
-    
+        return self._week < other._week
+
     def __eq__(self, other):
-        return self._turn == other._turn
+        return self._week == other._week
+
+    def __hash__(self):
+        return id(self)
 
     def getPlayer(self):
         return self._player

@@ -360,16 +360,6 @@ class Game:
 
         return foundOil
 
-    def sell(self, row, col):
-        site = self._oilField.getSite(row, col)
-        well = site.getWell()
-
-        cost = site.getDrillCost() * well.getDrillDepth() * self._theme.getDrillIncrement()
-
-        well.setSold(True)
-
-        return cost / 2
-
     def endTurn(self, player):
         self._week.endTurn(player)
 
@@ -383,7 +373,7 @@ class Game:
 
     def markSiteUpdated(self, player, site):
         for updateClient in self._clientUpdates:
-            if player.getUsername() not in self._clients[updateClient]:
+            if player not in self._clients[updateClient]:
                 updateSites = self._clientUpdates[updateClient]
                 if site not in updateSites:
                     updateSites.append(site)

@@ -1,8 +1,50 @@
 import curses
 import logging
+from dataclasses import dataclass
 
 from .oilfieldview import ProbabilityColorChooser
 from .view import View
+
+
+@dataclass
+class ReportInput:
+    next_player: bool = False
+    sell: tuple[int, int] | None = None
+
+
+def _report_key(
+    c: int,
+    cursor_turn: int | None,
+    page: int,
+    week: int,
+    report_dict: dict,
+) -> tuple[int | None, int, ReportInput]:
+    if c == curses.KEY_UP:
+        if cursor_turn is None:
+            cursor_turn = min(week, 13 * (page + 1))
+        elif cursor_turn - (page * 13) > 1:
+            cursor_turn -= 1
+    elif c == curses.KEY_DOWN:
+        if cursor_turn is not None:
+            if cursor_turn == min(week, 13 * (page + 1)):
+                cursor_turn = None
+            else:
+                cursor_turn += 1
+    elif c == curses.KEY_PPAGE:
+        if page > 0:
+            page -= 1
+            cursor_turn = None
+    elif c == curses.KEY_NPAGE:
+        if page < (week - 1) // 13:
+            page += 1
+            cursor_turn = None
+    elif c == ord(" ") or c == ord("\n"):
+        if cursor_turn is None:
+            return cursor_turn, page, ReportInput(next_player=True)
+        if cursor_turn in report_dict:
+            row_dict = report_dict[cursor_turn]
+            return cursor_turn, page, ReportInput(sell=(row_dict["row"], row_dict["col"]))
+    return cursor_turn, page, ReportInput()
 
 
 class WeeklySummaryView(View):
@@ -49,15 +91,8 @@ class WeeklySummaryView(View):
 
         self._win.refresh()
 
-    def input(self):
-        actions = {}
-        c = self._stdscr.getch()
-        if c == -1:
-            pass
-        else:
-            actions["done"] = True
-
-        return actions
+    def input(self) -> bool:
+        return bool(self._stdscr.getch() != -1)
 
 
 class WeeklyReportView(View):
@@ -151,53 +186,23 @@ class WeeklyReportView(View):
             row = self._cursorTurn - (self._page * 13) + 1
         self._win.move(row, 0)
 
-    def _input(self):
-        actions: dict[str, bool | tuple[int, int]] = {}
-
+    def _input(self) -> ReportInput:
         self._moveCursor()
         c = self._stdscr.getch()
-        if c == curses.KEY_UP:
-            if self._cursorTurn is None:
-                self._cursorTurn = min(self._report.getWeek(), 13 * (self._page + 1))
-                self._moveCursor()
-            elif self._cursorTurn - (self._page * 13) == 1:
-                pass
-            else:
-                self._cursorTurn -= 1
-                self._moveCursor()
-        elif c == curses.KEY_DOWN:
-            if self._cursorTurn is None:
-                pass
-            elif self._cursorTurn == min(self._report.getWeek(), 13 * (self._page + 1)):
-                self._cursorTurn = None
-                self._moveCursor()
-            else:
-                self._cursorTurn += 1
-                self._moveCursor()
-        elif c == curses.KEY_PPAGE:
-            if self._page > 0:
-                self._page -= 1
-                self._cursorTurn = None
-                self.display()
-        elif c == curses.KEY_NPAGE:
-            if self._page < int((self._report.getWeek() - 1) // 13):
-                self._page += 1
-                self._cursorTurn = None
-                self.display()
-        elif c == ord(" ") or c == ord("\n"):
-            if self._cursorTurn is None:
-                actions["nextPlayer"] = True
-            else:
-                report = self._report.getReportDict()
-                if self._cursorTurn in report:
-                    rowDict = report[self._cursorTurn]
-                    row = rowDict["row"]
-                    col = rowDict["col"]
-                    actions["sell"] = row, col
+
+        old_cursor, old_page = self._cursorTurn, self._page
+        self._cursorTurn, self._page, action = _report_key(
+            c, self._cursorTurn, self._page,
+            self._report.getWeek(), self._report.getReportDict()
+        )
+
+        if self._page != old_page:
+            self.display()
+        elif self._cursorTurn != old_cursor:
+            self._moveCursor()
 
         self._win.refresh()
-
-        return actions
+        return action
 
     def input(self):
         curses.cbreak()

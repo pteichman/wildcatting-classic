@@ -201,24 +201,25 @@ class Client:
             self._runDrill(row, col)
 
     def _runDrill(self, row, col):
-        actions = {}
+        last_stop = False
         site = self._wildcatting.getPlayerField().getSite(row, col)
         drillView = DrillView(self._stdscr, site, self._setting)
         while (
             site.getWell().getOutput() is None and site.getWell().getDrillDepth() < 10
         ):
             drillView.display()
-            actions = drillView.input()
-            if "drill" in actions:
+            action = drillView.input()
+            if action.drill:
                 wellUpdate = self._server.game.drill(self._getCurrentHandle(), row, col)
                 well = Well.deserialize(wellUpdate)
                 site.setWell(well)
                 drillView.display()
-            if "stop" in actions:
+            if action.stop:
+                last_stop = True
                 break
 
         if site.getWell().getOutput() is None:
-            if "stop" not in actions:
+            if not last_stop:
                 drillView.setMessage("DRY HOLE!")
                 drillView.display()
                 time.sleep(3)
@@ -268,11 +269,10 @@ class Client:
         )
         reportView.display()
 
-        actions = {}
-        while "nextPlayer" not in actions:
-            actions = reportView.input()
-            if "sell" in actions:
-                row, col = actions["sell"]
+        while True:
+            action = reportView.input()
+            if action.sell is not None:
+                row, col = action.sell
                 site = self._wildcatting.getPlayerField().getSite(row, col)
                 if site.getWell().isSold():
                     continue
@@ -294,6 +294,8 @@ class Client:
                 reportView.setField(self._wildcatting.getPlayerField())
                 reportView.setReport(report)
                 reportView.display()
+            if action.next_player:
+                break
 
     def _runWeeklySummary(self):
         assert self._clientInfo is not None
@@ -303,9 +305,8 @@ class Client:
         weeklySummaryView = WeeklySummaryView(self._stdscr, report)
         weeklySummaryView.display(self._wildcatting.isGameFinished())
 
-        actions = {}
-        while "done" not in actions:
-            actions = weeklySummaryView.input()
+        while not weeklySummaryView.input():
+            pass
 
     def _updateWildcatting(self):
         assert self._clientInfo is not None
@@ -383,10 +384,10 @@ class Client:
                 # redisplay to clear all the turn indication stuff
                 wildcattingView.display()
 
-            actions = wildcattingView.input(c, refresh)
+            action = wildcattingView.input(c, refresh)
 
-            if "survey" in actions and self._isMyTurn():
-                row, col = actions["survey"]
+            if action.survey is not None and self._isMyTurn():
+                row, col = action.survey
                 drillAWell = self._survey(row, col)
                 if drillAWell:
                     self._drillAWell(row, col)
@@ -405,7 +406,7 @@ class Client:
                 curses.halfdelay(refresh)
                 moved = False
                 wildcattingView.display()
-            elif "checkForUpdates" in actions:
+            elif action.check_for_updates:
                 now = time.time()
                 updated, weekUpdated = self._updateWildcatting()
                 then = time.time()
@@ -430,9 +431,8 @@ class Client:
         curses.flushinp()
 
         curses.curs_set(0)
-        actions = {}
-        while "survey" not in actions:
-            actions = wildcattingView.input()
+        while wildcattingView.input().survey is None:
+            pass
 
         self._runWeeklySummary()
 

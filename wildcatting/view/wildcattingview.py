@@ -2,6 +2,7 @@ import curses
 import logging
 import random
 import textwrap
+from dataclasses import dataclass
 
 from wildcatting.colors import Colors
 
@@ -12,6 +13,20 @@ from .oilfieldview import (
     OilFieldProbabilityView,
 )
 from .view import View
+
+
+@dataclass
+class DrillInput:
+    drill: bool = False
+    stop: bool = False
+
+
+def _drill_key(c: int) -> DrillInput:
+    if c == ord("q") or c == ord("Q"):
+        return DrillInput(stop=True)
+    if c != -1:
+        return DrillInput(drill=True)
+    return DrillInput()
 
 
 class DrillView(View):
@@ -47,18 +62,52 @@ class DrillView(View):
         self.addCentered(self._stdscr, row + 4, f" COST: {cost}")
         self._stdscr.refresh()
 
-    def input(self):
-        actions = {}
+    def input(self) -> DrillInput:
+        return _drill_key(self._stdscr.getch())
 
-        c = self._stdscr.getch()
-        if c == -1:
-            pass
-        elif c == ord("q") or c == ord("Q"):
-            actions["stop"] = True
-        else:
-            actions["drill"] = True
 
-        return actions
+@dataclass
+class WildcattingInput:
+    survey: tuple[int, int] | None = None
+    check_for_updates: bool = False
+
+
+def _wildcatting_key(
+    c: int,
+    x: int,
+    y: int,
+    fw: int,
+    fh: int,
+    mouse_pos: tuple[int, int] | None,
+) -> tuple[int, int, WildcattingInput]:
+    dx, dy, survey = 0, 0, False
+
+    if c == -1:
+        return x, y, WildcattingInput(check_for_updates=True)
+    elif c == curses.KEY_UP:
+        dy = -1
+    elif c == curses.KEY_DOWN:
+        dy = 1
+    elif c == curses.KEY_LEFT:
+        dx = -1
+    elif c == curses.KEY_RIGHT:
+        dx = 1
+    elif c == curses.KEY_MOUSE and mouse_pos is not None:
+        dx = mouse_pos[0] - x - 4
+        dy = mouse_pos[1] - y - 2
+        survey = True
+    elif c == ord(" ") or c == ord("\n"):
+        survey = True
+
+    if dx != 0 or dy != 0:
+        new_x, new_y = x + dx, y + dy
+        if new_x < 0 or new_x >= fw or new_y < 0 or new_y >= fh:
+            return x, y, WildcattingInput()
+        x, y = new_x, new_y
+
+    if survey:
+        return x, y, WildcattingInput(survey=(y, x))
+    return x, y, WildcattingInput()
 
 
 class WildcattingView(View):
@@ -229,17 +278,11 @@ class WildcattingView(View):
         self._drawBorder()
         self._getCurrentView().display()
 
-    def input(self, c=None, refresh=50):
-        actions: dict[str, bool | tuple[int, int]] = {}
-
+    def input(self, c=None, refresh=50) -> WildcattingInput:
         self._stdscr.move(self._y + 2, self._x + 4)
         self._field_win.refresh()
         curses.curs_set(0)
         self._drawKeyBar()
-
-        dx = 0
-        dy = 0
-        survey = False
 
         curses.mousemask(curses.BUTTON1_CLICKED)
         curses.halfdelay(refresh)
@@ -247,43 +290,19 @@ class WildcattingView(View):
 
         if c is None:
             c = self._stdscr.getch()
-        if c == -1:
-            actions["checkForUpdates"] = True
-        elif c == curses.KEY_UP:
-            dy = -1
-        elif c == curses.KEY_DOWN:
-            dy = 1
-        elif c == curses.KEY_LEFT:
-            dx = -1
-        elif c == curses.KEY_RIGHT:
-            dx = 1
-        elif c == curses.KEY_MOUSE:
-            mid, mx, my, mz, bstate = curses.getmouse()
-            dx = mx - self._x - 4
-            dy = my - self._y - 2
-            survey = True
-        elif c == ord(" ") or c == ord("\n"):
-            survey = True
+
+        mouse_pos = None
+        if c == curses.KEY_MOUSE:
+            _mid, mx, my, _mz, _bstate = curses.getmouse()
+            mouse_pos = (mx, my)
         elif c == ord("\t"):
             self._nextView()
             self._getCurrentView().display()
 
-        if dx != 0 or dy != 0:
-            if (
-                (self._x + dx) > self._fw - 1
-                or (self._y + dy) > self._fh - 1
-                or (self._x + dx) < 0
-                or (self._y + dy) < 0
-            ):
-                return actions
-
-            self._x += dx
-            self._y += dy
-
-        if survey:
-            actions["survey"] = (self._y, self._x)
-
-        return actions
+        self._x, self._y, action = _wildcatting_key(
+            c, self._x, self._y, self._fw, self._fh, mouse_pos
+        )
+        return action
 
     def animateGameEnd(self):
         curses.curs_set(0)

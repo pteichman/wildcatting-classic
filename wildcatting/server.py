@@ -85,9 +85,7 @@ class GameService:
 
         return game
 
-    def _read_handle(
-        self, handle: str
-    ) -> tuple[Game, wildcatting.model.Player]:
+    def _read_handle(self, handle: str) -> tuple[Game, wildcatting.model.Player]:
         if not isinstance(handle, str):
             raise WildcattingException("Invalid handle")
 
@@ -393,7 +391,9 @@ class GameService:
                     and well.player.username == player.username
                 ):
                     wellDict: dict[str, Any] = {
-                        "row": row, "col": col, "well": well.serialize()
+                        "row": row,
+                        "col": col,
+                        "well": well.serialize(),
                     }
                     wellUpdates.append(wellDict)
 

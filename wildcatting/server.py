@@ -2,6 +2,8 @@ import base64
 import inspect
 import logging
 import re
+from typing import Any, Protocol, cast
+from xmlrpc.client import ServerProxy
 from xmlrpc.server import SimpleXMLRPCServer
 
 import wildcatting.model
@@ -46,7 +48,7 @@ class BaseService:
     def ping(self):
         return True
 
-    def version(self):
+    def version(self) -> str:
         return version.VERSION_STRING
 
 
@@ -440,9 +442,117 @@ class GameService:
         return wildcatting.model.WeeklySummary.serialize(game.getWeeklySummary())
 
 
+class GameProtocol(Protocol):
+    def drill(self, handle: str, row: int, col: int) -> dict: ...
+    def endTurn(self, handle: str) -> tuple[None, list[Any]]: ...
+    def erect(self, handle: str, row: int, col: int) -> dict: ...
+    def getClientInfo(self, clientHandle: str) -> dict: ...
+    def getPlayerField(self, clientHandle: str) -> dict: ...
+    def getPlayerSite(self, handle: str, row: int, col: int) -> dict: ...
+    def getUpdate(self, clientHandle: str) -> dict: ...
+    def getWeeklySummary(self, clientHandle: str) -> dict: ...
+    def isStarted(self, clientHandle: str) -> bool: ...
+    def join(self, clientHandle: str, username: str, symbol: str) -> str: ...
+    def listPlayers(self, clientHandle: str) -> list[str]: ...
+    def new(self, width: int, height: int, turnCount: int) -> str: ...
+    def newClientHandle(self, gameId: str) -> str: ...
+    def sell(self, handle: str, row: int, col: int) -> int: ...
+    def start(self, handle: str) -> None: ...
+    def survey(self, handle: str, row: int, col: int) -> dict: ...
+
+
+class SettingProtocol(Protocol):
+    def getSetting(self) -> dict: ...
+
+
+class ServerProtocol(Protocol):
+    game: GameProtocol
+    setting: SettingProtocol
+
+    def version(self) -> str: ...
+
+
 class StandaloneServer(BaseService):
+    game: GameProtocol
+    setting: SettingProtocol
+
     def __init__(self):
         theme = DefaultTheme()
         self.admin = AdminService()
         self.game = GameService(theme)
         self.setting = SettingService(theme)
+
+
+class _XmlRpcGame:
+    def __init__(self, proxy: Any) -> None:
+        self._p = proxy
+
+    def drill(self, handle: str, row: int, col: int) -> dict:
+        return cast(dict, self._p.drill(handle, row, col))
+
+    def endTurn(self, handle: str) -> tuple[None, list[Any]]:
+        _u, well_updates = self._p.endTurn(handle)
+        return None, list(well_updates)
+
+    def erect(self, handle: str, row: int, col: int) -> dict:
+        return cast(dict, self._p.erect(handle, row, col))
+
+    def getClientInfo(self, clientHandle: str) -> dict:
+        return cast(dict, self._p.getClientInfo(clientHandle))
+
+    def getPlayerField(self, clientHandle: str) -> dict:
+        return cast(dict, self._p.getPlayerField(clientHandle))
+
+    def getPlayerSite(self, handle: str, row: int, col: int) -> dict:
+        return cast(dict, self._p.getPlayerSite(handle, row, col))
+
+    def getUpdate(self, clientHandle: str) -> dict:
+        return cast(dict, self._p.getUpdate(clientHandle))
+
+    def getWeeklySummary(self, clientHandle: str) -> dict:
+        return cast(dict, self._p.getWeeklySummary(clientHandle))
+
+    def isStarted(self, clientHandle: str) -> bool:
+        return bool(self._p.isStarted(clientHandle))
+
+    def join(self, clientHandle: str, username: str, symbol: str) -> str:
+        return str(self._p.join(clientHandle, username, symbol))
+
+    def listPlayers(self, clientHandle: str) -> list[str]:
+        return cast(list[str], self._p.listPlayers(clientHandle))
+
+    def new(self, width: int, height: int, turnCount: int) -> str:
+        return str(self._p.new(width, height, turnCount))
+
+    def newClientHandle(self, gameId: str) -> str:
+        return str(self._p.newClientHandle(gameId))
+
+    def sell(self, handle: str, row: int, col: int) -> int:
+        return int(self._p.sell(handle, row, col))
+
+    def start(self, handle: str) -> None:
+        self._p.start(handle)
+
+    def survey(self, handle: str, row: int, col: int) -> dict:
+        return cast(dict, self._p.survey(handle, row, col))
+
+
+class _XmlRpcSetting:
+    def __init__(self, proxy: Any) -> None:
+        self._p = proxy
+
+    def getSetting(self) -> dict:
+        return cast(dict, self._p.getSetting())
+
+
+class XmlRpcServer:
+    game: GameProtocol
+    setting: SettingProtocol
+
+    def __init__(self, proxy: ServerProxy) -> None:
+        self.game = _XmlRpcGame(proxy.game)
+        self.setting = _XmlRpcSetting(proxy.setting)
+        self._proxy = proxy
+
+    def version(self) -> str:
+        return str(self._proxy.version())

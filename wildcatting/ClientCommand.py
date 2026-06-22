@@ -6,6 +6,7 @@ from xmlrpc.client import ServerProxy
 from . import version
 from .client import Client
 from .cmdparse import Command
+from .server import ServerProtocol, XmlRpcServer
 from .util import startLogger
 
 
@@ -47,12 +48,12 @@ class ClientCommand(Command):
         if options.no_network:
             from .server import StandaloneServer
 
-            s: StandaloneServer | ServerProxy = StandaloneServer()
+            s: ServerProtocol = StandaloneServer()
         else:
-            s = ServerProxy(url, allow_none=True)
+            s = XmlRpcServer(ServerProxy(url, allow_none=True))
 
         try:
-            server_version: str = str(s.version())
+            server_version = s.version()
         except OSError as e:
             print(f"Socket error contacting {url}")
             print(e.args[1])

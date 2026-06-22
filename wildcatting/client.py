@@ -11,6 +11,7 @@ from wildcatting.model import (
     WeeklySummary,
     Well,
 )
+from wildcatting.server import ServerProtocol
 
 from .report import WeeklyReport
 from .view import (
@@ -105,6 +106,7 @@ class Wildcatting:
 
 class Client:
     log = logging.getLogger("Wildcatting")
+    _server: ServerProtocol
 
     def __init__(self, weeks, gameId, connectHandle, connectPlayer):
         self._connectGameId = gameId
@@ -436,7 +438,7 @@ class Client:
 
         self._runWeeklySummary()
 
-    def run(self, server):
+    def run(self, server: ServerProtocol) -> None:
         self._server = server
         self._setting = Setting.deserialize(self._server.setting.getSetting())
 

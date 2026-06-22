@@ -1,6 +1,6 @@
 import logging
 import sys
-from optparse import Values
+from argparse import Namespace
 from xmlrpc.client import ServerProxy
 
 from .cmdparse import Command
@@ -12,12 +12,10 @@ class ClientCommand(Command):
     def __init__(self) -> None:
         Command.__init__(self, "ping", summary="Ping a Wildcatting server")
 
-        self.add_option("-p", "--port", type="int", default="7777", help="server port")
-        self.add_option(
-            "-n", "--host", type="string", default="localhost", help="server hostname"
-        )
+        self.add_argument("-p", "--port", type=int, default=7777, help="server port")
+        self.add_argument("-n", "--host", default="localhost", help="server hostname")
 
-    def run(self, options: Values, args: list[str]) -> None:
+    def run(self, options: Namespace, args: list[str]) -> None:
         url = f"http://{options.host}:{options.port}/"
         s = ServerProxy(url, allow_none=True)
 

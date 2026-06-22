@@ -1,7 +1,7 @@
 import curses
 import logging
 import time
-from optparse import Values
+from argparse import Namespace
 from typing import Any
 
 from wildcatting.client import Wildcatting
@@ -24,24 +24,22 @@ class ScreensaverCommand(Command):
             self, "screensaver", summary="avoid character burn-in on your terminals"
         )
 
-        self.add_option("", "--no-border", action="store_true", help="disable border")
-        self.add_option(
-            "",
+        self.add_argument("--no-border", action="store_true", help="disable border")
+        self.add_argument(
             "--ascii",
             action="store_true",
             help="enable advanced ascii display (recommended)",
         )
-        self.add_option("", "--ansi", action="store_true", help="enable ansi display")
-        self.add_option("", "--fade-in", action="store_true", help="fade in mode")
-        self.add_option(
-            "",
+        self.add_argument("--ansi", action="store_true", help="enable ansi display")
+        self.add_argument("--fade-in", action="store_true", help="fade in mode")
+        self.add_argument(
             "--probability",
             action="store_true",
             default=True,
             help="probabilty landscapes",
         )
-        self.add_option(
-            "", "--drill-cost", action="store_true", help="drill cost landscapes"
+        self.add_argument(
+            "--drill-cost", action="store_true", help="drill cost landscapes"
         )
 
         self.y_border = 2
@@ -82,7 +80,9 @@ class ScreensaverCommand(Command):
 
         return border, win
 
-    def player_screensaver(self, stdscr: Any, options: Values, args: list[str]) -> None:
+    def player_screensaver(
+        self, stdscr: Any, options: Namespace, args: list[str]
+    ) -> None:
         border, border_win = self.border_win(stdscr, options.no_border)
         border_win_h, border_win_w = border_win.getmaxyx()
         height = border_win_h - border * 2
@@ -108,7 +108,9 @@ class ScreensaverCommand(Command):
                 animator.animate()
                 view.display()
 
-    def view_screensaver(self, stdscr: Any, options: Values, args: list[str]) -> None:
+    def view_screensaver(
+        self, stdscr: Any, options: Namespace, args: list[str]
+    ) -> None:
         border, border_win = self.border_win(stdscr, options.no_border)
         border_win_h, border_win_w = border_win.getmaxyx()
         height = border_win_h - border * 2
@@ -136,7 +138,7 @@ class ScreensaverCommand(Command):
             view.display()
             time.sleep(0.25)
 
-    def run(self, options: Values, args: list[str]) -> None:
+    def run(self, options: Namespace, args: list[str]) -> None:
         if options.ascii:
             self.ascii_screensaver()
         elif options.ansi:

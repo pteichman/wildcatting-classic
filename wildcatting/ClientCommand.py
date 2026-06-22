@@ -1,7 +1,7 @@
 import logging
 import os
 import sys
-from optparse import Values
+from argparse import Namespace
 from xmlrpc.client import ServerProxy
 
 from . import version
@@ -22,27 +22,19 @@ class ClientCommand(Command):
             user = "none"
         symbol = user[0].upper()
 
-        self.add_option("", "--no-network", action="store_true")
-        self.add_option("-p", "--port", type="int", default="7777", help="server port")
-        self.add_option(
-            "-n", "--host", type="string", default="localhost", help="server hostname"
+        self.add_argument("--no-network", action="store_true")
+        self.add_argument("-p", "--port", type=int, default=7777, help="server port")
+        self.add_argument("-n", "--host", default="localhost", help="server hostname")
+        self.add_argument("-u", "--username", default=user, help="username")
+        self.add_argument("-m", "--hotseat", action="store_true", help="hotseat mode")
+        self.add_argument("-s", "--symbol", default=symbol, help="well symbol")
+        self.add_argument(
+            "-w", "--weeks", type=int, default=13, help="length of game in weeks"
         )
-        self.add_option(
-            "-u", "--username", type="string", default=user, help="username"
-        )
-        self.add_option("-m", "--hotseat", action="store_true", help="hotseat mode")
-        self.add_option(
-            "-s", "--symbol", type="string", default=symbol, help="well symbol"
-        )
-        self.add_option(
-            "-w", "--weeks", type="int", default="13", help="length of game in weeks"
-        )
-        self.add_option("-g", "--game", type="string", default=None, help="game id")
-        self.add_option(
-            "-r", "--handle", type="string", default=None, help="game handle"
-        )
+        self.add_argument("-g", "--game", default=None, help="game id")
+        self.add_argument("-r", "--handle", default=None, help="game handle")
 
-    def run(self, options: Values, args: list[str]) -> None:
+    def run(self, options: Namespace, args: list[str]) -> None:
         start_logger("client.log")
 
         url = f"http://{options.host}:{options.port}/"

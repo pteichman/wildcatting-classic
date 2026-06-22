@@ -1,6 +1,6 @@
 import logging
 import socket
-from optparse import Values
+from argparse import Namespace
 
 import wildcatting.server
 import wildcatting.theme
@@ -14,24 +14,10 @@ class ServerCommand(Command):
 
     def __init__(self) -> None:
         Command.__init__(self, "server", summary="Run the Wildcatting server")
-        self.add_option(
-            "-n",
-            "--host",
-            action="store",
-            type="str",
-            default="",
-            help="server hostname",
-        )
-        self.add_option(
-            "-p",
-            "--port",
-            action="store",
-            type="int",
-            default="7777",
-            help="server port",
-        )
+        self.add_argument("-n", "--host", default="", help="server hostname")
+        self.add_argument("-p", "--port", type=int, default=7777, help="server port")
 
-    def run(self, options: Values, args: list[str]) -> None:
+    def run(self, options: Namespace, args: list[str]) -> None:
         wildcatting.util.start_logger("server.log")
 
         host = options.host

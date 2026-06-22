@@ -1,7 +1,7 @@
 import inspect
 import logging
 import textwrap
-from optparse import Values
+from argparse import Namespace
 from typing import Any
 
 import wildcatting.table
@@ -16,7 +16,7 @@ class ThemeInfo(Command):
     def __init__(self) -> None:
         Command.__init__(self, "theme-info", summary="Get info about themes")
 
-    def run(self, options: Values, args: list[str]) -> None:
+    def run(self, options: Namespace, args: list[str]) -> None:
         if len(args) == 0:
             self.print_all_themes()
         else:

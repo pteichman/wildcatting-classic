@@ -4,7 +4,7 @@ test:
 check:
 	uv run ruff check wildcatting test
 	uv run mypy wildcatting test
-	uv run vulture wildcatting test vulture/allowlist.py
+	uv run vulture wildcatting test
 
 fmt:
 	uv run ruff format wildcatting test

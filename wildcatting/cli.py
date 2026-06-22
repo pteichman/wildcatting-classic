@@ -14,12 +14,8 @@ from wildcatting.cmdparse import CommandParser
 
 def main() -> None:
     parser = CommandParser()
-    parser.add_option(
-        "", "--debug", action="store_true", help="enable debugging output"
-    )
-    parser.add_option(
-        "", "--version", action="store_true", help="print the version and exit"
-    )
+    parser.add_argument("--debug", action="store_true", help="enable debugging output")
+    parser.add_argument("--version", action="version", version=version.VERSION_STRING)
 
     parser.add_command(ClientCommand.ClientCommand())
     parser.add_command(ScreensaverCommand.ScreensaverCommand())
@@ -38,10 +34,6 @@ def main() -> None:
         logging.root.setLevel(logging.DEBUG)
     else:
         logging.root.setLevel(logging.ERROR)
-
-    if options.version:
-        print(version.VERSION_STRING)
-        sys.exit(0)
 
     if command is None:
         parser.print_help()

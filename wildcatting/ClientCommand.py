@@ -71,10 +71,7 @@ class ClientCommand(Command):
             )
             sys.exit(1)
 
-        if options.hotseat:
-            player = None
-        else:
-            player = (options.username, options.symbol)
+        player = None if options.hotseat else (options.username, options.symbol)
 
         c = Client(options.weeks, options.game, options.handle, player)
 

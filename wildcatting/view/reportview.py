@@ -36,10 +36,9 @@ def _report_navigate(c: int, cursor: _ReportCursor, week: int) -> _ReportCursor:
         if page > 0:
             page -= 1
             turn = None
-    elif c == curses.KEY_NPAGE:
-        if page < (week - 1) // 13:
-            page += 1
-            turn = None
+    elif c == curses.KEY_NPAGE and page < (week - 1) // 13:
+        page += 1
+        turn = None
     return _ReportCursor(turn=turn, page=page)
 
 
@@ -145,10 +144,7 @@ class WeeklyReportView(View):
                 row = row_dict["row"]
                 col = row_dict["col"]
                 site = self._field.get_site(row, col)
-                if site.well.sold:
-                    symbol = " "
-                else:
-                    symbol = self._report.symbol
+                symbol = " " if site.well.sold else self._report.symbol
                 self._win.addstr(
                     turn - (page * 13) + 1,
                     0,

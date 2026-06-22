@@ -58,10 +58,7 @@ class View:
         # workaround so we can write things to the bottom corner
         # or otherwise with the same method call
         (h, w) = win.getmaxyx()
-        if y == h - 1 and x == w - 1:
-            f = win.insch
-        else:
-            f = win.addch
+        f = win.insch if y == h - 1 and x == w - 1 else win.addch
 
         if attr:
             f(y, x, ch, attr)

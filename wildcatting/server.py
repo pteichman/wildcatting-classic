@@ -361,10 +361,7 @@ class GameService:
         oil_price = game.oil_price
 
         current_player = game.week.survey_player
-        if current_player is None:
-            players_turn = None
-        else:
-            players_turn = current_player.username
+        players_turn = None if current_player is None else current_player.username
 
         pending_players = self.get_pending_players(client_handle)
         game_finished = game.finished

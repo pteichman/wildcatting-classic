@@ -56,10 +56,7 @@ class Week:
         player_index = self._players.index(player)
 
         surveyed = player_index < self._survey_player_index
-        if surveyed and player not in self.pending_players:
-            return True
-
-        return False
+        return bool(surveyed and player not in self.pending_players)
 
     @property
     def finished(self) -> bool:

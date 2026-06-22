@@ -10,7 +10,7 @@ class Command(OptionParser):
         self.name = name
 
         self.aliases: list[str] = kwargs.get("aliases", [])
-        self.summary: str | None = kwargs.get("summary", None)
+        self.summary: str | None = kwargs.get("summary")
 
         for key in ("aliases", "summary"):
             if key in kwargs:

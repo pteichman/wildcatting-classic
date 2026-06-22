@@ -173,10 +173,7 @@ class OilFieldCursesView(View, abc.ABC):
             # work around an MacOS X terminal problem with
             # displaying blank characters - it doesn't draw
             # the background if the well is " "
-            if self._mac:
-                symbol = "."
-            else:
-                symbol = " "
+            symbol = "." if self._mac else " "
             color = self._color_chooser.blank_color(site)
         else:
             symbol = well.player.symbol

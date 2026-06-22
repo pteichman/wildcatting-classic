@@ -387,7 +387,6 @@ class Game:
             assert reservoir is not None
             output = theory.start(well, reservoir)
             well.output = output
-            well.initial_output = output
 
         return foundOil
 

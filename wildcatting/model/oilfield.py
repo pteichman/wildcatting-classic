@@ -143,7 +143,6 @@ class Well(Serializable):
     def __init__(self, week: int, player: Player) -> None:
         self.week: int = week
         self.drill_depth: int = 0
-        self.initial_output: float | None = None
         self.output: float | None = None
         self.sold: bool = False
         self.player: Player = player

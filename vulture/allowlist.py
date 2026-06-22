@@ -40,8 +40,3 @@ from wildcatting.ReportCommand import ReportCommand
 HistoricalPrices(0)
 HistoricalGaussianPrices(0, 0, 0)  # type: ignore[call-arg]
 ReportCommand()
-
-# Well.initial_output: set in game.py and tests but never read — candidate for removal
-from wildcatting.model.oilfield import Well
-
-Well(0, None).initial_output  # type: ignore[arg-type]

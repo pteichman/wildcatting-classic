@@ -156,7 +156,6 @@ class TestSerializationRoundTrips(unittest.TestCase):
         player = Player("alice", "A")
         well1 = Well(week=3, player=player)
         well1.drill_depth = 4
-        well1.initial_output = 30.0
         well1.output = 20.0
         well1.capacity = 2
 

@@ -1,7 +1,7 @@
 import base64
-import inspect
 import logging
 import re
+from collections.abc import Callable
 from typing import Any, Protocol, cast
 from xmlrpc.client import ServerProxy
 from xmlrpc.server import SimpleXMLRPCServer
@@ -15,10 +15,6 @@ from . import version
 from .theme import DefaultTheme
 
 
-def _to_camel_case(name: str) -> str:
-    return re.sub(r"_([a-z])", lambda m: m.group(1).upper(), name)
-
-
 class TieredXMLRPCServer(SimpleXMLRPCServer):
     def __init__(self, *args: Any, **kwargs: Any) -> None:
         kwargs["allow_none"] = True
@@ -26,10 +22,12 @@ class TieredXMLRPCServer(SimpleXMLRPCServer):
 
     log = logging.getLogger("XMLRPCServer")
 
-    def register_subinstance(self, tier: str, instance: Any) -> None:
-        for name, method in inspect.getmembers(instance, inspect.ismethod):
-            if not name.startswith("_"):
-                self.register_function(method, f"{tier}.{_to_camel_case(name)}")
+    def register_function(  # type: ignore[override]
+        self, function: Callable[..., Any], name: str | None = None
+    ) -> None:
+        # Widens the upstream signature from narrow arity protocols to Any,
+        # so callers aren't forced to cast every handler they register.
+        super().register_function(function, name)
 
     def _dispatch(self, *args: Any, **kwargs: Any) -> Any:
         """Log all Exceptions raised by XML-RPC handlers"""

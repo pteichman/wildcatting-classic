@@ -1,15 +1,7 @@
-# vulture whitelist — names referenced dynamically or via framework introspection
+# vulture allowlist — names referenced dynamically or via framework introspection
 
 from wildcatting.cmdparse import Command, CommandParser
-from wildcatting.server import AdminService, BaseService, GameService, StandaloneServer
-
-# XML-RPC handlers: registered via register_subinstance() using inspect.getmembers()
-AdminService().ping()
-BaseService().echo("")
-BaseService().ping()
-GameService(None).get_game_id("")  # type: ignore[arg-type]
-GameService(None).get_week("")  # type: ignore[arg-type]
-GameService(None).get_oil_price("")  # type: ignore[arg-type]
+from wildcatting.server import StandaloneServer
 
 # OptionParser overrides: called polymorphically by the parent class
 Command("").set_usage(None)

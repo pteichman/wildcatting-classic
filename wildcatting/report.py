@@ -1,6 +1,10 @@
 import logging
 
 
+def main(stdscr):
+    pass
+
+
 class WeeklyReport:
     log = logging.getLogger("Wildcatting")
 

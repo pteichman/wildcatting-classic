@@ -30,7 +30,7 @@ class PeakedFiller(Filler):
         for row in range(model.getHeight()):
             for col in range(model.getWidth()):
                 # calculate sum of distances from peak
-                minc = 99999
+                minc: float = 99999
                 for p in range(len(peaks)):
                     (y, x) = peaks[p]
 
@@ -62,7 +62,7 @@ class PeakedFiller(Filler):
     def _generatePeaks(self, model):
         minValue, maxValue = self.getValueRange()
         maxPeaks = self.getMaxPeaks()
-        peaks = [None] * random.randint(1, maxPeaks)
+        peaks: list[tuple[int, int] | None] = [None] * random.randint(1, maxPeaks)
         for i in range(len(peaks)):
             peaks[i] = (
                 random.randint(0, model.getHeight()),
@@ -71,6 +71,15 @@ class PeakedFiller(Filler):
         return peaks
 
     def getValueRange(self):
+        raise NotImplementedError("AbstractMethodNotImplemented")
+
+    def getLesserPeakFactor(self):
+        raise NotImplementedError("AbstractMethodNotImplemented")
+
+    def getFudge(self):
+        raise NotImplementedError("AbstractMethodNotImplemented")
+
+    def getMaxPeaks(self):
         raise NotImplementedError("AbstractMethodNotImplemented")
 
     def fillSite(self, site, value, roll):

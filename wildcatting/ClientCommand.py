@@ -1,6 +1,7 @@
 import logging
 import os
 import sys
+from typing import Any
 from xmlrpc.client import ServerProxy
 
 from . import version
@@ -44,6 +45,7 @@ class ClientCommand(Command):
         startLogger("client.log")
 
         url = f"http://{options.host}:{options.port}/"
+        s: Any
         if options.no_network:
             from .server import StandaloneServer
 

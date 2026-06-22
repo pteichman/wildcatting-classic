@@ -1,8 +1,8 @@
 import curses
 import logging
+from typing import Any
 
-import wildcatting.model
-
+from .oilfieldview import ProbabilityColorChooser
 from .view import View
 
 
@@ -72,7 +72,7 @@ class WeeklyReportView(View):
 
         (h, w) = self._stdscr.getmaxyx()
         self._win = self._stdscr.derwin(16, 48, (h - 16) // 2, (w - 48) // 2)
-        self._colorChooser = wildcatting.view.ProbabilityColorChooser()
+        self._colorChooser = ProbabilityColorChooser()
 
         # start cursor on nextPlayer prompt
         self._cursorTurn = None
@@ -153,7 +153,7 @@ class WeeklyReportView(View):
         self._win.move(row, 0)
 
     def _input(self):
-        actions = {}
+        actions: dict[str, Any] = {}
 
         self._moveCursor()
         c = self._stdscr.getch()

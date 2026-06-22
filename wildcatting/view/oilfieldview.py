@@ -160,6 +160,9 @@ class OilFieldCursesView(View):
     def _makeColorChooser(self):
         raise NotImplementedError("UnimplementedAbstractMethod")
 
+    def getKeyLabel(self):
+        raise NotImplementedError("UnimplementedAbstractMethod")
+
     def display(self):
         field = self._wildcatting.getPlayerField()
         for row in range(field.getHeight()):

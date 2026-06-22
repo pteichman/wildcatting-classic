@@ -244,5 +244,6 @@ class Well(Serializable):
             self._profitAndLoss -= expense
             self._profitAndLoss += income
 
-            self._player.expense(expense)
-            self._player.income(income)
+            if self._player is not None:
+                self._player.expense(expense)
+                self._player.income(income)

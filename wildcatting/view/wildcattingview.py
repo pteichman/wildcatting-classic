@@ -2,11 +2,16 @@ import curses
 import logging
 import random
 import textwrap
+from typing import Any
 
-import wildcatting.game
-import wildcatting.model
 from wildcatting.colors import Colors
 
+from .oilfieldview import (
+    ColorChooser,
+    OilFieldDepthView,
+    OilFieldDrillCostView,
+    OilFieldProbabilityView,
+)
 from .view import View
 
 
@@ -81,16 +86,14 @@ class WildcattingView(View):
         self._field_win = stdscr.derwin(rows, cols, 2, 4)
         bkgd = Colors.get(curses.COLOR_WHITE, curses.COLOR_BLACK)
         self._field_win.bkgdset(" ", bkgd)
-        probView = wildcatting.view.OilFieldProbabilityView(
-            self._field_win, wildcatting_
-        )
-        drillCostView = wildcatting.view.OilFieldDrillCostView(
+        probView = OilFieldProbabilityView(self._field_win, wildcatting_)
+        drillCostView = OilFieldDrillCostView(
             self._field_win,
             wildcatting_,
             setting.getMinDrillCost(),
             setting.getMaxDrillCost(),
         )
-        depthView = wildcatting.view.OilFieldDepthView(self._field_win, wildcatting_)
+        depthView = OilFieldDepthView(self._field_win, wildcatting_)
         self._views = [probView, drillCostView, depthView]
         self._currentView = 0
 
@@ -98,7 +101,7 @@ class WildcattingView(View):
         self._fact = None
 
         self._fh, self._fw = self._field_win.getmaxyx()
-        self._colorChooser = wildcatting.view.ColorChooser()
+        self._colorChooser = ColorChooser()
         self._x, self._y = 0, 0
 
     def _drawBorder(self):
@@ -228,7 +231,7 @@ class WildcattingView(View):
         self._getCurrentView().display()
 
     def input(self, c=None, refresh=50):
-        actions = {}
+        actions: dict[str, Any] = {}
 
         self._stdscr.move(self._y + 2, self._x + 4)
         self._field_win.refresh()

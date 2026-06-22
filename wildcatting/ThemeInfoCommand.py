@@ -51,6 +51,7 @@ class ThemeInfo(Command):
 
         if found is None:
             self.error(f"Unknown theme: {themeName}")
+            return
 
         theme = found()
 

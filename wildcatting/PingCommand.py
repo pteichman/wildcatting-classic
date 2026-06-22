@@ -21,7 +21,7 @@ class ClientCommand(Command):
         s = ServerProxy(url, allow_none=True)
 
         try:
-            server_version = s.version()
+            server_version = str(s.version())
         except Exception:
             print(f"Server at {url} is not up.")
             sys.exit(1)

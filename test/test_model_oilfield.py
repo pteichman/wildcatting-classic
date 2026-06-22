@@ -1,3 +1,5 @@
+import pytest
+
 import wildcatting.model
 
 
@@ -14,3 +16,14 @@ class TestOilField:
             for col in range(cols):
                 site = field.get_site(row, col)
                 assert site is not None
+
+    def testGetSiteOutOfBounds(self) -> None:
+        field = wildcatting.model.OilField(5, 10)
+        with pytest.raises(AssertionError):
+            field.get_site(-1, 0)
+        with pytest.raises(AssertionError):
+            field.get_site(0, -1)
+        with pytest.raises(AssertionError):
+            field.get_site(10, 0)
+        with pytest.raises(AssertionError):
+            field.get_site(0, 5)

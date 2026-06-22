@@ -2,7 +2,6 @@ import random
 
 from wildcatting.game import Game
 from wildcatting.model import Player, Well
-from wildcatting.server import GameService
 from wildcatting.theme import DefaultTheme
 
 
@@ -126,29 +125,3 @@ class TestOilDiscovery:
         oil_site.oil_depth = well.drill_depth
         assert oil_site.oil_depth == oil_depth
         assert well.drill_depth == oil_depth
-
-
-class TestMultiplayerTurnOrder:
-    def test_three_player_survey_order_across_two_weeks(self) -> None:
-        service = GameService(DefaultTheme())
-        client_handle = service.new(10, 10, 5)
-        h1 = service.join(client_handle, "alice", "A")
-        h2 = service.join(client_handle, "bob", "B")
-        h3 = service.join(client_handle, "carol", "C")
-        service.start(h1)
-
-        for week in range(2):
-            assert service.get_players_turn(client_handle) == "alice"
-            service.survey(h1, week, 0)
-
-            assert service.get_players_turn(client_handle) == "bob"
-            service.survey(h2, week, 1)
-
-            assert service.get_players_turn(client_handle) == "carol"
-            service.survey(h3, week, 2)
-
-            assert service.get_players_turn(client_handle) is None
-
-            service.end_turn(h1)
-            service.end_turn(h2)
-            service.end_turn(h3)

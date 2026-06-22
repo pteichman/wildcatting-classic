@@ -262,3 +262,74 @@ class TestGameService:
         assert service.get_players_turn(handle1) == name1
         assert service.get_players_turn(handle2) == name1
         assert service.get_players_turn(handle3) == name1
+
+
+class TestMultiplayerTurnOrder:
+    def test_three_player_survey_order_across_two_weeks(self) -> None:
+        service = GameService(DefaultTheme())
+        client_handle = service.new(10, 10, 5)
+        h1 = service.join(client_handle, "alice", "A")
+        h2 = service.join(client_handle, "bob", "B")
+        h3 = service.join(client_handle, "carol", "C")
+        service.start(h1)
+
+        for week in range(2):
+            assert service.get_players_turn(client_handle) == "alice"
+            service.survey(h1, week, 0)
+
+            assert service.get_players_turn(client_handle) == "bob"
+            service.survey(h2, week, 1)
+
+            assert service.get_players_turn(client_handle) == "carol"
+            service.survey(h3, week, 2)
+
+            assert service.get_players_turn(client_handle) is None
+
+            service.end_turn(h1)
+            service.end_turn(h2)
+            service.end_turn(h3)
+
+
+class TestGameServiceSell:
+    def _started_game(self) -> tuple[GameService, str, str]:
+        service = GameService(DefaultTheme())
+        client_handle = service.new(10, 10, 13)
+        handle = service.join(client_handle, "alice", "A")
+        service.start(handle)
+        return service, client_handle, handle
+
+    def test_sell_raises_if_no_well(self) -> None:
+        service, client_handle, handle = self._started_game()
+        service.survey(handle, 0, 0)
+        with pytest.raises(WildcattingException):
+            service.sell(handle, 0, 0)
+
+    def test_sell_raises_if_already_sold(self) -> None:
+        service, client_handle, handle = self._started_game()
+        service.survey(handle, 0, 0)
+        service.erect(handle, 0, 0)
+        service.sell(handle, 0, 0)
+        with pytest.raises(WildcattingException):
+            service.sell(handle, 0, 0)
+
+    def test_sell_raises_if_wrong_player(self) -> None:
+        service = GameService(DefaultTheme())
+        client_handle = service.new(10, 10, 13)
+        handle1 = service.join(client_handle, "alice", "A")
+        handle2 = service.join(client_handle, "bob", "B")
+        service.start(handle1)
+
+        # alice surveys and erects at (0, 0)
+        service.survey(handle1, 0, 0)
+        service.erect(handle1, 0, 0)
+
+        # bob tries to sell alice's well
+        with pytest.raises(WildcattingException):
+            service.sell(handle2, 0, 0)
+
+    def test_sell_returns_positive_price(self) -> None:
+        service, client_handle, handle = self._started_game()
+        service.survey(handle, 0, 0)
+        service.erect(handle, 0, 0)
+        price = service.sell(handle, 0, 0)
+        assert price > 0

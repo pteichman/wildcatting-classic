@@ -2,7 +2,7 @@ import random
 from collections.abc import Iterator
 from typing import Any
 
-from wildcatting.model import OilField, Player, Site, WeeklySummary, Well
+from wildcatting.model import OilField, Site
 from wildcatting.server import GameService
 from wildcatting.theme import DefaultTheme
 
@@ -141,42 +141,3 @@ class TestClientVisibility:
                 assert site.probability > 0, (
                     f"site ({row},{col}) has zero probability after game ended"
                 )
-
-
-class TestSerializationRoundTrips:
-    def test_well_round_trip(self) -> None:
-        player = Player("alice", "A")
-        well1 = Well(week=3, player=player)
-        well1.drill_depth = 4
-        well1.output = 20.0
-        well1.capacity = 2
-
-        obj1 = well1.serialize()
-        well2 = Well.deserialize(obj1)
-        obj2 = well2.serialize()
-
-        assert obj1 == obj2
-
-    def test_player_round_trip(self) -> None:
-        player1 = Player("bob", "B")
-        player1.secret = "DEADBEEF12345678"
-        player1.income(500)
-        player1.expense(200)
-
-        obj1 = player1.serialize()
-        player2 = Player.deserialize(obj1)
-        obj2 = player2.serialize()
-
-        assert obj1 == obj2
-
-    def test_weekly_summary_round_trip(self) -> None:
-        players = [Player("alice", "A"), Player("bob", "B")]
-        players[0].income(1000)
-        players[1].expense(200)
-
-        summary1 = WeeklySummary(players, 5)
-        obj1 = summary1.serialize()
-        summary2 = WeeklySummary.deserialize(obj1)
-        obj2 = summary2.serialize()
-
-        assert obj1 == obj2

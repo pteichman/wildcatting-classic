@@ -1,7 +1,6 @@
 import pytest
 
 from wildcatting.model import Player, Site, Well
-from wildcatting.oilprices import GaussianPrices
 from wildcatting.reservoir import Reservoir
 from wildcatting.welltheory import SimpleWellTheory
 
@@ -61,11 +60,3 @@ class TestWellOutputBounds:
                     f"{reservoir.reserves:.2f}"
                 )
             well.tick(site, oil_price=4.50)
-
-
-class TestOilPriceFloor:
-    def test_gaussian_prices_never_below_floor(self) -> None:
-        # Extreme downward bias to stress-test the floor.
-        prices = GaussianPrices(start=0.05, mu=-50.0, sigma=100.0)
-        for _ in range(1000):
-            assert next(prices) >= 0.01

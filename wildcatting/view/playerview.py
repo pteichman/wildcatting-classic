@@ -107,9 +107,7 @@ class PlayerNamesView(View):
 
 
 if __name__ == "__main__":
-    names = None
-
-    def main(stdscr: Any) -> None:
+    def main(stdscr: Any) -> list[tuple[str, str]]:
         count_view = PlayerCountView(stdscr)
         count_view.display()
 
@@ -118,8 +116,6 @@ if __name__ == "__main__":
         names_view = PlayerNamesView(stdscr, count)
         names_view.display()
 
-        global names
-        names = names_view.input()
+        return names_view.input()
 
-    curses.wrapper(main)
-    print(names)
+    print(curses.wrapper(main))

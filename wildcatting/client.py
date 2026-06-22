@@ -41,32 +41,32 @@ class Wildcatting:
         self.player_field.set_site(site.row, site.col, site)
 
     def update(self, update: Update) -> tuple[bool, bool]:
-        gameFinished = update.game_finished
+        game_finished = update.game_finished
         week = update.week
-        playersTurn = update.players_turn
-        pendingPlayers = update.pending_players
-        oilPrice = update.oil_price
+        players_turn = update.players_turn
+        pending_players = update.pending_players
+        oil_price = update.oil_price
         sites = update.sites
 
         updated = (
             len(sites) > 0
             or week > self.week
-            or oilPrice != self.oil_price
-            or playersTurn != self.players_turn
-            or gameFinished
+            or oil_price != self.oil_price
+            or players_turn != self.players_turn
+            or game_finished
         )
-        weekUpdated = week > self.week
+        week_updated = week > self.week
 
         for site in sites:
             self.update_player_field(site)
 
         self.week = week
-        self.players_turn = playersTurn
-        self.pending_players = pendingPlayers
-        self.game_finished = gameFinished
-        self.oil_price = oilPrice
+        self.players_turn = players_turn
+        self.pending_players = pending_players
+        self.game_finished = game_finished
+        self.oil_price = oil_price
 
-        return updated, weekUpdated
+        return updated, week_updated
 
 
 class Client:
@@ -76,82 +76,82 @@ class Client:
     def __init__(
         self,
         weeks: int,
-        gameId: str | None,
-        connectHandle: str | None,
-        connectPlayer: tuple[str, str] | None,
+        game_id: str | None,
+        connect_handle: str | None,
+        connect_player: tuple[str, str] | None,
     ) -> None:
-        self._connectGameId: str | None = gameId
-        self._connectHandle: str | None = connectHandle
-        self._connectPlayers: list[tuple[str, str]] | None = None
+        self._connect_game_id: str | None = game_id
+        self._connect_handle: str | None = connect_handle
+        self._connect_players: list[tuple[str, str]] | None = None
         self._weeks: int = weeks
 
-        if connectPlayer is not None:
-            self._connectPlayers = [connectPlayer]
+        if connect_player is not None:
+            self._connect_players = [connect_player]
 
-        self._clientInfo: ClientInfo | None = None
+        self._client_info: ClientInfo | None = None
 
         self._wildcatting = Wildcatting()
 
     def _connect_to_game(self) -> None:
-        if self._connectHandle is not None:
-            self.log.info("Reconnecting to handle: %s", self._connectHandle)
+        if self._connect_handle is not None:
+            self.log.info("Reconnecting to handle: %s", self._connect_handle)
         else:
-            if self._connectGameId is not None:
+            if self._connect_game_id is not None:
                 # connecting to an existing game
-                self._connectHandle = self._server.game.new_client_handle(
-                    self._connectGameId
+                self._connect_handle = self._server.game.new_client_handle(
+                    self._connect_game_id
                 )
             else:
                 # creating a new game
                 w, h = self._get_available_field_size()
-                self._connectHandle = self._server.game.new(w, h, self._weeks)
+                self._connect_handle = self._server.game.new(w, h, self._weeks)
                 self.log.info(
-                    "Created a new game with client id: %s", self._connectHandle
+                    "Created a new game with client id: %s", self._connect_handle
                 )
 
             # joining a new game
-            assert self._connectPlayers is not None
-            for username, symbol in self._connectPlayers:
-                self._server.game.join(self._connectHandle, username, symbol)
+            assert self._connect_players is not None
+            for username, symbol in self._connect_players:
+                self._server.game.join(self._connect_handle, username, symbol)
 
-        self._clientInfo = ClientInfo.deserialize(
-            self._server.game.get_client_info(self._connectHandle)
+        self._client_info = ClientInfo.deserialize(
+            self._server.game.get_client_info(self._connect_handle)
         )
 
     def _get_current_handle(self) -> str:
-        assert self._clientInfo is not None
+        assert self._client_info is not None
         player = self._wildcatting.players_turn
         assert player is not None
-        return self._clientInfo.get_player_handle(player)
+        return self._client_info.get_player_handle(player)
 
     def _run_pre_game(self) -> None:
-        assert self._clientInfo is not None
-        gameId = self._clientInfo.game_id
-        handle = self._clientInfo.client_handle
+        assert self._client_info is not None
+        game_id = self._client_info.game_id
+        handle = self._client_info.client_handle
 
-        self.log.info(self._clientInfo._players)
+        self.log.info(self._client_info._players)
 
         while not self._server.game.is_started(handle):
             players = self._server.game.list_players(handle)
             master = players[0]
 
-            isMaster = False
-            if self._clientInfo.has_player(master):
-                isMaster = True
+            is_master = False
+            if self._client_info.has_player(master):
+                is_master = True
 
-            report = PregameReportView(self._stdscr, gameId, isMaster, players)
+            report = PregameReportView(self._stdscr, game_id, is_master, players)
             report.display()
 
             start = report.input()
-            if start and isMaster:
-                masterHandle = self._clientInfo.get_player_handle(master)
-                self._server.game.start(masterHandle)
+            if start and is_master:
+                master_handle = self._client_info.get_player_handle(master)
+                self._server.game.start(master_handle)
 
     def _get_new_player_field(self) -> None:
-        assert self._clientInfo is not None
-        handle = self._clientInfo.client_handle
-        playerField = OilField.deserialize(self._server.game.get_player_field(handle))
-        self._wildcatting.player_field = playerField
+        assert self._client_info is not None
+        handle = self._client_info.client_handle
+        player_field = OilField.deserialize(self._server.game.get_player_field(handle))
+        self._wildcatting.player_field = player_field
 
     def _survey(self, row: int, col: int) -> bool:
         assert self._wildcatting.player_field is not None
@@ -179,26 +179,26 @@ class Client:
         assert self._wildcatting.player_field is not None
         last_stop = False
         site = self._wildcatting.player_field.get_site(row, col)
-        drillView = DrillView(self._stdscr, site, self._setting)
+        drill_view = DrillView(self._stdscr, site, self._setting)
         assert site.well is not None
         while site.well.output is None and site.well.drill_depth < 10:
-            drillView.display()
-            action = drillView.input()
+            drill_view.display()
+            action = drill_view.input()
             if action.drill:
-                wellUpdate = self._server.game.drill(
+                well_update = self._server.game.drill(
                     self._get_current_handle(), row, col
                 )
-                well = Well.deserialize(wellUpdate)
+                well = Well.deserialize(well_update)
                 site.well = well
-                drillView.display()
+                drill_view.display()
             if action.stop:
                 last_stop = True
                 break
 
         if site.well.output is None:
             if not last_stop:
-                drillView.set_message("DRY HOLE!")
-                drillView.display()
+                drill_view.set_message("DRY HOLE!")
+                drill_view.display()
                 time.sleep(3)
         else:
             # extrapolate the site's oil depth rather than hit the
@@ -208,34 +208,34 @@ class Client:
         return site
 
     def _end_turn(self) -> None:
-        assert self._clientInfo is not None
+        assert self._client_info is not None
         player = self._wildcatting.players_turn
         assert player is not None
-        handle = self._clientInfo.get_player_handle(player)
-        u, wellUpdates = self._server.game.end_turn(handle)
+        handle = self._client_info.get_player_handle(player)
+        u, well_updates = self._server.game.end_turn(handle)
         if u is not None:
             update = Update.deserialize(u)
-            updated, weekUpdated = self._wildcatting.update(update)
+            updated, week_updated = self._wildcatting.update(update)
         else:
-            _updated, weekUpdated = False, False
+            _updated, week_updated = False, False
 
         assert self._wildcatting.player_field is not None
-        for wellDict in wellUpdates:
-            row, col = wellDict["row"], wellDict["col"]
-            well = Well.deserialize(wellDict["well"])
+        for well_dict in well_updates:
+            row, col = well_dict["row"], well_dict["col"]
+            well = Well.deserialize(well_dict["well"])
             site = self._wildcatting.player_field.get_site(row, col)
             site.well = well
 
-        if weekUpdated and not self._wildcatting.game_finished:
+        if week_updated and not self._wildcatting.game_finished:
             self._run_weekly_summary()
 
     def _run_weekly_report(self) -> None:
         assert self._wildcatting.player_field is not None
-        assert self._clientInfo is not None
+        assert self._client_info is not None
         player = self._wildcatting.players_turn
         assert player is not None
-        handle = self._clientInfo.get_player_handle(player)
-        symbol = self._clientInfo.get_player_symbol(player)
+        handle = self._client_info.get_player_handle(player)
+        symbol = self._client_info.get_player_symbol(player)
 
         report = WeeklyReport(
             self._wildcatting.player_field,
@@ -245,13 +245,13 @@ class Client:
             self._setting,
             self._wildcatting.oil_price,
         )
-        reportView = WeeklyReportView(
+        report_view = WeeklyReportView(
             self._stdscr, report, self._wildcatting.player_field
         )
-        reportView.display()
+        report_view.display()
 
         while True:
-            action = reportView.input()
+            action = report_view.input()
             if action.sell is not None:
                 row, col = action.sell
                 site = self._wildcatting.player_field.get_site(row, col)
@@ -272,58 +272,58 @@ class Client:
                     self._wildcatting.oil_price,
                 )
 
-                reportView.set_field(self._wildcatting.player_field)
-                reportView.set_report(report)
-                reportView.display()
+                report_view.set_field(self._wildcatting.player_field)
+                report_view.set_report(report)
+                report_view.display()
             if action.next_player:
                 break
 
     def _run_weekly_summary(self) -> None:
-        assert self._clientInfo is not None
+        assert self._client_info is not None
         report = WeeklySummary.deserialize(
-            self._server.game.get_weekly_summary(self._clientInfo.client_handle)
+            self._server.game.get_weekly_summary(self._client_info.client_handle)
         )
-        weeklySummaryView = WeeklySummaryView(self._stdscr, report)
-        weeklySummaryView.display(self._wildcatting.game_finished)
+        weekly_summary_view = WeeklySummaryView(self._stdscr, report)
+        weekly_summary_view.display(self._wildcatting.game_finished)
 
-        while not weeklySummaryView.input():
+        while not weekly_summary_view.input():
             pass
 
     def _update_wildcatting(self) -> tuple[bool, bool]:
-        assert self._clientInfo is not None
+        assert self._client_info is not None
         update = Update.deserialize(
-            self._server.game.get_update(self._clientInfo.client_handle)
+            self._server.game.get_update(self._client_info.client_handle)
         )
         return self._wildcatting.update(update)
 
     def _is_my_turn(self) -> bool:
-        assert self._clientInfo is not None
+        assert self._client_info is not None
         player = self._wildcatting.players_turn
         if player is None:
             return False
-        return self._clientInfo.has_player(player)
+        return self._client_info.has_player(player)
 
     def _get_available_field_size(self) -> tuple[int, int]:
         (h, w) = self._stdscr.getmaxyx()
-        availableWidth = w - WildcattingView.SIDE_PADDING
-        availableHeight = h - WildcattingView.TOP_PADDING
-        return availableWidth, availableHeight
+        available_width = w - WildcattingView.SIDE_PADDING
+        available_height = h - WildcattingView.TOP_PADDING
+        return available_width, available_height
 
     def _input_user_names(self, stdscr: Any) -> None:
-        countView = PlayerCountView(stdscr)
-        countView.display()
+        count_view = PlayerCountView(stdscr)
+        count_view.display()
 
-        count = countView.input()
+        count = count_view.input()
 
-        namesView = PlayerNamesView(stdscr, count)
-        namesView.display()
+        names_view = PlayerNamesView(stdscr, count)
+        names_view.display()
 
-        self._connectPlayers = namesView.input()
+        self._connect_players = names_view.input()
 
     def wildcatting(self, stdscr: Any) -> None:
         self._stdscr = stdscr
 
-        if self._connectPlayers is None:
+        if self._connect_players is None:
             self._input_user_names(stdscr)
 
         self._connect_to_game()
@@ -333,23 +333,25 @@ class Client:
         self._update_wildcatting()
 
         # make sure we can fit
-        availableWidth, availableHeight = self._get_available_field_size()
+        available_width, available_height = self._get_available_field_size()
 
-        playerField = self._wildcatting.player_field
-        assert playerField is not None
-        if availableHeight < playerField.height or availableWidth < playerField.width:
+        player_field = self._wildcatting.player_field
+        assert player_field is not None
+        too_short = available_height < player_field.height
+        too_narrow = available_width < player_field.width
+        if too_short or too_narrow:
             w, h = self._stdscr.getmaxyx()
-            min_w = playerField.width + WildcattingView.SIDE_PADDING
-            min_h = playerField.height + WildcattingView.TOP_PADDING
+            min_w = player_field.width + WildcattingView.SIDE_PADDING
+            min_h = player_field.height + WildcattingView.TOP_PADDING
             raise Exception(f"Console must be at least {min_w}x{min_h} (is {w}x{h})")
 
-        self._wildcattingView = wildcattingView = WildcattingView(
+        self._wildcatting_view = wildcattingView = WildcattingView(
             self._stdscr, self._wildcatting, self._setting
         )
         wildcattingView.display()
 
         # Measured in deciseconds.  Thanks, curses.
-        origRefresh = refresh = 50
+        orig_refresh = refresh = 50
 
         curses.mousemask(curses.BUTTON1_CLICKED)
         curses.halfdelay(refresh)
@@ -370,27 +372,27 @@ class Client:
 
             if action.survey is not None and self._is_my_turn():
                 row, col = action.survey
-                drillAWell = self._survey(row, col)
-                if drillAWell:
+                drill_a_well = self._survey(row, col)
+                if drill_a_well:
                     self._drill_a_well(row, col)
                 curses.flushinp()
                 self._run_weekly_report()
                 self._end_turn()
-                updated, weekUpdated = self._update_wildcatting()
-                if weekUpdated and not self._wildcatting.game_finished:
+                updated, week_updated = self._update_wildcatting()
+                if week_updated and not self._wildcatting.game_finished:
                     curses.flushinp()
                     self._run_weekly_summary()
                 if updated:
                     wildcattingView.display()
 
                 # back to the original refresh interval
-                refresh = origRefresh
+                refresh = orig_refresh
                 curses.halfdelay(refresh)
                 moved = False
                 wildcattingView.display()
             elif action.check_for_updates:
                 now = time.time()
-                updated, weekUpdated = self._update_wildcatting()
+                updated, week_updated = self._update_wildcatting()
                 then = time.time()
 
                 if then - now > refresh:
@@ -401,7 +403,7 @@ class Client:
                     )
                     curses.halfdelay(refresh)
 
-                if weekUpdated and not self._wildcatting.game_finished:
+                if week_updated and not self._wildcatting.game_finished:
                     curses.flushinp()
                     self._run_weekly_summary()
                 if updated:
@@ -425,11 +427,11 @@ class Client:
         try:
             curses.wrapper(self.wildcatting)
         except KeyboardInterrupt:
-            self.log.info(f"To reconnect, run with --handle {self._connectHandle}")
-            print(f"To reconnect, run with --handle {self._connectHandle}")
+            self.log.info(f"To reconnect, run with --handle {self._connect_handle}")
+            print(f"To reconnect, run with --handle {self._connect_handle}")
             raise
         except Exception as e:
             self.log.error(str(e))
             self.log.debug("Uncaught exception in client: %s", e, exc_info=True)
-            if self._connectHandle is not None:
-                print(f"To reconnect, run with --handle {self._connectHandle}")
+            if self._connect_handle is not None:
+                print(f"To reconnect, run with --handle {self._connect_handle}")

@@ -8,7 +8,7 @@ from . import version
 from .client import Client
 from .cmdparse import Command
 from .server import ServerProtocol, XmlRpcServer
-from .util import startLogger
+from .util import start_logger
 
 
 class ClientCommand(Command):
@@ -43,7 +43,7 @@ class ClientCommand(Command):
         )
 
     def run(self, options: Values, args: list[str]) -> None:
-        startLogger("client.log")
+        start_logger("client.log")
 
         url = f"http://{options.host}:{options.port}/"
         if options.no_network:

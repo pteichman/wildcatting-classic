@@ -72,7 +72,7 @@ class TestWellOutputBounds(unittest.TestCase):
                     f"Week {week_num}: output {output:.2f} >= reserves "
                     f"{reservoir.reserves:.2f}",
                 )
-            well.tick(site, oilPrice=4.50)
+            well.tick(site, oil_price=4.50)
 
 
 class TestOilPriceFloor(unittest.TestCase):

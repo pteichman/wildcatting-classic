@@ -8,27 +8,27 @@ from wildcatting.turn import Turn
 class Week:
     log = logging.getLogger("Wildcatting")
 
-    def __init__(self, weekNum: int, players: list[Player], price: float) -> None:
-        self.week_num = weekNum
+    def __init__(self, week_num: int, players: list[Player], price: float) -> None:
+        self.week_num = week_num
 
         # copy the players array, so joins and exits don't affect this week
         self._players = players[:]
-        self._surveyPlayerIndex: int = 0
-        self._surveysDone: bool = False
+        self._survey_player_index: int = 0
+        self._surveys_done: bool = False
 
         self.price = price
         self.pending_players: list[Player] = self._players[:]
         self._turns: dict[Player, Turn] = {}
 
         for player in self._players:
-            self._turns[player] = wildcatting.turn.Turn(week=weekNum, player=player)
+            self._turns[player] = wildcatting.turn.Turn(week=week_num, player=player)
 
     @property
     def survey_player(self) -> Player | None:
-        if self._surveysDone:
+        if self._surveys_done:
             return None
 
-        return self._players[self._surveyPlayerIndex]
+        return self._players[self._survey_player_index]
 
     def get_player_turn(self, player: Player) -> Turn:
         return self._turns[player]
@@ -39,10 +39,10 @@ class Week:
     def end_survey(self, player: Player) -> None:
         assert self.is_survey_turn(player)
 
-        self._surveyPlayerIndex = self._surveyPlayerIndex + 1
+        self._survey_player_index = self._survey_player_index + 1
 
-        if self._surveyPlayerIndex > len(self._players) - 1:
-            self._surveysDone = True
+        if self._survey_player_index > len(self._players) - 1:
+            self._surveys_done = True
 
     def end_turn(self, player: Player) -> None:
         assert player in self.pending_players
@@ -53,9 +53,10 @@ class Week:
         self.pending_players.remove(player)
 
     def is_turn_finished(self, player: Player) -> bool:
-        playerIndex = self._players.index(player)
+        player_index = self._players.index(player)
 
-        if playerIndex < self._surveyPlayerIndex and player not in self.pending_players:
+        surveyed = player_index < self._survey_player_index
+        if surveyed and player not in self.pending_players:
             return True
 
         return False

@@ -20,11 +20,11 @@ class OilField(Serializable):
         ]
 
     def tick(
-        self, oilPrice: float, wellTheory: SimpleWellTheory, currentWeek: int
+        self, oil_price: float, well_theory: SimpleWellTheory, current_week: int
     ) -> None:
         for row in self._rows:
             for site in row:
-                site.tick(oilPrice, wellTheory, currentWeek)
+                site.tick(oil_price, well_theory, current_week)
 
     def get_site(self, row: int, col: int) -> Site:
         assert row < self.height
@@ -48,31 +48,31 @@ class Site(Serializable):
 
         self._prob: int = 0
         self._well: Well | None = None
-        self._drillCost: int = 0
+        self._drill_cost: int = 0
         self._tax: int = 0
         self._surveyed: bool = False
         self.oil_depth: int | None = None
 
         ## don't serialize
         self.__reservoir: Reservoir | None = None
-        self.__oilFlag: bool = False
-        self.__potentialOilDepth: int | None = None
+        self.__oil_flag: bool = False
+        self.__potential_oil_depth: int | None = None
 
     @property
     def drill_cost(self) -> int:
-        return self._drillCost
+        return self._drill_cost
 
     @drill_cost.setter
-    def drill_cost(self, drillCost: int) -> None:
-        self._drillCost = drillCost
+    def drill_cost(self, drill_cost: int) -> None:
+        self._drill_cost = drill_cost
 
     @property
     def potential_oil_depth(self) -> int | None:
-        return self.__potentialOilDepth
+        return self.__potential_oil_depth
 
     @potential_oil_depth.setter
-    def potential_oil_depth(self, potentialOilDepth: int | None) -> None:
-        self.__potentialOilDepth = potentialOilDepth
+    def potential_oil_depth(self, potential_oil_depth: int | None) -> None:
+        self.__potential_oil_depth = potential_oil_depth
 
     @property
     def probability(self) -> int:
@@ -117,14 +117,14 @@ class Site(Serializable):
 
     @property
     def oil_flag(self) -> bool:
-        return self.__oilFlag
+        return self.__oil_flag
 
     @oil_flag.setter
-    def oil_flag(self, oilFlag: bool) -> None:
-        self.__oilFlag = oilFlag
+    def oil_flag(self, oil_flag: bool) -> None:
+        self.__oil_flag = oil_flag
 
     def tick(
-        self, oilPrice: float, wellTheory: SimpleWellTheory, currentWeek: int
+        self, oil_price: float, well_theory: SimpleWellTheory, current_week: int
     ) -> None:
         if self._well is not None:
             reservoir = self.__reservoir
@@ -133,10 +133,10 @@ class Site(Serializable):
                 and not self._well.sold
                 and reservoir is not None
             ):
-                output, capacity = wellTheory.tick(self._well, reservoir, currentWeek)
+                output, capacity = well_theory.tick(self._well, reservoir, current_week)
                 self._well.output = output
                 self._well.capacity = capacity
-            self._well.tick(self, oilPrice)
+            self._well.tick(self, oil_price)
 
 
 class Well(Serializable):
@@ -166,32 +166,34 @@ class Well(Serializable):
         self.profit_and_loss += price
         return price
 
-    def drill(self, site: Site, drillIncrement: int) -> tuple[bool, int]:
+    def drill(self, site: Site, drill_increment: int) -> tuple[bool, int]:
         assert 0 <= self.drill_depth <= 10
 
-        oilDepth: int | None = None
+        oil_depth: int | None = None
         reservoir = site.reservoir
         if reservoir is not None:
-            oilDepth = reservoir.oil_depth
+            oil_depth = reservoir.oil_depth
 
-        drillCost = site.drill_cost
+        drill_cost = site.drill_cost
 
-        assert oilDepth is None or self.drill_depth < oilDepth
+        assert oil_depth is None or self.drill_depth < oil_depth
 
         self.drill_depth += 1
 
-        cost = drillCost * drillIncrement
+        cost = drill_cost * drill_increment
         self.initial_cost += cost
         self.profit_and_loss -= cost
 
-        return self.drill_depth == oilDepth, cost
+        return self.drill_depth == oil_depth, cost
 
     @staticmethod
-    def _computeWeeklyPnl(output: float, oilPrice: float, tax: int) -> tuple[int, int]:
-        income = int(output * oilPrice)
+    def _compute_weekly_pnl(
+        output: float, oil_price: float, tax: int
+    ) -> tuple[int, int]:
+        income = int(output * oil_price)
         return income, tax
 
-    def tick(self, site: Site, oilPrice: float) -> None:
+    def tick(self, site: Site, oil_price: float) -> None:
         if not self.sold:
             output: float = self.output if self.output is not None else 0
 
@@ -200,7 +202,7 @@ class Well(Serializable):
                 reservoir.pump(output)
 
             tax = site.tax
-            income, expense = self._computeWeeklyPnl(output, oilPrice, tax)
+            income, expense = self._compute_weekly_pnl(output, oil_price, tax)
 
             self.profit_and_loss -= expense
             self.profit_and_loss += income

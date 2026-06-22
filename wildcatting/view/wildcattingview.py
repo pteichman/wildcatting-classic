@@ -46,20 +46,20 @@ class DrillView(View):
     def display(self) -> None:
         self._stdscr.clear()
 
-        drillDepth = self._site.well.drill_depth * self._setting.drill_increment
-        drillCost = self._site.drill_cost
-        cost = drillDepth * drillCost
+        drill_depth = self._site.well.drill_depth * self._setting.drill_increment
+        drill_cost = self._site.drill_cost
+        cost = drill_depth * drill_cost
 
         height, width = self._stdscr.getmaxyx()
         row = (height - 5) // 2
 
         if self._msg is not None:
-            self.addCentered(self._stdscr, row - 2, self._msg)
+            self.add_centered(self._stdscr, row - 2, self._msg)
 
-        self.addCentered(self._stdscr, row, "PRESS ANY KEY TO DRILL")
-        self.addCentered(self._stdscr, row + 1, "PRESS Q TO STOP")
-        self.addCentered(self._stdscr, row + 3, f"DEPTH: {drillDepth}")
-        self.addCentered(self._stdscr, row + 4, f" COST: {cost}")
+        self.add_centered(self._stdscr, row, "PRESS ANY KEY TO DRILL")
+        self.add_centered(self._stdscr, row + 1, "PRESS Q TO STOP")
+        self.add_centered(self._stdscr, row + 3, f"DEPTH: {drill_depth}")
+        self.add_centered(self._stdscr, row + 4, f" COST: {cost}")
         self._stdscr.refresh()
 
     def input(self) -> DrillInput:
@@ -134,22 +134,22 @@ class WildcattingView(View):
         self._field_win = stdscr.derwin(rows, cols, 2, 4)
         bkgd = Colors.get(curses.COLOR_WHITE, curses.COLOR_BLACK)
         self._field_win.bkgdset(" ", bkgd)
-        probView = OilFieldProbabilityView(self._field_win, wildcatting_)
-        drillCostView = OilFieldDrillCostView(
+        prob_view = OilFieldProbabilityView(self._field_win, wildcatting_)
+        drill_cost_view = OilFieldDrillCostView(
             self._field_win,
             wildcatting_,
             setting.min_drill_cost,
             setting.max_drill_cost,
         )
-        depthView = OilFieldDepthView(self._field_win, wildcatting_)
-        self._views = [probView, drillCostView, depthView]
-        self._currentView = 0
+        depth_view = OilFieldDepthView(self._field_win, wildcatting_)
+        self._views = [prob_view, drill_cost_view, depth_view]
+        self._current_view = 0
 
         self._week: str | None = None
         self._fact: str | None = None
 
         self._fh, self._fw = self._field_win.getmaxyx()
-        self._colorChooser = ProbabilityColorChooser()
+        self._color_chooser = ProbabilityColorChooser()
         self._x, self._y = 0, 0
 
     def _draw_border(self) -> None:
@@ -167,9 +167,9 @@ class WildcattingView(View):
 
             week = f"Week {self._wildcatting.week}"
 
-            newWeek = False
+            new_week = False
             if week != self._week:
-                newWeek = True
+                new_week = True
 
             self._week = week
 
@@ -177,7 +177,7 @@ class WildcattingView(View):
                 0, w - self.SIDE_BORDER - len(week) - 1, week, curses.A_BOLD
             )
 
-            if newWeek:
+            if new_week:
                 self._fact = random.choice(self._setting.facts)
             if self._fact is not None:
                 wrapped = self._wrap_fact(self._fact, " " * 4, w - 8)
@@ -203,11 +203,11 @@ class WildcattingView(View):
 
     def _draw_key_bar(self) -> None:
         border_h, border_w = self._border_win.getmaxyx()
-        colors = list(self._colorChooser.get_colors())
+        colors = list(self._color_chooser.get_colors())
         colors.reverse()
-        keyStr = " " * (border_w - 2)
-        blackOnWhite = Colors.get(curses.COLOR_BLACK, curses.COLOR_WHITE)
-        self._border_win.addstr(border_h - 2, 1, keyStr, blackOnWhite)
+        key_str = " " * (border_w - 2)
+        black_on_white = Colors.get(curses.COLOR_BLACK, curses.COLOR_WHITE)
+        self._border_win.addstr(border_h - 2, 1, key_str, black_on_white)
         for i in range(len(colors)):
             color = colors[i]
             self._border_win.addstr(border_h - 2, 1 + i, " ", color)
@@ -220,55 +220,56 @@ class WildcattingView(View):
             )
 
         label = f" {self._get_current_view().get_key_label()}"
-        self.addLeft(
-            self._border_win, border_h - 2, label, blackOnWhite, pad=len(colors) + 1
+        self.add_left(
+            self._border_win, border_h - 2, label, black_on_white, pad=len(colors) + 1
         )
 
         turn = self._wildcatting.players_turn
         if turn is not None:
-            coordStr = f"X={str(self._x).rjust(2)}   Y={str(self._y).rjust(2)}"
-            self.addCentered(self._border_win, border_h - 2, coordStr, blackOnWhite)
+            coord_str = f"X={str(self._x).rjust(2)}   Y={str(self._y).rjust(2)}"
+            self.add_centered(self._border_win, border_h - 2, coord_str, black_on_white)
             if not self._wildcatting.game_finished:
-                self.addRight(
-                    self._border_win, border_h - 2, f"{turn}'s turn", blackOnWhite
+                self.add_right(
+                    self._border_win, border_h - 2, f"{turn}'s turn", black_on_white
                 )
         else:
-            longestLabel = 0
+            longest_label = 0
             for view in self._views:
-                if len(view.get_key_label()) > longestLabel:
-                    longestLabel = len(view.get_key_label())
+                if len(view.get_key_label()) > longest_label:
+                    longest_label = len(view.get_key_label())
 
             players = self._wildcatting.pending_players
             label = " WAITING FOR {}".format(", ".join(players).upper())
-            self.addLeft(
+            self.add_left(
                 self._border_win,
                 border_h - 2,
                 label,
-                blackOnWhite,
-                pad=len(colors) + 1 + longestLabel + 4,
+                black_on_white,
+                pad=len(colors) + 1 + longest_label + 4,
             )
 
         self._border_win.refresh()
 
     def _get_current_view(self) -> OilFieldCursesView:
-        return self._views[self._currentView]
+        return self._views[self._current_view]
 
     def _next_view(self) -> None:
-        self._currentView = (self._currentView + 1) % len(self._views)
+        self._current_view = (self._current_view + 1) % len(self._views)
 
     def indicate_turn(self) -> None:
         border_h, border_w = self._border_win.getmaxyx()
 
-        blackOnGreen = Colors.get(curses.COLOR_BLACK, curses.COLOR_GREEN)
+        black_on_green = Colors.get(curses.COLOR_BLACK, curses.COLOR_GREEN)
 
         go = f"GO {self._wildcatting.players_turn.upper()}!"
         if self._mac:
             bkgd, text = self.get_green_fgbg()
-            self.addCentered(self._border_win, border_h - 2, "." * (border_w - 2), text)
+            dots = "." * (border_w - 2)
+            self.add_centered(self._border_win, border_h - 2, dots, text)
         else:
             go = go.center(border_w - 2)
 
-        self.addCentered(self._border_win, border_h - 2, go, blackOnGreen)
+        self.add_centered(self._border_win, border_h - 2, go, black_on_green)
         self._stdscr.move(self._y + 2, self._x + 4)
         self._border_win.refresh()
         self._field_win.refresh()

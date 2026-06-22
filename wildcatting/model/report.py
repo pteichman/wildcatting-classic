@@ -9,25 +9,25 @@ if TYPE_CHECKING:
 
 
 class WeeklySummary(Serializable):
-    def __init__(self, playerOrder: list[Player], week: int) -> None:
-        self._playerOrder = playerOrder
+    def __init__(self, player_order: list[Player], week: int) -> None:
+        self._player_order = player_order
         self.week = week
 
         self.report_rows = self._build_report_rows()
 
     def _build_report_rows(self) -> list[dict[str, Any]]:
         rows: list[dict[str, Any]] = []
-        maxProfitAndLoss: int | None = None
-        for player in self._playerOrder:
-            profitAndLoss = player.profit_and_loss
-            if maxProfitAndLoss is None or profitAndLoss > maxProfitAndLoss:
-                maxProfitAndLoss = profitAndLoss
-        for player in self._playerOrder:
-            profitAndLoss = player.profit_and_loss
+        max_profit_and_loss: int | None = None
+        for player in self._player_order:
+            profit_and_loss = player.profit_and_loss
+            if max_profit_and_loss is None or profit_and_loss > max_profit_and_loss:
+                max_profit_and_loss = profit_and_loss
+        for player in self._player_order:
+            profit_and_loss = player.profit_and_loss
             row: dict[str, Any] = {
                 "username": player.username,
-                "profitAndLoss": profitAndLoss,
-                "leader": (profitAndLoss == maxProfitAndLoss),
+                "profitAndLoss": profit_and_loss,
+                "leader": (profit_and_loss == max_profit_and_loss),
             }
             rows.append(row)
         return rows

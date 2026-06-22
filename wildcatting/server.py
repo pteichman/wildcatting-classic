@@ -72,16 +72,16 @@ class GameService:
 
     def __init__(self, theme: Any) -> None:
         self._games: dict[str, Game] = {}
-        self._nextGameId: int = 0
+        self._next_game_id: int = 0
         self._theme = theme
 
-    def _get_game(self, gameId: str) -> Game:
-        if not isinstance(gameId, str):
+    def _get_game(self, game_id: str) -> Game:
+        if not isinstance(game_id, str):
             raise WildcattingException("Invalid game id")
 
-        game = self._games.get(gameId)
+        game = self._games.get(game_id)
         if game is None:
-            raise WildcattingException("Unknown game id: " + gameId)
+            raise WildcattingException("Unknown game id: " + game_id)
 
         return game
 
@@ -90,10 +90,10 @@ class GameService:
             raise WildcattingException("Invalid handle")
 
         self.log.debug("Reading handle: %s", handle)
-        (gameId, playerName, secret) = self._decode_game_handle(handle)
+        (game_id, player_name, secret) = self._decode_game_handle(handle)
 
-        game = self._get_game(gameId)
-        player = game.get_player(playerName, secret)
+        game = self._get_game(game_id)
+        player = game.get_player(player_name, secret)
 
         return (game, player)
 
@@ -101,12 +101,12 @@ class GameService:
         if not isinstance(handle, str):
             raise WildcattingException("Invalid handle")
 
-        (gameId, clientId) = self._decode_client_handle(handle)
-        self.log.info("gameId: %s, clientId: %s", gameId, clientId)
+        (game_id, client_id) = self._decode_client_handle(handle)
+        self.log.info("game_id: %s, client_id: %s", game_id, client_id)
 
-        game = self._get_game(gameId)
+        game = self._get_game(game_id)
 
-        return (game, clientId)
+        return (game, client_id)
 
     def _ensure_survey_turn(
         self, game: Game, player: wildcatting.model.Player
@@ -135,98 +135,98 @@ class GameService:
         return week.get_player_turn(player)
 
     def _encode_game_handle(
-        self, gameId: str, player: wildcatting.model.Player, secret: str
+        self, game_id: str, player: wildcatting.model.Player, secret: str
     ) -> str:
-        handle = GameService.HANDLE_SEP.join((gameId, player.username, secret))
+        handle = GameService.HANDLE_SEP.join((game_id, player.username, secret))
         return base64.b64encode(handle.encode("utf-8")).decode("utf-8")
 
-    def _decode_game_handle(self, gameHandle: str) -> list[str]:
-        if not isinstance(gameHandle, str):
+    def _decode_game_handle(self, game_handle: str) -> list[str]:
+        if not isinstance(game_handle, str):
             raise WildcattingException("Invalid handle")
 
         try:
-            gameHandle = base64.b64decode(gameHandle).decode("utf-8")
+            game_handle = base64.b64decode(game_handle).decode("utf-8")
         except Exception:
             raise WildcattingException("Malformed handle")
 
-        if not re.match(r"\d+::.+", gameHandle):
+        if not re.match(r"\d+::.+", game_handle):
             raise WildcattingException("Malformed handle")
 
-        return gameHandle.split(GameService.HANDLE_SEP, 2)
+        return game_handle.split(GameService.HANDLE_SEP, 2)
 
-    def _encode_client_handle(self, gameId: str, clientId: str) -> str:
-        handle = GameService.HANDLE_SEP.join((gameId, clientId))
+    def _encode_client_handle(self, game_id: str, client_id: str) -> str:
+        handle = GameService.HANDLE_SEP.join((game_id, client_id))
         return base64.b64encode(handle.encode("utf-8")).decode("utf-8")
 
-    def _decode_client_handle(self, clientHandle: str) -> list[str]:
-        if not isinstance(clientHandle, str):
+    def _decode_client_handle(self, client_handle: str) -> list[str]:
+        if not isinstance(client_handle, str):
             raise WildcattingException("Invalid handle")
 
-        self.log.debug("Decoding %s", clientHandle)
+        self.log.debug("Decoding %s", client_handle)
         try:
-            clientHandle = base64.b64decode(clientHandle).decode("utf-8")
+            client_handle = base64.b64decode(client_handle).decode("utf-8")
         except Exception:
             raise WildcattingException("Malformed handle")
-        self.log.debug("Got %s", clientHandle)
+        self.log.debug("Got %s", client_handle)
 
-        if not re.match(r"\d+::.+", clientHandle):
+        if not re.match(r"\d+::.+", client_handle):
             raise WildcattingException("Malformed handle")
 
-        return clientHandle.split(GameService.HANDLE_SEP, 1)
+        return client_handle.split(GameService.HANDLE_SEP, 1)
 
-    def new_client_handle(self, gameId: str) -> str:
-        game = self._games[gameId]
-        clientId = game._new_client_id()
-        self.log.info("New client handle requested for game %s: %s", gameId, clientId)
-        return self._encode_client_handle(gameId, clientId)
+    def new_client_handle(self, game_id: str) -> str:
+        game = self._games[game_id]
+        client_id = game._new_client_id()
+        self.log.info("New client handle requested for game %s: %s", game_id, client_id)
+        return self._encode_client_handle(game_id, client_id)
 
-    def new(self, width: int, height: int, turnCount: int) -> str:
+    def new(self, width: int, height: int, turn_count: int) -> str:
         if (
             not isinstance(width, int)
             or not isinstance(height, int)
-            or not isinstance(turnCount, int)
+            or not isinstance(turn_count, int)
         ):
             raise WildcattingException("Invalid parameters")
 
-        gameId = str(self._nextGameId)
-        self._nextGameId = self._nextGameId + 1
+        game_id = str(self._next_game_id)
+        self._next_game_id = self._next_game_id + 1
 
-        self._games[gameId] = Game(width, height, turnCount, self._theme)
+        self._games[game_id] = Game(width, height, turn_count, self._theme)
 
-        return self.new_client_handle(gameId)
+        return self.new_client_handle(game_id)
 
-    def join(self, clientHandle: str, username: str, symbol: str) -> str:
-        if not isinstance(clientHandle, str):
+    def join(self, client_handle: str, username: str, symbol: str) -> str:
+        if not isinstance(client_handle, str):
             raise WildcattingException("Invalid handle")
         if not isinstance(username, str):
             raise WildcattingException("Invalid username")
 
-        gameId, clientId = self._decode_client_handle(clientHandle)
-        game = self._games[gameId]
+        game_id, client_id = self._decode_client_handle(client_handle)
+        game = self._games[game_id]
 
         player = wildcatting.model.Player(username, symbol)
-        game.add_player(clientId, player)
+        game.add_player(client_id, player)
 
-        handle = self._encode_game_handle(gameId, player, player.secret)
+        handle = self._encode_game_handle(game_id, player, player.secret)
 
-        self.log.debug("%s joined game %s (%s)", player.username, gameId, handle)
+        self.log.debug("%s joined game %s (%s)", player.username, game_id, handle)
 
         return handle
 
-    def get_client_info(self, clientHandle: str) -> dict[str, Any]:
-        if not isinstance(clientHandle, str):
+    def get_client_info(self, client_handle: str) -> dict[str, Any]:
+        if not isinstance(client_handle, str):
             raise WildcattingException("Invalid handle")
 
-        gameId, clientId = self._decode_client_handle(clientHandle)
-        game = self._games[gameId]
+        game_id, client_id = self._decode_client_handle(client_handle)
+        game = self._games[game_id]
 
-        clientInfo = wildcatting.model.ClientInfo(clientHandle, gameId)
+        client_info = wildcatting.model.ClientInfo(client_handle, game_id)
 
-        for player in game.get_client_players(clientId):
-            handle = self._encode_game_handle(gameId, player, player.secret)
-            clientInfo.add_player_info(player.username, handle, player.symbol)
+        for player in game.get_client_players(client_id):
+            handle = self._encode_game_handle(game_id, player, player.secret)
+            client_info.add_player_info(player.username, handle, player.symbol)
 
-        return clientInfo.serialize()
+        return client_info.serialize()
 
     def survey(self, handle: str, row: int, col: int) -> dict[str, Any]:
         game, player = self._read_handle(handle)
@@ -268,8 +268,8 @@ class GameService:
         return self._make_player_site(site).serialize()
 
     def get_game_id(self, handle: str) -> str:
-        gameId, playerName, secret = self._decode_game_handle(handle)
-        return gameId
+        game_id, player_name, secret = self._decode_game_handle(handle)
+        return game_id
 
     def get_week(self, handle: str) -> int:
         game, player = self._read_handle(handle)
@@ -292,8 +292,8 @@ class GameService:
         game, clientId = self._read_client_handle(handle)
         return game.finished
 
-    def list_players(self, clientHandle: str) -> list[str]:
-        game, clientId = self._read_client_handle(clientHandle)
+    def list_players(self, client_handle: str) -> list[str]:
+        game, client_id = self._read_client_handle(client_handle)
 
         players = game.get_players()
         ret = [player.username for player in players]
@@ -303,8 +303,8 @@ class GameService:
         game, player = self._read_handle(handle)
         turn = self._ensure_turn(game, player)
 
-        drilledSite = turn.drilled_site
-        if drilledSite and not (drilledSite.row == row and drilledSite.col == col):
+        drilled_site = turn.drilled_site
+        if drilled_site and not (drilled_site.row == row and drilled_site.col == col):
             raise WildcattingException("Already drilled somewhere else this turn")
 
         game.drill(row, col)
@@ -338,49 +338,49 @@ class GameService:
 
         game.end_turn(player)
 
-        wellUpdates = self.get_well_updates(handle)
-        return None, wellUpdates
+        well_updates = self.get_well_updates(handle)
+        return None, well_updates
 
-    def get_players_turn(self, clientHandle: str) -> str | None:
-        game, clientId = self._read_client_handle(clientHandle)
+    def get_players_turn(self, client_handle: str) -> str | None:
+        game, client_id = self._read_client_handle(client_handle)
 
         player = game.week.survey_player
         if player is not None:
             return player.username
         return None
 
-    def get_pending_players(self, clientHandle: str) -> list[str]:
-        game, clientId = self._read_client_handle(clientHandle)
+    def get_pending_players(self, client_handle: str) -> list[str]:
+        game, client_id = self._read_client_handle(client_handle)
 
         players = game.week.pending_players
 
         return [p.username for p in players]
 
-    def get_update(self, clientHandle: str) -> dict[str, Any]:
-        game, clientId = self._read_client_handle(clientHandle)
+    def get_update(self, client_handle: str) -> dict[str, Any]:
+        game, client_id = self._read_client_handle(client_handle)
 
         week = game.week.week_num
-        oilPrice = game.oil_price
+        oil_price = game.oil_price
 
-        currentPlayer = game.week.survey_player
-        if currentPlayer is None:
-            playersTurn = None
+        current_player = game.week.survey_player
+        if current_player is None:
+            players_turn = None
         else:
-            playersTurn = currentPlayer.username
+            players_turn = current_player.username
 
-        pendingPlayers = self.get_pending_players(clientHandle)
-        gameFinished = game.finished
-        sites = game.pop_updated_sites(clientId)
+        pending_players = self.get_pending_players(client_handle)
+        game_finished = game.finished
+        sites = game.pop_updated_sites(client_id)
 
         update = wildcatting.model.Update(
-            week, oilPrice, playersTurn, pendingPlayers, gameFinished, sites
+            week, oil_price, players_turn, pending_players, game_finished, sites
         )
         return update.serialize()
 
     def get_well_updates(self, handle: str) -> list[dict[str, Any]]:
         game, player = self._read_handle(handle)
 
-        wellUpdates: list[dict[str, Any]] = []
+        well_updates: list[dict[str, Any]] = []
         field = game.oil_field
         for row in range(field.height):
             for col in range(field.width):
@@ -390,70 +390,70 @@ class GameService:
                     and well.player is not None
                     and well.player.username == player.username
                 ):
-                    wellDict: dict[str, Any] = {
+                    well_dict: dict[str, Any] = {
                         "row": row,
                         "col": col,
                         "well": well.serialize(),
                     }
-                    wellUpdates.append(wellDict)
+                    well_updates.append(well_dict)
 
-        return wellUpdates
+        return well_updates
 
     def _update_player_site(
-        self, playerSite: wildcatting.model.Site, site: wildcatting.model.Site
+        self, player_site: wildcatting.model.Site, site: wildcatting.model.Site
     ) -> None:
-        playerSite.drill_cost = site.drill_cost
-        playerSite.probability = site.probability
-        playerSite.well = site.well
-        playerSite.tax = site.tax
-        playerSite.surveyed = site.surveyed
-        playerSite.oil_depth = site.oil_depth
+        player_site.drill_cost = site.drill_cost
+        player_site.probability = site.probability
+        player_site.well = site.well
+        player_site.tax = site.tax
+        player_site.surveyed = site.surveyed
+        player_site.oil_depth = site.oil_depth
 
     def _make_player_site(self, site: wildcatting.model.Site) -> wildcatting.model.Site:
-        playerSite = wildcatting.model.Site(site.row, site.col)
+        player_site = wildcatting.model.Site(site.row, site.col)
         if site.surveyed:
-            self._update_player_site(playerSite, site)
+            self._update_player_site(player_site, site)
 
-        return playerSite
+        return player_site
 
     def get_player_site(self, handle: str, row: int, col: int) -> dict[str, Any]:
         game, player = self._read_handle(handle)
         field = game.oil_field
         site = field.get_site(row, col)
-        playerSite = self._make_player_site(site)
+        player_site = self._make_player_site(site)
 
-        return playerSite.serialize()
+        return player_site.serialize()
 
     def get_oil_price(self, handle: str) -> float:
         game, player = self._read_handle(handle)
         return game.oil_price
 
-    def get_player_field(self, clientHandle: str) -> dict[str, Any]:
-        game, player = self._read_client_handle(clientHandle)
+    def get_player_field(self, client_handle: str) -> dict[str, Any]:
+        game, player = self._read_client_handle(client_handle)
         field = game.oil_field
 
         width, height = field.width, field.height
-        playerField = wildcatting.model.OilField(width, height)
+        player_field = wildcatting.model.OilField(width, height)
 
-        gameFinished = game.finished
+        game_finished = game.finished
 
         for row in range(height):
             for col in range(width):
                 site = field.get_site(row, col)
-                playerSite = playerField.get_site(row, col)
+                player_site = player_field.get_site(row, col)
 
-                if site.surveyed or gameFinished:
-                    self._update_player_site(playerSite, site)
+                if site.surveyed or game_finished:
+                    self._update_player_site(player_site, site)
 
-                if gameFinished:
+                if game_finished:
                     reservoir = site.reservoir
                     if reservoir is not None:
-                        playerSite.oil_depth = reservoir.oil_depth
+                        player_site.oil_depth = reservoir.oil_depth
 
-        return playerField.serialize()
+        return player_field.serialize()
 
-    def get_weekly_summary(self, clientHandle: str) -> dict[str, Any]:
-        game, clientId = self._read_client_handle(clientHandle)
+    def get_weekly_summary(self, client_handle: str) -> dict[str, Any]:
+        game, client_id = self._read_client_handle(client_handle)
 
         return wildcatting.model.WeeklySummary.serialize(game.weekly_summary)
 
@@ -462,16 +462,16 @@ class GameProtocol(Protocol):
     def drill(self, handle: str, row: int, col: int) -> dict: ...
     def end_turn(self, handle: str) -> tuple[None, list[Any]]: ...
     def erect(self, handle: str, row: int, col: int) -> dict: ...
-    def get_client_info(self, clientHandle: str) -> dict: ...
-    def get_player_field(self, clientHandle: str) -> dict: ...
+    def get_client_info(self, client_handle: str) -> dict: ...
+    def get_player_field(self, client_handle: str) -> dict: ...
     def get_player_site(self, handle: str, row: int, col: int) -> dict: ...
-    def get_update(self, clientHandle: str) -> dict: ...
-    def get_weekly_summary(self, clientHandle: str) -> dict: ...
-    def is_started(self, clientHandle: str) -> bool: ...
-    def join(self, clientHandle: str, username: str, symbol: str) -> str: ...
-    def list_players(self, clientHandle: str) -> list[str]: ...
-    def new(self, width: int, height: int, turnCount: int) -> str: ...
-    def new_client_handle(self, gameId: str) -> str: ...
+    def get_update(self, client_handle: str) -> dict: ...
+    def get_weekly_summary(self, client_handle: str) -> dict: ...
+    def is_started(self, client_handle: str) -> bool: ...
+    def join(self, client_handle: str, username: str, symbol: str) -> str: ...
+    def list_players(self, client_handle: str) -> list[str]: ...
+    def new(self, width: int, height: int, turn_count: int) -> str: ...
+    def new_client_handle(self, game_id: str) -> str: ...
     def sell(self, handle: str, row: int, col: int) -> int: ...
     def start(self, handle: str) -> None: ...
     def survey(self, handle: str, row: int, col: int) -> dict: ...
@@ -513,35 +513,35 @@ class _XmlRpcGame:
     def erect(self, handle: str, row: int, col: int) -> dict:
         return cast(dict, self._p.erect(handle, row, col))
 
-    def get_client_info(self, clientHandle: str) -> dict:
-        return cast(dict, self._p.getClientInfo(clientHandle))
+    def get_client_info(self, client_handle: str) -> dict:
+        return cast(dict, self._p.getClientInfo(client_handle))
 
-    def get_player_field(self, clientHandle: str) -> dict:
-        return cast(dict, self._p.getPlayerField(clientHandle))
+    def get_player_field(self, client_handle: str) -> dict:
+        return cast(dict, self._p.getPlayerField(client_handle))
 
     def get_player_site(self, handle: str, row: int, col: int) -> dict:
         return cast(dict, self._p.getPlayerSite(handle, row, col))
 
-    def get_update(self, clientHandle: str) -> dict:
-        return cast(dict, self._p.getUpdate(clientHandle))
+    def get_update(self, client_handle: str) -> dict:
+        return cast(dict, self._p.getUpdate(client_handle))
 
-    def get_weekly_summary(self, clientHandle: str) -> dict:
-        return cast(dict, self._p.getWeeklySummary(clientHandle))
+    def get_weekly_summary(self, client_handle: str) -> dict:
+        return cast(dict, self._p.getWeeklySummary(client_handle))
 
-    def is_started(self, clientHandle: str) -> bool:
-        return bool(self._p.isStarted(clientHandle))
+    def is_started(self, client_handle: str) -> bool:
+        return bool(self._p.isStarted(client_handle))
 
-    def join(self, clientHandle: str, username: str, symbol: str) -> str:
-        return str(self._p.join(clientHandle, username, symbol))
+    def join(self, client_handle: str, username: str, symbol: str) -> str:
+        return str(self._p.join(client_handle, username, symbol))
 
-    def list_players(self, clientHandle: str) -> list[str]:
-        return cast(list[str], self._p.listPlayers(clientHandle))
+    def list_players(self, client_handle: str) -> list[str]:
+        return cast(list[str], self._p.listPlayers(client_handle))
 
-    def new(self, width: int, height: int, turnCount: int) -> str:
-        return str(self._p.new(width, height, turnCount))
+    def new(self, width: int, height: int, turn_count: int) -> str:
+        return str(self._p.new(width, height, turn_count))
 
-    def new_client_handle(self, gameId: str) -> str:
-        return str(self._p.newClientHandle(gameId))
+    def new_client_handle(self, game_id: str) -> str:
+        return str(self._p.newClientHandle(game_id))
 
     def sell(self, handle: str, row: int, col: int) -> int:
         return int(self._p.sell(handle, row, col))

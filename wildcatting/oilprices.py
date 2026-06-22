@@ -23,7 +23,7 @@ class GaussianPrices:
     def __init__(
         self, start: float, mu: float | None = None, sigma: float | None = None
     ) -> None:
-        self._initialPrice = self._price = start
+        self._initial_price = self._price = start
 
         if mu is None:
             mu = 0.0
@@ -56,8 +56,8 @@ class GaussianPrices:
 
         return "\n".join(lines)
 
-    def getInitialPrice(self) -> float:
-        return self._initialPrice
+    def get_initial_price(self) -> float:
+        return self._initial_price
 
     def __next__(self) -> float:
         change = random.gauss(self._mu, self._sigma)
@@ -90,46 +90,48 @@ class TrendingGaussianPrices:
     def __init__(
         self,
         start: float,
-        minPrice: float,
-        maxPrice: float,
-        trendMu: float,
-        trendSigma: float,
+        min_price: float,
+        max_price: float,
+        trend_mu: float,
+        trend_sigma: float,
     ) -> None:
-        self._initialPrice = self._price = start
-        self._minPrice = minPrice
-        self._maxPrice = maxPrice
-        self._trendMu = trendMu
-        self._trendSigma = trendSigma
+        self._initial_price = self._price = start
+        self._min_price = min_price
+        self._max_price = max_price
+        self._trend_mu = trend_mu
+        self._trend_sigma = trend_sigma
 
-        self._trendWeek: int = 0
-        self._trendLength: int = 0
+        self._trend_week: int = 0
+        self._trend_length: int = 0
 
         self._mu: float = 0.0
         self._sigma: float = 2.0
 
-    def _nextTrend(self) -> None:
-        self._trendWeek = 0
-        self._trendLength = max(1, int(random.gauss(self._trendMu, self._trendSigma)))
+    def _next_trend(self) -> None:
+        self._trend_week = 0
+        self._trend_length = max(
+            1, int(random.gauss(self._trend_mu, self._trend_sigma))
+        )
 
         self._mu = random.gauss(0.0, 3.0)
         self._sigma = 2.0
 
     def __next__(self) -> float:
-        if self._trendLength == self._trendWeek:
-            self._nextTrend()
+        if self._trend_length == self._trend_week:
+            self._next_trend()
 
-        self._trendWeek = self._trendWeek + 1
+        self._trend_week = self._trend_week + 1
 
         change = random.gauss(self._mu, self._sigma)
         self._price = self._price + self._price * change / 100
 
         # clamp to our min/max values
-        self._price = max(self._minPrice, min(self._maxPrice, self._price))
+        self._price = max(self._min_price, min(self._max_price, self._price))
 
         return self._price
 
-    def getInitialPrice(self) -> float:
-        return self._initialPrice
+    def get_initial_price(self) -> float:
+        return self._initial_price
 
 
 class HistoricalGaussianPrices(GaussianPrices):
@@ -149,7 +151,7 @@ class HistoricalGaussianPrices(GaussianPrices):
 
         prev = prices[0]
         for cur in prices:
-            change = (cur.getValue() - prev.getValue()) / prev.getValue()
+            change = (cur.get_value() - prev.get_value()) / prev.get_value()
             ret.append(change)
 
         return ret
@@ -160,7 +162,7 @@ class Price:
         self._date = date
         self._price = price
 
-    def getValue(self) -> float:
+    def get_value(self) -> float:
         return self._price
 
     def __str__(self) -> str:

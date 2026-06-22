@@ -47,14 +47,14 @@ class ScreensaverCommand(Command):
         self.y_border = 2
         self.x_border = 3
 
-    def asciiScreensaver(self) -> None:
+    def ascii_screensaver(self) -> None:
         while True:
             game = Game(80, 23)
             field = game.oil_field
             OilFieldTextView(field).ascii()
             time.sleep(0.25)
 
-    def ansiScreensaver(self) -> None:
+    def ansi_screensaver(self) -> None:
         try:
             while True:
                 game = Game(80, 23)
@@ -64,7 +64,7 @@ class ScreensaverCommand(Command):
         except Exception:
             print(chr(27) + "[0m")
 
-    def borderWin(self, parent: Any, no_border: bool) -> tuple[int, Any]:
+    def border_win(self, parent: Any, no_border: bool) -> tuple[int, Any]:
         if no_border:
             win = parent
             border = 0
@@ -82,8 +82,8 @@ class ScreensaverCommand(Command):
 
         return border, win
 
-    def playerScreensaver(self, stdscr: Any, options: Values, args: list[str]) -> None:
-        border, border_win = self.borderWin(stdscr, options.no_border)
+    def player_screensaver(self, stdscr: Any, options: Values, args: list[str]) -> None:
+        border, border_win = self.border_win(stdscr, options.no_border)
         border_win_h, border_win_w = border_win.getmaxyx()
         height = border_win_h - border * 2
         width = border_win_w - border * 2
@@ -108,8 +108,8 @@ class ScreensaverCommand(Command):
                 animator.animate()
                 view.display()
 
-    def viewScreensaver(self, stdscr: Any, options: Values, args: list[str]) -> None:
-        border, border_win = self.borderWin(stdscr, options.no_border)
+    def view_screensaver(self, stdscr: Any, options: Values, args: list[str]) -> None:
+        border, border_win = self.border_win(stdscr, options.no_border)
         border_win_h, border_win_w = border_win.getmaxyx()
         height = border_win_h - border * 2
         width = border_win_w - border * 2
@@ -138,10 +138,10 @@ class ScreensaverCommand(Command):
 
     def run(self, options: Values, args: list[str]) -> None:
         if options.ascii:
-            self.asciiScreensaver()
+            self.ascii_screensaver()
         elif options.ansi:
-            self.ansiScreensaver()
+            self.ansi_screensaver()
         elif options.fade_in:
-            curses.wrapper(self.playerScreensaver, options, args)
+            curses.wrapper(self.player_screensaver, options, args)
         else:
-            curses.wrapper(self.viewScreensaver, options, args)
+            curses.wrapper(self.view_screensaver, options, args)

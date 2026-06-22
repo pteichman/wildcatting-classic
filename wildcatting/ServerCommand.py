@@ -32,7 +32,7 @@ class ServerCommand(Command):
         )
 
     def run(self, options: Values, args: list[str]) -> None:
-        wildcatting.util.startLogger("server.log")
+        wildcatting.util.start_logger("server.log")
 
         host = options.host
 

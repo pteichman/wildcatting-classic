@@ -2,7 +2,7 @@ import logging
 from logging.handlers import RotatingFileHandler
 
 
-def startLogger(filename: str) -> None:
+def start_logger(filename: str) -> None:
     root = logging.getLogger()
 
     # This specifies the deepest possible log level, so our handlers
@@ -16,17 +16,17 @@ def startLogger(filename: str) -> None:
 
     format = "%(asctime)s [%(levelname)s] %(message)s"
 
-    fileHandler = RotatingFileHandler(
+    file_handler = RotatingFileHandler(
         filename, maxBytes=10 * 1024 * 1024, backupCount=3
     )
-    fileHandler.setLevel(logging.DEBUG)
+    file_handler.setLevel(logging.DEBUG)
     formatter = logging.Formatter(format, "%Y-%m-%d %T")
-    fileHandler.setFormatter(formatter)
+    file_handler.setFormatter(formatter)
 
-    consoleHandler = logging.StreamHandler()
-    consoleHandler.setLevel(logging.ERROR)
+    console_handler = logging.StreamHandler()
+    console_handler.setLevel(logging.ERROR)
     formatter = logging.Formatter(format, "%T")
-    consoleHandler.setFormatter(formatter)
+    console_handler.setFormatter(formatter)
 
-    root.addHandler(fileHandler)
-    root.addHandler(consoleHandler)
+    root.addHandler(file_handler)
+    root.addHandler(console_handler)

@@ -56,7 +56,7 @@ class TestFieldPropertyRanges(unittest.TestCase):
 class TestCompleteGameFlow(unittest.TestCase):
     def test_idle_two_player_game_completes(self) -> None:
         turn_count = 5
-        game = Game(10, 10, turnCount=turn_count)
+        game = Game(10, 10, turn_count=turn_count)
         p1 = Player("alice", "A")
         p2 = Player("bob", "B")
         game.add_player("c1", p1)
@@ -72,7 +72,7 @@ class TestCompleteGameFlow(unittest.TestCase):
 
     def test_idle_players_pnl_stays_zero(self) -> None:
         turn_count = 5
-        game = Game(10, 10, turnCount=turn_count)
+        game = Game(10, 10, turn_count=turn_count)
         p1 = Player("alice", "A")
         p2 = Player("bob", "B")
         game.add_player("c1", p1)

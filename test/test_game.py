@@ -96,7 +96,7 @@ class TestGame(unittest.TestCase):
         self.assertEqual(True, game.started)
 
     def testFinishGame(self) -> None:
-        game = Game(10, 10, turnCount=1)
+        game = Game(10, 10, turn_count=1)
 
         player1 = Player("alice", "A")
         game.add_player("test_client", player1)

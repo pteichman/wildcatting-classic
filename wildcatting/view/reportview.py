@@ -62,35 +62,35 @@ class WeeklySummaryView(View):
         (h, w) = self._stdscr.getmaxyx()
         self._win = self._stdscr.derwin(16, 48, (h - 16) // 2, (w - 48) // 2)
 
-    def display(self, gameFinished: bool = False) -> None:
+    def display(self, game_finished: bool = False) -> None:
         self._stdscr.clear()
         self._stdscr.refresh()
 
         fg, bg = self.get_green_fgbg()
-        self.setFGBG(self._win, fg, bg)
+        self.set_fgbg(self._win, fg, bg)
 
-        self.addCentered(self._win, 1, "... WILDCATTING ...")
-        if not gameFinished:
-            self.addCentered(self._win, 3, f"WEEK {self._report.week!s:>3}")
+        self.add_centered(self._win, 1, "... WILDCATTING ...")
+        if not game_finished:
+            self.add_centered(self._win, 3, f"WEEK {self._report.week!s:>3}")
         else:
-            self.addCentered(self._win, 3, "FINAL REPORT")
+            self.add_centered(self._win, 3, "FINAL REPORT")
         row = 6
-        reportRows = self._report.report_rows
-        for rowDict in reportRows:
-            username = rowDict["username"]
-            profitAndLoss = rowDict["profitAndLoss"]
-            leader = rowDict["leader"]
+        report_rows = self._report.report_rows
+        for row_dict in report_rows:
+            username = row_dict["username"]
+            profit_and_loss = row_dict["profitAndLoss"]
+            leader = row_dict["leader"]
             if leader:
-                self.addLeft(self._win, row, "*", pad=10)
-            self.addLeft(self._win, row, username, pad=12)
+                self.add_left(self._win, row, "*", pad=10)
+            self.add_left(self._win, row, username, pad=12)
 
             # could be profit, but probably a loss
-            loss = f"$ {profitAndLoss:8d}"
+            loss = f"$ {profit_and_loss:8d}"
 
-            self.addRight(self._win, row, loss, pad=12)
+            self.add_right(self._win, row, loss, pad=12)
 
             # support up to 9 or more players
-            if len(reportRows) > 5:
+            if len(report_rows) > 5:
                 row += 1
             else:
                 row += 2
@@ -112,7 +112,7 @@ class WeeklyReportView(View):
 
         (h, w) = self._stdscr.getmaxyx()
         self._win = self._stdscr.derwin(16, 48, (h - 16) // 2, (w - 48) // 2)
-        self._colorChooser = ProbabilityColorChooser()
+        self._color_chooser = ProbabilityColorChooser()
 
         self._cursor = _ReportCursor(page=(report.week - 1) // 13)
 
@@ -128,22 +128,22 @@ class WeeklyReportView(View):
         (h, w) = self._win.getmaxyx()
 
         fg, bg = self.get_green_fgbg()
-        self.setFGBG(self._win, fg, bg)
+        self.set_fgbg(self._win, fg, bg)
 
         self._win.addstr(0, 0, self._report.username.upper())
-        self.addCentered(self._win, 0, f"{self._report.oil_price} PER BARREL")
-        self.addRight(self._win, 0, f"WEEK {self._report.week}")
+        self.add_centered(self._win, 0, f"{self._report.oil_price} PER BARREL")
+        self.add_right(self._win, 0, f"WEEK {self._report.week}")
         self._win.addstr(1, 1, "  X   Y   COST     TAX     INCOME     P&L")
 
         week = self._report.week
-        reportDict = self._report.report_dict
+        report_dict = self._report.report_dict
         page = self._cursor.page
-        lastWeekOnPage = min(week, 13 * (page + 1))
-        for turn in range((page * 13) + 1, lastWeekOnPage + 1):
-            if turn in reportDict:
-                rowDict = reportDict[turn]
-                row = rowDict["row"]
-                col = rowDict["col"]
+        last_week_on_page = min(week, 13 * (page + 1))
+        for turn in range((page * 13) + 1, last_week_on_page + 1):
+            if turn in report_dict:
+                row_dict = report_dict[turn]
+                row = row_dict["row"]
+                col = row_dict["col"]
                 site = self._field.get_site(row, col)
                 if site.well.sold:
                     symbol = " "
@@ -153,10 +153,10 @@ class WeeklyReportView(View):
                     turn - (page * 13) + 1,
                     0,
                     symbol,
-                    self._colorChooser.site_color(site),
+                    self._color_chooser.site_color(site),
                 )
             else:
-                rowDict = {
+                row_dict = {
                     "row": 0,
                     "col": 0,
                     "cost": 0,
@@ -165,12 +165,12 @@ class WeeklyReportView(View):
                     "profitAndLoss": 0,
                 }
 
-            col = rowDict["col"]
-            row_num = rowDict["row"]
-            cost = rowDict["cost"]
-            tax = rowDict["tax"]
-            income = rowDict["income"]
-            pl = rowDict["profitAndLoss"]
+            col = row_dict["col"]
+            row_num = row_dict["row"]
+            cost = row_dict["cost"]
+            tax = row_dict["tax"]
+            income = row_dict["income"]
+            pl = row_dict["profitAndLoss"]
             well_str = (
                 f" {col!s:>2} {row_num!s:>3}   ${cost!s:>4}    ${tax!s:>4}"
                 f"   ${income!s:>4}      ${pl!s:>7}"
@@ -233,7 +233,7 @@ class SurveyorsReportView(View):
         tax_str = "$" + str(self._site.tax).rjust(4)
 
         fg, bg = self.get_green_fgbg()
-        self.setFGBG(self._win, fg, bg)
+        self.set_fgbg(self._win, fg, bg)
 
         self._win.addstr(1, 14, "SURVEYOR'S REPORT")
         self._win.addstr(4, 12, "LOCATION")
@@ -305,12 +305,12 @@ class PregameReportView(View):
     log = logging.getLogger("Wildcatting")
 
     def __init__(
-        self, stdscr: Any, gameId: str, isMaster: bool, players: list[str]
+        self, stdscr: Any, game_id: str, is_master: bool, players: list[str]
     ) -> None:
         View.__init__(self, stdscr)
 
-        self._gameId = gameId
-        self._isMaster = isMaster
+        self._game_id = game_id
+        self._is_master = is_master
         self._players = players
 
         (h, w) = self._stdscr.getmaxyx()
@@ -323,17 +323,17 @@ class PregameReportView(View):
         (h, w) = self._win.getmaxyx()
 
         fg, bg = self.get_green_fgbg()
-        self.setFGBG(self._win, fg, bg)
+        self.set_fgbg(self._win, fg, bg)
 
-        self.addCentered(self._win, 1, f"PLAYERS: GAME {self._gameId}")
+        self.add_centered(self._win, 1, f"PLAYERS: GAME {self._game_id}")
 
         row = 3
         for player in self._players:
             self._win.addstr(row, 2, player)
             row = row + 1
 
-        if self._isMaster:
-            self.addCentered(self._win, h - 1, "ANY KEY TO START")
+        if self._is_master:
+            self.add_centered(self._win, h - 1, "ANY KEY TO START")
 
         self._win.refresh()
 

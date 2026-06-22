@@ -18,12 +18,12 @@ class ThemeInfo(Command):
 
     def run(self, options: Values, args: list[str]) -> None:
         if len(args) == 0:
-            self.printAllThemes()
+            self.print_all_themes()
         else:
             for theme in args:
-                self.printTheme(theme)
+                self.print_theme(theme)
 
-    def _getAllThemes(self) -> list[tuple[str, Any]]:
+    def _get_all_themes(self) -> list[tuple[str, Any]]:
         themes: list[tuple[str, Any]] = []
         for name, member in inspect.getmembers(wildcatting.theme, inspect.isclass):
             if name in ("Theme", "DefaultTheme"):
@@ -40,56 +40,56 @@ class ThemeInfo(Command):
         themes.sort()
         return themes
 
-    def _formatPrice(self, theme: Any, price: Any) -> str:
-        return str(theme.getPriceFormat() % price)
+    def _format_price(self, theme: Any, price: Any) -> str:
+        return str(theme.get_price_format() % price)
 
-    def printTheme(self, themeName: str) -> None:
-        themes = self._getAllThemes()
+    def print_theme(self, theme_name: str) -> None:
+        themes = self._get_all_themes()
 
         found = None
         for name, theme in themes:
-            if name == themeName:
+            if name == theme_name:
                 found = theme
 
         if found is None:
-            self.error(f"Unknown theme: {themeName}")
+            self.error(f"Unknown theme: {theme_name}")
             return
 
         theme = found()
 
-        print(f"Name: {themeName}")
-        print(f"Location: {theme.getLocation()}")
-        print(f"Era: {theme.getEra()}")
+        print(f"Name: {theme_name}")
+        print(f"Location: {theme.get_location()}")
+        print(f"Era: {theme.get_era()}")
         print()
-        prices = theme.getOilPrices()
+        prices = theme.get_oil_prices()
         print(f"Oil price generator: {str(prices)}")
 
         print()
 
-        min_drill = self._formatPrice(theme, theme.getMinDrillCost())
-        max_drill = self._formatPrice(theme, theme.getMaxDrillCost())
-        drill_inc = theme.getDrillIncrement()
+        min_drill = self._format_price(theme, theme.get_min_drill_cost())
+        max_drill = self._format_price(theme, theme.get_max_drill_cost())
+        drill_inc = theme.get_drill_increment()
         print(f"Drilling cost: {min_drill} .. {max_drill} per {drill_inc} depth units")
-        min_tax = self._formatPrice(theme, theme.getMinTax())
-        max_tax = self._formatPrice(theme, theme.getMaxTax())
+        min_tax = self._format_price(theme, theme.get_min_tax())
+        max_tax = self._format_price(theme, theme.get_max_tax())
         print(f"Taxes: {min_tax} .. {max_tax}")
-        print(f"Maximum oil output: {theme.getMaxOutput()} barrels")
-        min_profit = self._formatPrice(theme, theme.getMinOutput())
-        max_profit = self._formatPrice(
-            theme, theme.getMaxOutput() * prices.getInitialPrice()
+        print(f"Maximum oil output: {theme.get_max_output()} barrels")
+        min_profit = self._format_price(theme, theme.get_min_output())
+        max_profit = self._format_price(
+            theme, theme.get_max_output() * prices.get_initial_price()
         )
         print(f"At starting price, well profit is {min_profit} .. {max_profit}")
 
         print()
         print("Facts:")
 
-        for fact in theme.getFacts():
+        for fact in theme.facts:
             print(
                 textwrap.fill(fact.strip(), initial_indent="* ", subsequent_indent="  ")
             )
 
-    def printAllThemes(self) -> None:
-        themes = self._getAllThemes()
+    def print_all_themes(self) -> None:
+        themes = self._get_all_themes()
 
         cols = ("Name", "Location", "Era", "Facts")
 
@@ -103,9 +103,9 @@ class ThemeInfo(Command):
             rows.append(
                 (
                     display_name,
-                    obj.getLocation(),
-                    obj.getEra(),
-                    str(len(obj.getFacts())),
+                    obj.get_location(),
+                    obj.get_era(),
+                    str(len(obj.facts)),
                 )
             )
 

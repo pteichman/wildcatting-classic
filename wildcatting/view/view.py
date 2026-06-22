@@ -17,7 +17,7 @@ class View:
         color = Colors.get(curses.COLOR_BLACK, curses.COLOR_GREEN)
         return color, color
 
-    def addCentered(
+    def add_centered(
         self, win: Any, row: int, text: str, color: int | None = None
     ) -> None:
         (h, w) = win.getmaxyx()
@@ -28,7 +28,7 @@ class View:
         else:
             win.addstr(row, col, text, color)
 
-    def addLeft(
+    def add_left(
         self, win: Any, row: int, text: str, color: int | None = None, pad: int = 0
     ) -> None:
         (h, w) = win.getmaxyx()
@@ -39,7 +39,7 @@ class View:
         else:
             win.addstr(row, col, text, color)
 
-    def addRight(
+    def add_right(
         self, win: Any, row: int, text: str, color: int | None = None, pad: int = 0
     ) -> None:
         (h, w) = win.getmaxyx()
@@ -50,7 +50,7 @@ class View:
         else:
             win.addstr(row, col, text, color)
 
-    def setFGBG(self, win: Any, fg: int, bg: int) -> None:
+    def set_fgbg(self, win: Any, fg: int, bg: int) -> None:
         win.bkgdset(" ", fg)
         win.clear()
 

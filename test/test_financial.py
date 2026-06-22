@@ -97,7 +97,7 @@ class TestPlayerAccounting(unittest.TestCase):
         well.output = 10.0
         site.well = well
 
-        well.tick(site, oilPrice=2.0)
+        well.tick(site, oil_price=2.0)
 
         self.assertEqual(player.profit_and_loss, int(10.0 * 2.0) - 5)
 
@@ -109,7 +109,7 @@ class TestPlayerAccounting(unittest.TestCase):
         # output is None by default — no oil found yet
         site.well = well
 
-        well.tick(site, oilPrice=5.0)
+        well.tick(site, oil_price=5.0)
 
         self.assertEqual(player.profit_and_loss, -100)
 
@@ -123,7 +123,7 @@ class TestPlayerAccounting(unittest.TestCase):
         site.well = well
 
         pnl_before = player.profit_and_loss
-        well.tick(site, oilPrice=5.0)
+        well.tick(site, oil_price=5.0)
 
         self.assertEqual(player.profit_and_loss, pnl_before)
 

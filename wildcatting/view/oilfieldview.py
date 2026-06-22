@@ -97,28 +97,28 @@ class ProbabilityColorChooser(ColorChooser):
 
 
 class DrillCostColorChooser(ColorChooser):
-    def __init__(self, minDrillCost: int, maxDrillCost: int) -> None:
+    def __init__(self, min_drill_cost: int, max_drill_cost: int) -> None:
         ColorChooser.__init__(self)
 
-        self._minDrillCost = minDrillCost
-        self._maxDrillCost = maxDrillCost
+        self._min_drill_cost = min_drill_cost
+        self._max_drill_cost = max_drill_cost
 
     def _choose_color(self, site: wildcatting.model.Site, colors: list[int]) -> int:
-        drillCost = site.drill_cost * 1.0
-        costRange = self._maxDrillCost - self._minDrillCost
-        idx = int(drillCost / costRange * (len(colors) - 1))
+        drill_cost = site.drill_cost * 1.0
+        cost_range = self._max_drill_cost - self._min_drill_cost
+        idx = int(drill_cost / cost_range * (len(colors) - 1))
 
         return colors[idx]
 
 
 class DepthColorChooser(ColorChooser):
     def _choose_color(self, site: wildcatting.model.Site, colors: list[int]) -> int:
-        oilDepth = site.oil_depth
-        if oilDepth is None:
+        oil_depth = site.oil_depth
+        if oil_depth is None:
             color = Colors.get(curses.COLOR_WHITE, curses.COLOR_BLACK)
         else:
-            depthRange = 9
-            idx = int(oilDepth * 1.0 / depthRange * (len(colors) - 1))
+            depth_range = 9
+            idx = int(oil_depth * 1.0 / depth_range * (len(colors) - 1))
             color = colors[idx]
 
         return color
@@ -149,7 +149,7 @@ class OilFieldCursesView(View, abc.ABC):
         self._win = win
         self._wildcatting = wildcatting_
 
-        self._colorChooser = self._make_color_chooser()
+        self._color_chooser = self._make_color_chooser()
 
     @abc.abstractmethod
     def _make_color_chooser(self) -> ColorChooser: ...
@@ -177,10 +177,10 @@ class OilFieldCursesView(View, abc.ABC):
                 symbol = "."
             else:
                 symbol = " "
-            color = self._colorChooser.blank_color(site)
+            color = self._color_chooser.blank_color(site)
         else:
             symbol = well.player.symbol
-            color = self._colorChooser.site_color(site)
+            color = self._color_chooser.site_color(site)
 
         self.putch(self._win, site.row, site.col, ord(symbol), color)
 
@@ -201,10 +201,10 @@ class OilFieldProbabilityView(OilFieldCursesView):
 
 class OilFieldDrillCostView(OilFieldCursesView):
     def __init__(
-        self, win: Any, wildcatting_: Any, minDrillCost: int, maxDrillCost: int
+        self, win: Any, wildcatting_: Any, min_drill_cost: int, max_drill_cost: int
     ) -> None:
-        self._minDrillCost = minDrillCost
-        self._maxDrillCost = maxDrillCost
+        self._min_drill_cost = min_drill_cost
+        self._max_drill_cost = max_drill_cost
 
         OilFieldCursesView.__init__(self, win, wildcatting_)
 
@@ -212,7 +212,7 @@ class OilFieldDrillCostView(OilFieldCursesView):
         return "DRILL COST"
 
     def _make_color_chooser(self) -> ColorChooser:
-        return DrillCostColorChooser(self._minDrillCost, self._maxDrillCost)
+        return DrillCostColorChooser(self._min_drill_cost, self._max_drill_cost)
 
 
 class OilFieldDepthView(OilFieldCursesView):
@@ -227,9 +227,9 @@ class OilFieldDepthView(OilFieldCursesView):
         if well is None:
             # show a "." for surveyed sites
             symbol = "."
-            color = self._colorChooser.blank_color(site)
+            color = self._color_chooser.blank_color(site)
         else:
             symbol = well.player.symbol
-            color = self._colorChooser.site_color(site)
+            color = self._color_chooser.site_color(site)
 
         self.putch(self._win, site.row, site.col, ord(symbol), color)

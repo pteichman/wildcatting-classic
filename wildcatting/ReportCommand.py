@@ -15,5 +15,5 @@ class ReportCommand(Command):
         Command.__init__(self, "report", summary="Test a Wildcatting report")
 
     def run(self, options: Values, args: list[str]) -> None:
-        wildcatting.util.startLogger("report.log")
+        wildcatting.util.start_logger("report.log")
         curses.wrapper(wildcatting.report.main)

@@ -9,11 +9,11 @@ if TYPE_CHECKING:
 
 
 class SimpleWellTheory:
-    def __init__(self, maxOutput: int) -> None:
-        self._maxOutput = maxOutput
+    def __init__(self, max_output: int) -> None:
+        self._max_output = max_output
 
     def __str__(self) -> str:
-        return f"SimpleWellTheory(maxOutput={self._maxOutput})"
+        return f"SimpleWellTheory(maxOutput={self._max_output})"
 
     def _get_output(
         self, well: Well, reservoir: Reservoir, capacity: int | None = None
@@ -22,7 +22,7 @@ class SimpleWellTheory:
         if capacity is None:
             capacity = well.capacity
         ## actually the maximum output for one unit of well capacity
-        output: float = self._maxOutput
+        output: float = self._max_output
         ## diminishing returns for increased capacity.  not too relevant yet.
         c = capacity * 1.0
         output += (c - 1) * output - math.pow(c - 1, 2)
@@ -37,13 +37,13 @@ class SimpleWellTheory:
         return self._get_output(well, reservoir)
 
     def tick(
-        self, well: Well, reservoir: Reservoir, currentWeek: int
+        self, well: Well, reservoir: Reservoir, current_week: int
     ) -> tuple[float, int]:
-        weeksOperational = currentWeek - well.week
+        weeks_operational = current_week - well.week
 
         new_capacity = well.capacity
         ## simlulate old well ramp up.
-        if weeksOperational <= 3:
+        if weeks_operational <= 3:
             new_capacity += 1
 
         output = self._get_output(well, reservoir, new_capacity)

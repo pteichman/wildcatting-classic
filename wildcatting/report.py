@@ -22,13 +22,13 @@ class WeeklyReport:
         symbol: str,
         week: int,
         setting: Setting,
-        oilPrice: float,
+        oil_price: float,
     ) -> None:
         self.username = username
         self.symbol = symbol
         self.week = week
         self._setting = setting
-        self._oilPrice = oilPrice
+        self._oil_price = oil_price
 
         self.profit_and_loss: int = 0
 
@@ -49,19 +49,19 @@ class WeeklyReport:
                         if output is None:
                             output = 0
 
-                        rowDict: dict[str, Any] = {}
-                        rowDict["row"] = row
-                        rowDict["col"] = col
-                        rowDict["cost"] = well.initial_cost
-                        rowDict["tax"] = site.tax
-                        rowDict["income"] = int(output * self._oilPrice)
-                        wellProfitAndLoss = well.profit_and_loss
-                        rowDict["profitAndLoss"] = wellProfitAndLoss
-                        self.profit_and_loss += wellProfitAndLoss
+                        row_dict: dict[str, Any] = {}
+                        row_dict["row"] = row
+                        row_dict["col"] = col
+                        row_dict["cost"] = well.initial_cost
+                        row_dict["tax"] = site.tax
+                        row_dict["income"] = int(output * self._oil_price)
+                        well_profit_and_loss = well.profit_and_loss
+                        row_dict["profitAndLoss"] = well_profit_and_loss
+                        self.profit_and_loss += well_profit_and_loss
 
-                        sites[well.week] = rowDict
+                        sites[well.week] = row_dict
         return sites
 
     @property
     def oil_price(self) -> str:
-        return self._setting.price_format % self._oilPrice
+        return self._setting.price_format % self._oil_price

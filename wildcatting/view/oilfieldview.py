@@ -1,6 +1,7 @@
 import abc
 import curses
 import random
+from typing import Any
 
 import wildcatting.game
 import wildcatting.model
@@ -10,11 +11,11 @@ from .view import View
 
 
 class OilFieldTextView(View):
-    def __init__(self, model):
+    def __init__(self, model: wildcatting.model.OilField) -> None:
         assert isinstance(model, wildcatting.model.OilField)
         self._model = model
 
-    def bracket(self, site):
+    def bracket(self, site: wildcatting.model.Site) -> int:
         p = site.probability
         if p > 95:
             b = 0
@@ -30,12 +31,12 @@ class OilFieldTextView(View):
             b = 5
         return b
 
-    def to_ascii(self, site):
+    def to_ascii(self, site: wildcatting.model.Site) -> str:
         assert isinstance(site, wildcatting.model.Site)
         b = self.bracket(site)
         return ".x%*&#"[b]
 
-    def ascii(self):
+    def ascii(self) -> None:
         model = self._model
         for row in range(model.height):
             line = ""
@@ -43,12 +44,12 @@ class OilFieldTextView(View):
                 line += self.to_ascii(model.get_site(row, col))
             print(line)
 
-    def to_ansi(self, site):
+    def to_ansi(self, site: wildcatting.model.Site) -> str:
         b = self.bracket(site) % 9
         ansi = chr(27) + "[" + str(32 + b) + "m" + "O"
         return ansi
 
-    def ansi(self):
+    def ansi(self) -> None:
         model = self._model
         for row in range(model.height):
             line = ""
@@ -58,7 +59,7 @@ class OilFieldTextView(View):
 
 
 class ColorChooser(abc.ABC):
-    def __init__(self):
+    def __init__(self) -> None:
         # increasing order of hotness
         self._colors = [
             Colors.get(curses.COLOR_WHITE, curses.COLOR_BLUE),
@@ -70,12 +71,12 @@ class ColorChooser(abc.ABC):
         ]
 
     @abc.abstractmethod
-    def _choose_color(self, site, colors): ...
+    def _choose_color(self, site: wildcatting.model.Site, colors: list[int]) -> int: ...
 
-    def get_colors(self):
+    def get_colors(self) -> list[int]:
         return self._colors[:]
 
-    def site_color(self, site):
+    def site_color(self, site: wildcatting.model.Site | None) -> int:
         if site is None:
             return Colors.get(curses.COLOR_WHITE, curses.COLOR_BLACK)
 
@@ -83,7 +84,7 @@ class ColorChooser(abc.ABC):
 
         return self._choose_color(site, self._colors)
 
-    def blank_color(self, site):
+    def blank_color(self, site: wildcatting.model.Site | None) -> int:
         if site is None:
             return Colors.get(curses.COLOR_WHITE, curses.COLOR_BLACK)
 
@@ -93,7 +94,7 @@ class ColorChooser(abc.ABC):
 
 
 class ProbabilityColorChooser(ColorChooser):
-    def _choose_color(self, site, colors):
+    def _choose_color(self, site: wildcatting.model.Site, colors: list[int]) -> int:
         p = site.probability
         if p == 100:
             return colors[-1]
@@ -102,13 +103,13 @@ class ProbabilityColorChooser(ColorChooser):
 
 
 class DrillCostColorChooser(ColorChooser):
-    def __init__(self, minDrillCost, maxDrillCost):
+    def __init__(self, minDrillCost: int, maxDrillCost: int) -> None:
         ColorChooser.__init__(self)
 
         self._minDrillCost = minDrillCost
         self._maxDrillCost = maxDrillCost
 
-    def _choose_color(self, site, colors):
+    def _choose_color(self, site: wildcatting.model.Site, colors: list[int]) -> int:
         drillCost = site.drill_cost * 1.0
         costRange = self._maxDrillCost - self._minDrillCost
         idx = int(drillCost / costRange * (len(colors) - 1))
@@ -117,9 +118,9 @@ class DrillCostColorChooser(ColorChooser):
 
 
 class DepthColorChooser(ColorChooser):
-    def _choose_color(self, site, colors):
+    def _choose_color(self, site: wildcatting.model.Site, colors: list[int]) -> int:
         oilDepth = site.oil_depth
-        if site.oil_depth is None:
+        if oilDepth is None:
             color = Colors.get(curses.COLOR_WHITE, curses.COLOR_BLACK)
         else:
             depthRange = 9
@@ -130,17 +131,17 @@ class DepthColorChooser(ColorChooser):
 
 
 class FadeInOilFieldCursesAnimator:
-    def __init__(self, field):
+    def __init__(self, field: wildcatting.model.OilField) -> None:
         self._field = field
 
-        self._coords = [
+        self._coords: list[tuple[int, int]] = [
             (row, col) for row in range(field.height) for col in range(field.width)
         ]
 
-    def is_done(self):
+    def is_done(self) -> bool:
         return len(self._coords) == 0
 
-    def animate(self):
+    def animate(self) -> None:
         row, col = random.choice(self._coords)
         self._coords.remove((row, col))
 
@@ -149,7 +150,7 @@ class FadeInOilFieldCursesAnimator:
 
 
 class OilFieldCursesView(View, abc.ABC):
-    def __init__(self, win, wildcatting_):
+    def __init__(self, win: Any, wildcatting_: Any) -> None:
         View.__init__(self, win)
         self._win = win
         self._wildcatting = wildcatting_
@@ -157,12 +158,12 @@ class OilFieldCursesView(View, abc.ABC):
         self._colorChooser = self._make_color_chooser()
 
     @abc.abstractmethod
-    def _make_color_chooser(self): ...
+    def _make_color_chooser(self) -> ColorChooser: ...
 
     @abc.abstractmethod
-    def get_key_label(self): ...
+    def get_key_label(self) -> str: ...
 
-    def display(self):
+    def display(self) -> None:
         field = self._wildcatting.player_field
         for row in range(field.height):
             for col in range(field.width):
@@ -172,7 +173,7 @@ class OilFieldCursesView(View, abc.ABC):
 
         self._win.refresh()
 
-    def display_site(self, site):
+    def display_site(self, site: wildcatting.model.Site) -> None:
         well = site.well
         if well is None:
             # work around an MacOS X terminal problem with
@@ -184,12 +185,13 @@ class OilFieldCursesView(View, abc.ABC):
                 symbol = " "
             color = self._colorChooser.blank_color(site)
         else:
+            assert well.player is not None
             symbol = well.player.symbol
             color = self._colorChooser.site_color(site)
 
         self.putch(self._win, site.row, site.col, ord(symbol), color)
 
-    def animate_game_end(self):
+    def animate_game_end(self) -> None:
         animator = FadeInOilFieldCursesAnimator(self._wildcatting.player_field)
         while not animator.is_done():
             animator.animate()
@@ -197,41 +199,44 @@ class OilFieldCursesView(View, abc.ABC):
 
 
 class OilFieldProbabilityView(OilFieldCursesView):
-    def _make_color_chooser(self):
+    def _make_color_chooser(self) -> ColorChooser:
         return ProbabilityColorChooser()
 
-    def get_key_label(self):
+    def get_key_label(self) -> str:
         return "PROBABILITY"
 
 
 class OilFieldDrillCostView(OilFieldCursesView):
-    def __init__(self, win, wildcatting_, minDrillCost, maxDrillCost):
+    def __init__(
+        self, win: Any, wildcatting_: Any, minDrillCost: int, maxDrillCost: int
+    ) -> None:
         self._minDrillCost = minDrillCost
         self._maxDrillCost = maxDrillCost
 
         OilFieldCursesView.__init__(self, win, wildcatting_)
 
-    def get_key_label(self):
+    def get_key_label(self) -> str:
         return "DRILL COST"
 
-    def _make_color_chooser(self):
+    def _make_color_chooser(self) -> ColorChooser:
         return DrillCostColorChooser(self._minDrillCost, self._maxDrillCost)
 
 
 class OilFieldDepthView(OilFieldCursesView):
-    def _make_color_chooser(self):
+    def _make_color_chooser(self) -> ColorChooser:
         return DepthColorChooser()
 
-    def get_key_label(self):
+    def get_key_label(self) -> str:
         return "OIL DEPTH"
 
-    def display_site(self, site):
+    def display_site(self, site: wildcatting.model.Site) -> None:
         well = site.well
         if well is None:
             # show a "." for surveyed sites
             symbol = "."
             color = self._colorChooser.blank_color(site)
         else:
+            assert well.player is not None
             symbol = well.player.symbol
             color = self._colorChooser.site_color(site)
 

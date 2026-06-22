@@ -4,7 +4,7 @@ from wildcatting.model import OilField, Setting, Site
 
 
 class TestSerializer(unittest.TestCase):
-    def testSite(self):
+    def testSite(self) -> None:
         site1 = Site(1, 1)
         obj1 = site1.serialize()
         site2 = Site.deserialize(obj1)
@@ -12,7 +12,7 @@ class TestSerializer(unittest.TestCase):
 
         self.assertEqual(obj1, obj2)
 
-    def testOilField(self):
+    def testOilField(self) -> None:
         field1 = OilField(2, 2)
         obj1 = field1.serialize()
         field2 = OilField.deserialize(obj1)
@@ -20,7 +20,7 @@ class TestSerializer(unittest.TestCase):
 
         self.assertEqual(obj1, obj2)
 
-    def testSetting(self):
+    def testSetting(self) -> None:
         setting1 = Setting()
         obj1 = setting1.serialize()
         setting2 = Setting.deserialize(obj1)

@@ -1,22 +1,35 @@
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
+from .player import Player
 from .serialize import Serializable
+
+if TYPE_CHECKING:
+    from wildcatting.reservoir import Reservoir
+    from wildcatting.welltheory import SimpleWellTheory
 
 
 class OilField(Serializable):
-    def __init__(self, width, height):
+    def __init__(self, width: int, height: int) -> None:
         assert isinstance(width, int)
         assert isinstance(height, int)
 
         self.width = width
         self.height = height
 
-        self._rows = [[Site(row, col) for col in range(width)] for row in range(height)]
+        self._rows: list[list[Site]] = [
+            [Site(row, col) for col in range(width)] for row in range(height)
+        ]
 
-    def tick(self, oilPrice, wellTheory, currentWeek):
+    def tick(
+        self, oilPrice: float, wellTheory: SimpleWellTheory, currentWeek: int
+    ) -> None:
         for row in self._rows:
             for site in row:
                 site.tick(oilPrice, wellTheory, currentWeek)
 
-    def get_site(self, row, col):
+    def get_site(self, row: int, col: int) -> Site:
         assert row < self.height
         assert col < self.width
 
@@ -27,103 +40,105 @@ class OilField(Serializable):
 
         return site
 
-    def set_site(self, row, col, site):
+    def set_site(self, row: int, col: int, site: Site) -> None:
         assert isinstance(site, Site)
 
         self._rows[row][col] = site
 
 
 class Site(Serializable):
-    def __init__(self, row, col):
+    def __init__(self, row: int, col: int) -> None:
         assert isinstance(row, int)
         assert isinstance(col, int)
 
         self.row = row
         self.col = col
 
-        self._prob = 0
-        self._well = None
-        self._drillCost = 0
-        self._tax = 0
-        self._surveyed = False
-        self.oil_depth = None
+        self._prob: int = 0
+        self._well: Well | None = None
+        self._drillCost: int = 0
+        self._tax: int = 0
+        self._surveyed: bool = False
+        self.oil_depth: int | None = None
 
         ## don't serialize
-        self.__reservoir = None
-        self.__oilFlag = False
-        self.__potentialOilDepth = None
+        self.__reservoir: Reservoir | None = None
+        self.__oilFlag: bool = False
+        self.__potentialOilDepth: int | None = None
 
     @property
-    def drill_cost(self):
+    def drill_cost(self) -> int:
         return self._drillCost
 
     @drill_cost.setter
-    def drill_cost(self, drillCost):
+    def drill_cost(self, drillCost: int) -> None:
         assert isinstance(drillCost, int)
         self._drillCost = drillCost
 
     @property
-    def potential_oil_depth(self):
+    def potential_oil_depth(self) -> int | None:
         return self.__potentialOilDepth
 
     @potential_oil_depth.setter
-    def potential_oil_depth(self, potentialOilDepth):
+    def potential_oil_depth(self, potentialOilDepth: int | None) -> None:
         self.__potentialOilDepth = potentialOilDepth
 
     @property
-    def probability(self):
+    def probability(self) -> int:
         return self._prob
 
     @probability.setter
-    def probability(self, prob):
+    def probability(self, prob: int) -> None:
         assert 0 <= prob <= 100
         self._prob = prob
 
     @property
-    def well(self):
+    def well(self) -> Well | None:
         return self._well
 
     @well.setter
-    def well(self, well):
+    def well(self, well: Well | None) -> None:
         if well is not None:
             assert isinstance(well, Well)
         self._well = well
 
     @property
-    def surveyed(self):
+    def surveyed(self) -> bool:
         return self._surveyed
 
     @surveyed.setter
-    def surveyed(self, surveyed):
+    def surveyed(self, surveyed: bool) -> None:
         assert isinstance(surveyed, bool)
         self._surveyed = surveyed
 
     @property
-    def tax(self):
+    def tax(self) -> int:
         return self._tax
 
     @tax.setter
-    def tax(self, tax):
+    def tax(self, tax: int) -> None:
         assert isinstance(tax, int)
         self._tax = tax
 
     @property
-    def reservoir(self):
+    def reservoir(self) -> Reservoir | None:
         return self.__reservoir
 
     @reservoir.setter
-    def reservoir(self, reservoir):
+    def reservoir(self, reservoir: Reservoir | None) -> None:
         self.__reservoir = reservoir
 
     @property
-    def oil_flag(self):
+    def oil_flag(self) -> bool:
         return self.__oilFlag
 
     @oil_flag.setter
-    def oil_flag(self, oilFlag):
+    def oil_flag(self, oilFlag: bool) -> None:
         self.__oilFlag = oilFlag
 
-    def tick(self, oilPrice, wellTheory, currentWeek):
+    def tick(
+        self, oilPrice: float, wellTheory: SimpleWellTheory, currentWeek: int
+    ) -> None:
         if self._well is not None:
             if self._well.output is not None and not self._well.sold:
                 output, capacity = wellTheory.tick(self, currentWeek)
@@ -133,36 +148,36 @@ class Site(Serializable):
 
 
 class Well(Serializable):
-    def __init__(self):
-        self.week = None
-        self.drill_depth = 0
-        self.initial_output = None
-        self.output = None
-        self.sold = False
-        self.player = None
-        self.initial_cost = 0
-        self.profit_and_loss = 0
-        self.capacity = 1
+    def __init__(self) -> None:
+        self.week: int | None = None
+        self.drill_depth: int = 0
+        self.initial_output: float | None = None
+        self.output: float | None = None
+        self.sold: bool = False
+        self.player: Player | None = None
+        self.initial_cost: int = 0
+        self.profit_and_loss: int = 0
+        self.capacity: int = 1
 
-    def __lt__(self, other):
-        return self.week < other.week
+    def __lt__(self, other: Well) -> bool:
+        return self.week < other.week  # type: ignore[operator]
 
-    def __eq__(self, other):
-        return self.week == other.week
+    def __eq__(self, other: object) -> bool:
+        return isinstance(other, Well) and self.week == other.week
 
-    def __hash__(self):
+    def __hash__(self) -> int:
         return id(self)
 
-    def sell(self):
+    def sell(self) -> int:
         self.sold = True
         price = self.initial_cost // 2
         self.profit_and_loss += price
         return price
 
-    def drill(self, site, drillIncrement):
+    def drill(self, site: Site, drillIncrement: int) -> tuple[bool, int]:
         assert 0 <= self.drill_depth <= 10
 
-        oilDepth = None
+        oilDepth: int | None = None
         reservoir = site.reservoir
         if reservoir is not None:
             oilDepth = reservoir.oil_depth
@@ -180,13 +195,13 @@ class Well(Serializable):
         return self.drill_depth == oilDepth, cost
 
     @staticmethod
-    def _computeWeeklyPnl(output, oilPrice, tax):
+    def _computeWeeklyPnl(output: float, oilPrice: float, tax: int) -> tuple[int, int]:
         income = int(output * oilPrice)
         return income, tax
 
-    def tick(self, site, oilPrice):
+    def tick(self, site: Site, oilPrice: float) -> None:
         if not self.sold:
-            output = self.output if self.output is not None else 0
+            output: float = self.output if self.output is not None else 0
 
             reservoir = site.reservoir
             if reservoir is not None:

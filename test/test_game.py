@@ -7,7 +7,7 @@ from wildcatting.theme import DefaultTheme
 
 
 class TestOilFiller(unittest.TestCase):
-    def testFreshField(self):
+    def testFreshField(self) -> None:
         rows = cols = 10
 
         field = OilField(rows, cols)
@@ -24,7 +24,7 @@ class TestOilFiller(unittest.TestCase):
 
 
 class TestTaxFiller(unittest.TestCase):
-    def testFreshField(self):
+    def testFreshField(self) -> None:
         rows = cols = 10
 
         field = OilField(rows, cols)
@@ -40,7 +40,7 @@ class TestTaxFiller(unittest.TestCase):
 
 
 class TestGame(unittest.TestCase):
-    def testAddPlayer(self):
+    def testAddPlayer(self) -> None:
         game = Game(10, 10)
 
         player = Player("alice", "A")
@@ -48,7 +48,7 @@ class TestGame(unittest.TestCase):
 
         self.assertTrue(player in game.get_players())
 
-    def testTwoPlayers(self):
+    def testTwoPlayers(self) -> None:
         game = Game(10, 10)
 
         player1 = Player("alice", "A")
@@ -61,7 +61,7 @@ class TestGame(unittest.TestCase):
 
         self.assertTrue(player1 in game.get_players())
 
-    def testTwoPlayerOrder(self):
+    def testTwoPlayerOrder(self) -> None:
         game = Game(10, 10)
 
         player1 = Player("alice", "A")
@@ -75,7 +75,7 @@ class TestGame(unittest.TestCase):
         self.assertEqual(player1, players[0])
         self.assertEqual(player2, players[1])
 
-    def testRejoin(self):
+    def testRejoin(self) -> None:
         game = Game(10, 10)
 
         player1 = Player("alice", "A")
@@ -85,7 +85,7 @@ class TestGame(unittest.TestCase):
 
         self.assertRaises(WildcattingException, game.add_player, "test_client", player1)
 
-    def testStartGame(self):
+    def testStartGame(self) -> None:
         game = Game(10, 10)
 
         player1 = Player("alice", "A")
@@ -95,7 +95,7 @@ class TestGame(unittest.TestCase):
         game.start()
         self.assertEqual(True, game.started)
 
-    def testFinishGame(self):
+    def testFinishGame(self) -> None:
         game = Game(10, 10, turnCount=1)
 
         player1 = Player("alice", "A")
@@ -109,7 +109,7 @@ class TestGame(unittest.TestCase):
         game.end_turn(player1)
         self.assertEqual(True, game.finished)
 
-    def testWeekIncrement(self):
+    def testWeekIncrement(self) -> None:
         game = Game(10, 10)
 
         player1 = Player("alice", "A")

@@ -1,12 +1,14 @@
 import random
 import unittest
+from collections.abc import Iterator
+from typing import Any
 
 from wildcatting.model import OilField, Player, Site, WeeklySummary, Well
 from wildcatting.server import GameService
 from wildcatting.theme import DefaultTheme
 
 
-def _all_keys(d):
+def _all_keys(d: Any) -> Iterator[Any]:
     """Yield every key from a nested dict/list structure."""
     if isinstance(d, dict):
         for k, v in d.items():
@@ -18,14 +20,14 @@ def _all_keys(d):
 
 
 class TestClientVisibility(unittest.TestCase):
-    def _one_player_game(self, turn_count=13):
+    def _one_player_game(self, turn_count: int = 13) -> tuple[GameService, str, str]:
         service = GameService(DefaultTheme())
         client_handle = service.new(10, 10, turn_count)
         player_handle = service.join(client_handle, "alice", "A")
         service.start(player_handle)
         return service, client_handle, player_handle
 
-    def test_unsurveyed_site_is_empty(self):
+    def test_unsurveyed_site_is_empty(self) -> None:
         service, client_handle, player_handle = self._one_player_game()
 
         raw = service.get_player_site(player_handle, 0, 0)
@@ -37,7 +39,7 @@ class TestClientVisibility(unittest.TestCase):
         self.assertIsNone(site.well)
         self.assertFalse(site.surveyed)
 
-    def test_oil_flag_never_serialized(self):
+    def test_oil_flag_never_serialized(self) -> None:
         # End the game so all sites are revealed — this is the worst case for leakage.
         random.seed(42)
         service = GameService(DefaultTheme())
@@ -56,7 +58,7 @@ class TestClientVisibility(unittest.TestCase):
                 "oil_flag", key, f"oil_flag found in serialized key: {key!r}"
             )
 
-    def test_reservoir_never_serialized(self):
+    def test_reservoir_never_serialized(self) -> None:
         random.seed(42)
         service = GameService(DefaultTheme())
         client_handle = service.new(10, 10, 1)
@@ -71,7 +73,7 @@ class TestClientVisibility(unittest.TestCase):
             self.assertNotIn("reserves", key.lower(), f"reserves in key: {key!r}")
             self.assertNotIn("ratioPumped", key, f"ratioPumped in key: {key!r}")
 
-    def test_oil_depth_hidden_until_drill_hits_oil(self):
+    def test_oil_depth_hidden_until_drill_hits_oil(self) -> None:
         random.seed(42)
         service = GameService(DefaultTheme())
         client_handle = service.new(10, 10, 13)
@@ -87,7 +89,11 @@ class TestClientVisibility(unittest.TestCase):
             for col in range(field.width):
                 site = field.get_site(row, col)
                 reservoir = site.reservoir
-                if reservoir is not None and reservoir.oil_depth > 1:
+                if (
+                    reservoir is not None
+                    and reservoir.oil_depth is not None
+                    and reservoir.oil_depth > 1
+                ):
                     target = (row, col)
                     break
             if target:
@@ -98,7 +104,7 @@ class TestClientVisibility(unittest.TestCase):
         assert target is not None
         row, col = target
 
-        def get_oil_depth():
+        def get_oil_depth() -> int | None:
             return Site.deserialize(
                 service.get_player_site(player_handle, row, col)
             ).oil_depth
@@ -109,7 +115,10 @@ class TestClientVisibility(unittest.TestCase):
         service.erect(player_handle, row, col)
         self.assertIsNone(get_oil_depth())
 
-        oil_depth = field.get_site(row, col).reservoir.oil_depth
+        reservoir = field.get_site(row, col).reservoir
+        assert reservoir is not None
+        oil_depth = reservoir.oil_depth
+        assert oil_depth is not None
         for _ in range(oil_depth - 2):  # erect already drilled once
             service.drill(player_handle, row, col)
             self.assertIsNone(get_oil_depth())
@@ -117,7 +126,7 @@ class TestClientVisibility(unittest.TestCase):
         service.drill(player_handle, row, col)
         self.assertIsNotNone(get_oil_depth())
 
-    def test_player_field_reveals_all_sites_after_game_ends(self):
+    def test_player_field_reveals_all_sites_after_game_ends(self) -> None:
         random.seed(42)
         service = GameService(DefaultTheme())
         client_handle = service.new(10, 10, 1)
@@ -143,7 +152,7 @@ class TestClientVisibility(unittest.TestCase):
 
 
 class TestSerializationRoundTrips(unittest.TestCase):
-    def test_well_round_trip(self):
+    def test_well_round_trip(self) -> None:
         player = Player("alice", "A")
         well1 = Well()
         well1.player = player
@@ -159,7 +168,7 @@ class TestSerializationRoundTrips(unittest.TestCase):
 
         self.assertEqual(obj1, obj2)
 
-    def test_player_round_trip(self):
+    def test_player_round_trip(self) -> None:
         player1 = Player("bob", "B")
         player1.secret = "DEADBEEF12345678"
         player1.income(500)
@@ -171,7 +180,7 @@ class TestSerializationRoundTrips(unittest.TestCase):
 
         self.assertEqual(obj1, obj2)
 
-    def test_weekly_summary_round_trip(self):
+    def test_weekly_summary_round_trip(self) -> None:
         players = [Player("alice", "A"), Player("bob", "B")]
         players[0].income(1000)
         players[1].expense(200)

@@ -1,6 +1,8 @@
 import inspect
 import logging
 import textwrap
+from optparse import Values
+from typing import Any
 
 import wildcatting.table
 import wildcatting.theme
@@ -11,18 +13,18 @@ from .cmdparse import Command
 class ThemeInfo(Command):
     log = logging.getLogger("Wildcatting")
 
-    def __init__(self):
+    def __init__(self) -> None:
         Command.__init__(self, "theme-info", summary="Get info about themes")
 
-    def run(self, options, args):
+    def run(self, options: Values, args: list[str]) -> None:
         if len(args) == 0:
             self.printAllThemes()
         else:
             for theme in args:
                 self.printTheme(theme)
 
-    def _getAllThemes(self):
-        themes = []
+    def _getAllThemes(self) -> list[tuple[str, Any]]:
+        themes: list[tuple[str, Any]] = []
         for name, member in inspect.getmembers(wildcatting.theme, inspect.isclass):
             if name in ("Theme", "DefaultTheme"):
                 continue
@@ -38,10 +40,10 @@ class ThemeInfo(Command):
         themes.sort()
         return themes
 
-    def _formatPrice(self, theme, price):
-        return theme.getPriceFormat() % price
+    def _formatPrice(self, theme: Any, price: Any) -> str:
+        return str(theme.getPriceFormat() % price)
 
-    def printTheme(self, themeName):
+    def printTheme(self, themeName: str) -> None:
         themes = self._getAllThemes()
 
         found = None
@@ -86,7 +88,7 @@ class ThemeInfo(Command):
                 textwrap.fill(fact.strip(), initial_indent="* ", subsequent_indent="  ")
             )
 
-    def printAllThemes(self):
+    def printAllThemes(self) -> None:
         themes = self._getAllThemes()
 
         cols = ("Name", "Location", "Era", "Facts")

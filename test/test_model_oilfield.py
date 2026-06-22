@@ -4,7 +4,7 @@ import wildcatting.model
 
 
 class TestOilField(unittest.TestCase):
-    def testEmptySites(self):
+    def testEmptySites(self) -> None:
         cols = 5
         rows = 10
 

@@ -1,6 +1,7 @@
 import logging
 import os
 import sys
+from optparse import Values
 from xmlrpc.client import ServerProxy
 
 from . import version
@@ -13,7 +14,7 @@ from .util import startLogger
 class ClientCommand(Command):
     log = logging.getLogger("Wildcatting")
 
-    def __init__(self):
+    def __init__(self) -> None:
         Command.__init__(self, "client", summary="Run the Wildcatting client")
 
         user = os.environ.get("USER")
@@ -41,7 +42,7 @@ class ClientCommand(Command):
             "-r", "--handle", type="string", default=None, help="game handle"
         )
 
-    def run(self, options, args):
+    def run(self, options: Values, args: list[str]) -> None:
         startLogger("client.log")
 
         url = f"http://{options.host}:{options.port}/"

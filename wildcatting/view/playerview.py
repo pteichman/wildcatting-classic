@@ -1,18 +1,19 @@
 import curses
 import curses.textpad
 import time
+from typing import Any
 
 from .view import View
 
 
 class PlayerCountView(View):
-    def __init__(self, stdscr):
+    def __init__(self, stdscr: Any) -> None:
         View.__init__(self, stdscr)
 
         (h, w) = self._stdscr.getmaxyx()
-        self._win = self._stdscr.derwin(16, 48, (h - 16) / 2, (w - 48) / 2)
+        self._win = self._stdscr.derwin(16, 48, (h - 16) // 2, (w - 48) // 2)
 
-    def display(self, gameFinished=False):
+    def display(self, gameFinished: bool = False) -> None:
         self._stdscr.clear()
         self._stdscr.refresh()
 
@@ -24,7 +25,7 @@ class PlayerCountView(View):
 
         self._win.refresh()
 
-    def input(self):
+    def input(self) -> int:
         while True:
             c = self._stdscr.getch()
 
@@ -42,16 +43,16 @@ class PlayerCountView(View):
 
 
 class PlayerNamesView(View):
-    def __init__(self, stdscr, count):
+    def __init__(self, stdscr: Any, count: int) -> None:
         View.__init__(self, stdscr)
 
         self._count = count
-        self._textpads = []
+        self._textpads: list[Any] = []
 
         (h, w) = self._stdscr.getmaxyx()
-        self._win = self._stdscr.derwin(16, 48, (h - 16) / 2, (w - 48) / 2)
+        self._win = self._stdscr.derwin(16, 48, (h - 16) // 2, (w - 48) // 2)
 
-    def display(self, gameFinished=False):
+    def display(self, gameFinished: bool = False) -> None:
         self._stdscr.clear()
         self._stdscr.refresh()
         (h, w) = self._win.getmaxyx()
@@ -78,8 +79,8 @@ class PlayerNamesView(View):
 
         self._win.refresh()
 
-    def input(self):
-        players = []
+    def input(self) -> list[tuple[str, str]]:
+        players: list[tuple[str, str]] = []
         for i in range(self._count):
             nameField = self._textpads[2 * i]
             symbolField = self._textpads[2 * i + 1]
@@ -108,7 +109,7 @@ class PlayerNamesView(View):
 if __name__ == "__main__":
     names = None
 
-    def main(stdscr):
+    def main(stdscr: Any) -> None:
         countView = PlayerCountView(stdscr)
         countView.display()
 

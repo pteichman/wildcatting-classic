@@ -1,6 +1,8 @@
 import curses
 import logging
 import time
+from optparse import Values
+from typing import Any
 
 from wildcatting.client import Wildcatting
 from wildcatting.cmdparse import Command
@@ -17,7 +19,7 @@ from wildcatting.view import (
 class ScreensaverCommand(Command):
     log = logging.getLogger("Wildcatting")
 
-    def __init__(self):
+    def __init__(self) -> None:
         Command.__init__(
             self, "screensaver", summary="avoid character burn-in on your terminals"
         )
@@ -45,14 +47,14 @@ class ScreensaverCommand(Command):
         self.y_border = 2
         self.x_border = 3
 
-    def asciiScreensaver(self):
+    def asciiScreensaver(self) -> None:
         while True:
             game = Game(80, 23)
             field = game.oil_field
             OilFieldTextView(field).ascii()
             time.sleep(0.25)
 
-    def ansiScreensaver(self):
+    def ansiScreensaver(self) -> None:
         try:
             while True:
                 game = Game(80, 23)
@@ -62,7 +64,7 @@ class ScreensaverCommand(Command):
         except Exception:
             print(chr(27) + "[0m")
 
-    def borderWin(self, parent, no_border):
+    def borderWin(self, parent: Any, no_border: bool) -> tuple[int, Any]:
         if no_border:
             win = parent
             border = 0
@@ -80,7 +82,7 @@ class ScreensaverCommand(Command):
 
         return border, win
 
-    def playerScreensaver(self, stdscr, options, args):
+    def playerScreensaver(self, stdscr: Any, options: Values, args: list[str]) -> None:
         border, border_win = self.borderWin(stdscr, options.no_border)
         border_win_h, border_win_w = border_win.getmaxyx()
         height = border_win_h - border * 2
@@ -106,7 +108,7 @@ class ScreensaverCommand(Command):
                 animator.animate()
                 view.display()
 
-    def viewScreensaver(self, stdscr, options, args):
+    def viewScreensaver(self, stdscr: Any, options: Values, args: list[str]) -> None:
         border, border_win = self.borderWin(stdscr, options.no_border)
         border_win_h, border_win_w = border_win.getmaxyx()
         height = border_win_h - border * 2
@@ -126,15 +128,15 @@ class ScreensaverCommand(Command):
             else:
                 view = OilFieldProbabilityView(win, w)
 
-            for row in range(field.get_height()):
-                for col in range(field.get_width()):
+            for row in range(field.height):
+                for col in range(field.width):
                     site = field.get_site(row, col)
-                    site.set_surveyed(True)
+                    site.surveyed = True
 
             view.display()
             time.sleep(0.25)
 
-    def run(self, options, args):
+    def run(self, options: Values, args: list[str]) -> None:
         if options.ascii:
             self.asciiScreensaver()
         elif options.ansi:

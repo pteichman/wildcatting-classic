@@ -8,7 +8,7 @@ from wildcatting.theme import DefaultTheme
 
 
 class TestSeededDeterminism(unittest.TestCase):
-    def test_same_seed_same_field(self):
+    def test_same_seed_same_field(self) -> None:
         random.seed(42)
         field1 = Game(10, 10).oil_field.serialize()
 
@@ -17,7 +17,7 @@ class TestSeededDeterminism(unittest.TestCase):
 
         self.assertEqual(field1, field2)
 
-    def test_different_seeds_differ(self):
+    def test_different_seeds_differ(self) -> None:
         random.seed(1)
         field1 = Game(10, 10).oil_field.serialize()
 
@@ -28,7 +28,7 @@ class TestSeededDeterminism(unittest.TestCase):
 
 
 class TestFieldPropertyRanges(unittest.TestCase):
-    def test_all_sites_within_theme_bounds(self):
+    def test_all_sites_within_theme_bounds(self) -> None:
         theme = DefaultTheme()
         field = Game(20, 20, theme=theme).oil_field
 
@@ -47,14 +47,14 @@ class TestFieldPropertyRanges(unittest.TestCase):
                 self.assertGreaterEqual(site.tax, min_tax)
                 self.assertLessEqual(site.tax, max_tax)
 
-    def test_oil_prices_always_positive(self):
+    def test_oil_prices_always_positive(self) -> None:
         prices = DefaultTheme().get_oil_prices()
         for _ in range(100):
             self.assertGreater(next(prices), 0.0)
 
 
 class TestCompleteGameFlow(unittest.TestCase):
-    def test_idle_two_player_game_completes(self):
+    def test_idle_two_player_game_completes(self) -> None:
         turn_count = 5
         game = Game(10, 10, turnCount=turn_count)
         p1 = Player("alice", "A")
@@ -70,7 +70,7 @@ class TestCompleteGameFlow(unittest.TestCase):
 
         self.assertTrue(game.finished)
 
-    def test_idle_players_pnl_stays_zero(self):
+    def test_idle_players_pnl_stays_zero(self) -> None:
         turn_count = 5
         game = Game(10, 10, turnCount=turn_count)
         p1 = Player("alice", "A")
@@ -91,7 +91,7 @@ class TestCompleteGameFlow(unittest.TestCase):
 
 
 class TestOilDiscovery(unittest.TestCase):
-    def test_drilling_finds_oil_at_correct_depth(self):
+    def test_drilling_finds_oil_at_correct_depth(self) -> None:
         random.seed(42)
         theme = DefaultTheme()
         game = Game(10, 10, theme=theme)
@@ -118,7 +118,9 @@ class TestOilDiscovery(unittest.TestCase):
         well.week = 1
         oil_site.well = well
 
+        assert oil_site.reservoir is not None
         oil_depth = oil_site.reservoir.oil_depth
+        assert oil_depth is not None
 
         for _ in range(oil_depth - 1):
             found, _ = well.drill(oil_site, theme.get_drill_increment())
@@ -133,7 +135,7 @@ class TestOilDiscovery(unittest.TestCase):
 
 
 class TestMultiplayerTurnOrder(unittest.TestCase):
-    def test_three_player_survey_order_across_two_weeks(self):
+    def test_three_player_survey_order_across_two_weeks(self) -> None:
         service = GameService(DefaultTheme())
         client_handle = service.new(10, 10, 5)
         h1 = service.join(client_handle, "alice", "A")

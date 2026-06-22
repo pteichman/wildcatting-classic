@@ -6,7 +6,7 @@ class _Colors:
 
     _colors = {(curses.COLOR_WHITE, curses.COLOR_BLACK): 0}
 
-    def get(self, fg, bg):
+    def get(self, fg: int, bg: int) -> int:
         pair = (fg, bg)
 
         if pair not in self._colors:

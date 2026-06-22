@@ -1,35 +1,31 @@
 # some simple code for formatting text tables
+from collections.abc import Sequence
 
 
-def format_row(elts, widths, sep=" | "):
-
+def format_row(elts: Sequence[str | None], widths: list[int], sep: str = " | ") -> str:
     row = []
     for i in range(len(elts)):
-        if elts[i] is None:
-            elt = ""
-        else:
-            elt = elts[i]
-
+        e = elts[i]
+        elt = "" if e is None else e
         row.append(f"{elt:<{widths[i]}}")
     return sep.join(row)
 
 
-def format_separator(widths):
+def format_separator(widths: list[int]) -> str:
     elts = ["-" * width for width in widths]
     return format_row(elts, widths, "-+-")
 
 
-def format_table(labels, rows):
+def format_table(
+    labels: Sequence[str], rows: Sequence[Sequence[str | None] | None]
+) -> str:
     widths = [len(label) for label in labels]
 
     for row in rows:
         if row is not None:
             for i in range(len(row)):
-                if row[i] is None:
-                    length = 0
-                else:
-                    length = len(row[i])
-
+                e = row[i]
+                length = 0 if e is None else len(e)
                 if length > widths[i]:
                     widths[i] = length
 

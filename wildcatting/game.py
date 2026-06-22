@@ -15,23 +15,26 @@ from .theme import DefaultTheme, Theme
 
 class Filler(abc.ABC):
     @abc.abstractmethod
-    def fill(self, field): ...
+    def fill(self, field: wildcatting.model.OilField) -> None: ...
 
 
 class PeakedFiller(Filler):
-    def fill(self, field):
+    def fill(self, field: wildcatting.model.OilField) -> None:
         assert isinstance(field, wildcatting.model.OilField)
         peaks = self._generate_peaks(field)
         self._fill_model(field, peaks)
 
-    def _cell_roll(self):
+    def _cell_roll(self) -> int | None:
         return None
 
-    def _fill_model(self, model, peaks):
+    def _fill_model(
+        self, model: wildcatting.model.OilField, peaks: list[tuple[int, int]]
+    ) -> None:
         for row in range(model.height):
             for col in range(model.width):
                 # calculate sum of distances from peak
                 minc: float = 99999
+                closest: int = 0
                 for p in range(len(peaks)):
                     (y, x) = peaks[p]
 
@@ -60,129 +63,135 @@ class PeakedFiller(Filler):
                 site = model.get_site(row, col)
                 self.fill_site(site, value, roll)
 
-    def _generate_peaks(self, model):
-        minValue, maxValue = self.get_value_range()
+    def _generate_peaks(
+        self, model: wildcatting.model.OilField
+    ) -> list[tuple[int, int]]:
         maxPeaks = self.get_max_peaks()
-        peaks: list[tuple[int, int] | None] = [None] * random.randint(1, maxPeaks)
-        for i in range(len(peaks)):
-            peaks[i] = (
-                random.randint(0, model.height),
-                random.randint(0, model.width),
-            )
-        return peaks
+        return [
+            (random.randint(0, model.height), random.randint(0, model.width))
+            for _ in range(random.randint(1, maxPeaks))
+        ]
 
     @abc.abstractmethod
-    def get_value_range(self): ...
+    def get_value_range(self) -> tuple[int, int]: ...
 
     @abc.abstractmethod
-    def get_lesser_peak_factor(self): ...
+    def get_lesser_peak_factor(self) -> int | float: ...
 
     @abc.abstractmethod
-    def get_fudge(self): ...
+    def get_fudge(self) -> int | float: ...
 
     @abc.abstractmethod
-    def get_max_peaks(self): ...
+    def get_max_peaks(self) -> int: ...
 
     @abc.abstractmethod
-    def fill_site(self, site, value, roll): ...
+    def fill_site(
+        self, site: wildcatting.model.Site, value: int, roll: int | None
+    ) -> None: ...
 
 
 class OilFiller(PeakedFiller):
-    def __init__(self, theme):
+    def __init__(self, theme: Theme) -> None:
         assert isinstance(theme, Theme)
         self._theme = theme
 
-    def get_value_range(self):
+    def get_value_range(self) -> tuple[int, int]:
         return (10, 100)
 
-    def _cell_roll(self):
+    def _cell_roll(self) -> int:
         return random.randint(0, 100)
 
-    def fill_site(self, site, value, roll):
+    def fill_site(
+        self, site: wildcatting.model.Site, value: int, roll: int | None
+    ) -> None:
         site.probability = value
-        if roll < value:
+        if roll is not None and roll < value:
             site.oil_flag = True
 
-    def get_min_dropoff(self):
+    def get_min_dropoff(self) -> int:
         return self._theme.get_oil_min_dropoff()
 
-    def get_max_dropoff(self):
+    def get_max_dropoff(self) -> int:
         return self._theme.get_oil_max_dropoff()
 
-    def get_max_peaks(self):
+    def get_max_peaks(self) -> int:
         return self._theme.get_oil_max_peaks()
 
-    def get_fudge(self):
+    def get_fudge(self) -> int:
         return self._theme.get_oil_fudge()
 
-    def get_lesser_peak_factor(self):
+    def get_lesser_peak_factor(self) -> int:
         return self._theme.get_oil_lesser_peak_factor()
 
 
 class DrillCostFiller(PeakedFiller):
-    def __init__(self, theme):
+    def __init__(self, theme: Theme) -> None:
         assert isinstance(theme, Theme)
         self._theme = theme
 
-    def get_value_range(self):
+    def get_value_range(self) -> tuple[int, int]:
         return (self._theme.get_min_drill_cost(), self._theme.get_max_drill_cost())
 
-    def fill_site(self, site, discount, roll):
+    def fill_site(
+        self, site: wildcatting.model.Site, discount: int, roll: int | None
+    ) -> None:
         site.drill_cost = self._theme.get_max_drill_cost() - discount
 
-    def get_min_dropoff(self):
+    def get_min_dropoff(self) -> int:
         return self._theme.get_drill_cost_min_dropoff()
 
-    def get_max_dropoff(self):
+    def get_max_dropoff(self) -> int:
         return self._theme.get_drill_cost_max_dropoff()
 
-    def get_max_peaks(self):
+    def get_max_peaks(self) -> int:
         return self._theme.get_drill_cost_max_peaks()
 
-    def get_fudge(self):
+    def get_fudge(self) -> int:
         return self._theme.get_drill_cost_fudge()
 
-    def get_lesser_peak_factor(self):
+    def get_lesser_peak_factor(self) -> int:
         return self._theme.get_drill_cost_lesser_peak_factor()
 
 
 class PotentialOilDepthFiller(PeakedFiller):
-    def __init__(self, theme):
+    def __init__(self, theme: Theme) -> None:
         assert isinstance(theme, Theme)
         self._theme = theme
 
-    def get_value_range(self):
+    def get_value_range(self) -> tuple[int, int]:
         return (1, 10)
 
-    def fill_site(self, site, value, roll):
+    def fill_site(
+        self, site: wildcatting.model.Site, value: int, roll: int | None
+    ) -> None:
         if site.oil_flag:
             site.potential_oil_depth = 11 - value
 
-    def get_min_dropoff(self):
+    def get_min_dropoff(self) -> int:
         return 0
 
-    def get_max_dropoff(self):
+    def get_max_dropoff(self) -> int:
         return 0
 
-    def get_max_peaks(self):
+    def get_max_peaks(self) -> int:
         return 10
 
-    def get_fudge(self):
+    def get_fudge(self) -> int:
         return 0
 
-    def get_lesser_peak_factor(self):
+    def get_lesser_peak_factor(self) -> int:
         return 1
 
 
 class ReservoirFiller(Filler):
     log = logging.getLogger("Wildcatting")
 
-    def __init__(self, theme):
+    def __init__(self, theme: Theme) -> None:
         assert isinstance(theme, Theme)
 
         self._theme = theme
 
-    def fill(self, field):
+    def fill(self, field: wildcatting.model.OilField) -> None:
         height, width = field.height, field.width
         reservoir_count = 0
         site_count = 0
@@ -191,7 +200,7 @@ class ReservoirFiller(Filler):
                 site = field.get_site(row, col)
                 if not site.oil_flag:
                     continue
-                adjacentSites = []
+                adjacentSites: list[wildcatting.model.Site] = []
                 for adjacentRow, adjacentCol in [(row + 1, col), (row, col + 1)]:
                     if adjacentRow >= height or adjacentCol >= width:
                         continue
@@ -206,18 +215,22 @@ class ReservoirFiller(Filler):
             "Created %d reservoirs covering %d sites", reservoir_count, site_count
         )
 
-    def _get_initial_reserves(self):
+    def _get_initial_reserves(self) -> int:
         reserves = int(
             max(0.1, random.gauss(1, 1)) * self._theme.get_mean_site_reserves()
         )
         return reserves
 
-    def _depth_bracket(self, depth):
+    def _depth_bracket(self, depth: int | None) -> int:
         if depth is None:
             return -1
         return int(depth * 1.0 / 9 * 6)
 
-    def _fill_site(self, site, adjacentSites):
+    def _fill_site(
+        self,
+        site: wildcatting.model.Site,
+        adjacentSites: list[wildcatting.model.Site],
+    ) -> tuple[int, int]:
         initialDepth = site.potential_oil_depth
         reservoir_count = 0
         site_count = 0
@@ -243,11 +256,11 @@ class ReservoirFiller(Filler):
 
 
 class TaxFiller:
-    def __init__(self, theme):
+    def __init__(self, theme: Theme) -> None:
         assert isinstance(theme, Theme)
         self._theme = theme
 
-    def fill(self, field):
+    def fill(self, field: wildcatting.model.OilField) -> None:
         assert isinstance(field, wildcatting.model.OilField)
 
         for row in range(field.height):
@@ -261,7 +274,9 @@ class TaxFiller:
 class Game:
     log = logging.getLogger("Wildcatting")
 
-    def __init__(self, width, height, turnCount=13, theme=None):
+    def __init__(
+        self, width: int, height: int, turnCount: int = 13, theme: Theme | None = None
+    ) -> None:
         assert isinstance(width, int)
         assert isinstance(height, int)
         assert isinstance(turnCount, int)
@@ -273,13 +288,13 @@ class Game:
 
         self._turnCount = turnCount
         self._theme = theme
-        self._players = {}
-        self._playerOrder = []
-        self._isStarted = False
-        self._isFinished = False
-        self._weekNum = 0
-        self._clients = {}
-        self._clientUpdates = {}
+        self._players: dict[str, wildcatting.model.Player] = {}
+        self._playerOrder: list[wildcatting.model.Player] = []
+        self._isStarted: bool = False
+        self._isFinished: bool = False
+        self._weekNum: int = 0
+        self._clients: dict[str, list[wildcatting.model.Player]] = {}
+        self._clientUpdates: dict[str, list[wildcatting.model.Site]] = {}
 
         self._prices = theme.get_oil_prices()
 
@@ -290,18 +305,18 @@ class Game:
         DrillCostFiller(theme).fill(self._oilField)
         TaxFiller(theme).fill(self._oilField)
 
-    def _new_client_id(self):
+    def _new_client_id(self) -> str:
         clientId = self._generate_secret()
         self._clientUpdates[clientId] = []
         return clientId
 
-    def _generate_secret(self):
+    def _generate_secret(self) -> str:
         return secrets.token_hex(8).upper()
 
-    def get_client_players(self, clientId):
+    def get_client_players(self, clientId: str) -> list[wildcatting.model.Player]:
         return self._clients.get(clientId, [])
 
-    def add_player(self, clientId, player):
+    def add_player(self, clientId: str, player: wildcatting.model.Player) -> None:
         assert isinstance(player, wildcatting.model.Player)
 
         playerNames = [p.username for p in list(self._players.values())]
@@ -319,12 +334,12 @@ class Game:
         self._clients.setdefault(clientId, []).append(player)
 
     @property
-    def master(self):
+    def master(self) -> wildcatting.model.Player | None:
         if len(self._playerOrder) > 0:
             return self._playerOrder[0]
         return None
 
-    def get_player(self, username, secret):
+    def get_player(self, username: str, secret: str) -> wildcatting.model.Player:
         if not isinstance(username, str) or not isinstance(secret, str):
             raise WildcattingException("Invalid login")
 
@@ -335,16 +350,16 @@ class Game:
 
         return player
 
-    def get_players(self):
+    def get_players(self) -> list[wildcatting.model.Player]:
         # return a copy, since we don't want outside callers to be able
         # to modify the order
         return self._playerOrder[:]
 
-    def start(self):
+    def start(self) -> None:
         self._isStarted = True
         self._next_week()
 
-    def _next_week(self):
+    def _next_week(self) -> None:
         self._weekNum = self._weekNum + 1
 
         price = next(self._prices)
@@ -355,14 +370,14 @@ class Game:
             self._finish()
 
     @property
-    def week(self):
+    def week(self) -> wildcatting.week.Week:
         return self._week
 
     @property
-    def started(self):
+    def started(self) -> bool:
         return self._isStarted
 
-    def _finish(self):
+    def _finish(self) -> None:
         self._isFinished = True
 
         players = sorted(self._players.values(), key=lambda p: -p.profit_and_loss)
@@ -372,13 +387,15 @@ class Game:
         self.log.info("Game is finished.  Scores: %s", ", ".join(playerStrs))
 
     @property
-    def finished(self):
+    def finished(self) -> bool:
         return self._isFinished
 
-    def drill(self, row, col):
+    def drill(self, row: int, col: int) -> bool:
         site = self._oilField.get_site(row, col)
         well = site.well
+        assert well is not None
         foundOil, cost = well.drill(site, self._theme.get_drill_increment())
+        assert well.player is not None
         well.player.expense(cost)
 
         if foundOil:
@@ -390,32 +407,34 @@ class Game:
 
         return foundOil
 
-    def end_turn(self, player):
+    def end_turn(self, player: wildcatting.model.Player) -> None:
         self._week.end_turn(player)
 
         if self._week.finished:
             self._next_week()
 
     @property
-    def weekly_summary(self):
+    def weekly_summary(self) -> wildcatting.model.WeeklySummary:
         return wildcatting.model.WeeklySummary(self._playerOrder, self._weekNum)
 
-    def mark_site_updated(self, player, site):
+    def mark_site_updated(
+        self, player: wildcatting.model.Player, site: wildcatting.model.Site
+    ) -> None:
         for updateClient in self._clientUpdates:
             if player not in self._clients[updateClient]:
                 updateSites = self._clientUpdates[updateClient]
                 if site not in updateSites:
                     updateSites.append(site)
 
-    def pop_updated_sites(self, clientId):
+    def pop_updated_sites(self, clientId: str) -> list[wildcatting.model.Site]:
         updates = self._clientUpdates[clientId]
         self._clientUpdates[clientId] = []
         return updates
 
     @property
-    def oil_price(self):
+    def oil_price(self) -> float:
         return self._week.price
 
     @property
-    def oil_field(self):
+    def oil_field(self) -> wildcatting.model.OilField:
         return self._oilField

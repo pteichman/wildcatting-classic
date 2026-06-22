@@ -7,7 +7,7 @@ from wildcatting.theme import DefaultTheme
 
 
 class TestGameService(unittest.TestCase):
-    def testGameStart(self):
+    def testGameStart(self) -> None:
         service = GameService(DefaultTheme())
 
         name1 = "alice"
@@ -22,7 +22,7 @@ class TestGameService(unittest.TestCase):
         service.start(handle1)
         self.assertEqual(True, service.is_started(handle1))
 
-    def testShortGame(self):
+    def testShortGame(self) -> None:
         # start a game, survey once by each player
         service = GameService(DefaultTheme())
 
@@ -93,7 +93,7 @@ class TestGameService(unittest.TestCase):
         self.assertEqual(True, service.is_finished(handle1))
         self.assertEqual(True, service.is_finished(handle2))
 
-    def testDrilling(self):
+    def testDrilling(self) -> None:
         # start a game, survey once by each player
         service = GameService(DefaultTheme())
 
@@ -118,10 +118,11 @@ class TestGameService(unittest.TestCase):
         site = Site.deserialize(service.erect(handle1, x, y))
 
         well = site.well
+        assert well is not None
         while well.output is None and well.drill_depth < 10:
             well = Well.deserialize(service.drill(handle1, x, y))
 
-    def testSneakyErecting(self):
+    def testSneakyErecting(self) -> None:
         # start a game, survey once by each player
         service = GameService(DefaultTheme())
 
@@ -146,7 +147,7 @@ class TestGameService(unittest.TestCase):
         # make sure we can't erect elsewhere
         self.assertRaises(WildcattingException, service.survey, handle1, 0, 1)
 
-    def testSneakyDrilling(self):
+    def testSneakyDrilling(self) -> None:
         # start a game, survey once by each player
         service = GameService(DefaultTheme())
 
@@ -174,7 +175,7 @@ class TestGameService(unittest.TestCase):
         Well.deserialize(service.drill(handle1, x, y))
         self.assertRaises(WildcattingException, service.drill, handle1, x, y + 1)
 
-    def testSimultaneousGame(self):
+    def testSimultaneousGame(self) -> None:
         # start a game, survey once by each player
         service = GameService(DefaultTheme())
 
@@ -208,7 +209,7 @@ class TestGameService(unittest.TestCase):
         service.end_turn(handle1)
         service.end_turn(handle2)
 
-    def testGameWithoutSurvey(self):
+    def testGameWithoutSurvey(self) -> None:
         service = GameService(DefaultTheme())
 
         name1 = "alice"

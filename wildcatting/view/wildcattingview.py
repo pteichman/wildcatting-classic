@@ -3,10 +3,12 @@ import logging
 import random
 import textwrap
 from dataclasses import dataclass
+from typing import Any
 
 from wildcatting.colors import Colors
 
 from .oilfieldview import (
+    OilFieldCursesView,
     OilFieldDepthView,
     OilFieldDrillCostView,
     OilFieldProbabilityView,
@@ -32,16 +34,16 @@ def _drill_key(c: int) -> DrillInput:
 class DrillView(View):
     log = logging.getLogger("Wildcatting")
 
-    def __init__(self, stdscr, site, setting):
+    def __init__(self, stdscr: Any, site: Any, setting: Any) -> None:
         self._stdscr = stdscr
         self._site = site
         self._setting = setting
-        self._msg = None
+        self._msg: str | None = None
 
-    def set_message(self, msg):
+    def set_message(self, msg: str) -> None:
         self._msg = msg
 
-    def display(self):
+    def display(self) -> None:
         self._stdscr.clear()
 
         drillDepth = self._site.well.drill_depth * self._setting.drill_increment
@@ -116,7 +118,7 @@ class WildcattingView(View):
     TOP_PADDING = TOP_BORDER * 2 + 3
     SIDE_PADDING = SIDE_BORDER * 2 + 2
 
-    def __init__(self, stdscr, wildcatting_, setting):
+    def __init__(self, stdscr: Any, wildcatting_: Any, setting: Any) -> None:
         View.__init__(self, stdscr)
 
         self._wildcatting = wildcatting_
@@ -143,14 +145,14 @@ class WildcattingView(View):
         self._views = [probView, drillCostView, depthView]
         self._currentView = 0
 
-        self._week = None
-        self._fact = None
+        self._week: str | None = None
+        self._fact: str | None = None
 
         self._fh, self._fw = self._field_win.getmaxyx()
         self._colorChooser = ProbabilityColorChooser()
         self._x, self._y = 0, 0
 
-    def _draw_border(self):
+    def _draw_border(self) -> None:
         (h, w) = self._stdscr.getmaxyx()
         location = self._setting.location
         era = self._setting.era
@@ -177,12 +179,13 @@ class WildcattingView(View):
 
             if newWeek:
                 self._fact = random.choice(self._setting.facts)
-            wrapped = self._wrap_fact(self._fact, " " * 4, w - 8)
-            self._stdscr.addstr(h - 3, 0, wrapped)
+            if self._fact is not None:
+                wrapped = self._wrap_fact(self._fact, " " * 4, w - 8)
+                self._stdscr.addstr(h - 3, 0, wrapped)
 
         self._border_win.box()
 
-    def _wrap_fact(self, fact, indent, width):
+    def _wrap_fact(self, fact: str, indent: str, width: int) -> str:
         """Wrap a fact across three lines"""
         lines = textwrap.wrap(
             fact,
@@ -198,7 +201,7 @@ class WildcattingView(View):
 
         return "\n".join(lines)
 
-    def _draw_key_bar(self):
+    def _draw_key_bar(self) -> None:
         border_h, border_w = self._border_win.getmaxyx()
         colors = list(self._colorChooser.get_colors())
         colors.reverse()
@@ -247,13 +250,13 @@ class WildcattingView(View):
 
         self._border_win.refresh()
 
-    def _get_current_view(self):
+    def _get_current_view(self) -> OilFieldCursesView:
         return self._views[self._currentView]
 
-    def _next_view(self):
+    def _next_view(self) -> None:
         self._currentView = (self._currentView + 1) % len(self._views)
 
-    def indicate_turn(self):
+    def indicate_turn(self) -> None:
         border_h, border_w = self._border_win.getmaxyx()
 
         blackOnGreen = Colors.get(curses.COLOR_BLACK, curses.COLOR_GREEN)
@@ -270,13 +273,13 @@ class WildcattingView(View):
         self._border_win.refresh()
         self._field_win.refresh()
 
-    def display(self):
+    def display(self) -> None:
         curses.curs_set(1)
         self._stdscr.clear()
         self._draw_border()
         self._get_current_view().display()
 
-    def input(self, c=None, refresh=50) -> WildcattingInput:
+    def input(self, c: int | None = None, refresh: int = 50) -> WildcattingInput:
         self._stdscr.move(self._y + 2, self._x + 4)
         self._field_win.refresh()
         curses.curs_set(0)
@@ -302,7 +305,7 @@ class WildcattingView(View):
         )
         return action
 
-    def animate_game_end(self):
+    def animate_game_end(self) -> None:
         curses.curs_set(0)
         self._draw_key_bar()
         self._get_current_view().animate_game_end()

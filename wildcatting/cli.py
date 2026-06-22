@@ -12,7 +12,7 @@ from wildcatting import (
 from wildcatting.cmdparse import CommandParser
 
 
-def main():
+def main() -> None:
     parser = CommandParser()
     parser.add_option(
         "", "--debug", action="store_true", help="enable debugging output"

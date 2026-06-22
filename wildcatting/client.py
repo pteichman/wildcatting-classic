@@ -1,6 +1,7 @@
 import curses
 import logging
 import time
+from typing import Any
 
 from wildcatting.model import (
     ClientInfo,
@@ -27,19 +28,19 @@ from .view import (
 
 
 class Wildcatting:
-    def __init__(self):
-        self.player_field = None
-        self.week = 0
-        self.oil_price = 0
-        self.players_turn = None
-        self.pending_players = []
-        self.game_finished = False
+    def __init__(self) -> None:
+        self.player_field: OilField | None = None
+        self.week: int = 0
+        self.oil_price: float = 0
+        self.players_turn: str | None = None
+        self.pending_players: list[str] = []
+        self.game_finished: bool = False
 
-    def update_player_field(self, site):
+    def update_player_field(self, site: Site) -> None:
         assert self.player_field is not None
         self.player_field.set_site(site.row, site.col, site)
 
-    def update(self, update):
+    def update(self, update: Update) -> tuple[bool, bool]:
         gameFinished = update.game_finished
         week = update.week
         playersTurn = update.players_turn
@@ -72,20 +73,26 @@ class Client:
     log = logging.getLogger("Wildcatting")
     _server: ServerProtocol
 
-    def __init__(self, weeks, gameId, connectHandle, connectPlayer):
-        self._connectGameId = gameId
-        self._connectHandle = connectHandle
-        self._connectPlayers = None
-        self._weeks = weeks
+    def __init__(
+        self,
+        weeks: int,
+        gameId: str | None,
+        connectHandle: str | None,
+        connectPlayer: tuple[str, str] | None,
+    ) -> None:
+        self._connectGameId: str | None = gameId
+        self._connectHandle: str | None = connectHandle
+        self._connectPlayers: list[tuple[str, str]] | None = None
+        self._weeks: int = weeks
 
         if connectPlayer is not None:
             self._connectPlayers = [connectPlayer]
 
-        self._clientInfo = None
+        self._clientInfo: ClientInfo | None = None
 
         self._wildcatting = Wildcatting()
 
-    def _connect_to_game(self):
+    def _connect_to_game(self) -> None:
         if self._connectHandle is not None:
             self.log.info("Reconnecting to handle: %s", self._connectHandle)
         else:
@@ -111,12 +118,13 @@ class Client:
             self._server.game.get_client_info(self._connectHandle)
         )
 
-    def _get_current_handle(self):
+    def _get_current_handle(self) -> str:
         assert self._clientInfo is not None
         player = self._wildcatting.players_turn
+        assert player is not None
         return self._clientInfo.get_player_handle(player)
 
-    def _run_pre_game(self):
+    def _run_pre_game(self) -> None:
         assert self._clientInfo is not None
         gameId = self._clientInfo.game_id
         handle = self._clientInfo.client_handle
@@ -139,13 +147,13 @@ class Client:
                 masterHandle = self._clientInfo.get_player_handle(master)
                 self._server.game.start(masterHandle)
 
-    def _get_new_player_field(self):
+    def _get_new_player_field(self) -> None:
         assert self._clientInfo is not None
         handle = self._clientInfo.client_handle
         playerField = OilField.deserialize(self._server.game.get_player_field(handle))
         self._wildcatting.player_field = playerField
 
-    def _survey(self, row, col):
+    def _survey(self, row: int, col: int) -> bool:
         assert self._wildcatting.player_field is not None
         site = self._wildcatting.player_field.get_site(row, col)
         surveyed = site.surveyed
@@ -159,19 +167,20 @@ class Client:
         report.display()
         return report.input()
 
-    def _drill_a_well(self, row, col):
+    def _drill_a_well(self, row: int, col: int) -> None:
         site = Site.deserialize(
             self._server.game.erect(self._get_current_handle(), row, col)
         )
         self._wildcatting.update_player_field(site)
-        if site.well.output is None:
+        if site.well is None or site.well.output is None:
             self._run_drill(row, col)
 
-    def _run_drill(self, row, col):
+    def _run_drill(self, row: int, col: int) -> Site:
         assert self._wildcatting.player_field is not None
         last_stop = False
         site = self._wildcatting.player_field.get_site(row, col)
         drillView = DrillView(self._stdscr, site, self._setting)
+        assert site.well is not None
         while site.well.output is None and site.well.drill_depth < 10:
             drillView.display()
             action = drillView.input()
@@ -198,9 +207,10 @@ class Client:
 
         return site
 
-    def _end_turn(self):
+    def _end_turn(self) -> None:
         assert self._clientInfo is not None
         player = self._wildcatting.players_turn
+        assert player is not None
         handle = self._clientInfo.get_player_handle(player)
         u, wellUpdates = self._server.game.end_turn(handle)
         if u is not None:
@@ -219,10 +229,11 @@ class Client:
         if weekUpdated and not self._wildcatting.game_finished:
             self._run_weekly_summary()
 
-    def _run_weekly_report(self):
+    def _run_weekly_report(self) -> None:
         assert self._wildcatting.player_field is not None
         assert self._clientInfo is not None
         player = self._wildcatting.players_turn
+        assert player is not None
         handle = self._clientInfo.get_player_handle(player)
         symbol = self._clientInfo.get_player_symbol(player)
 
@@ -244,7 +255,7 @@ class Client:
             if action.sell is not None:
                 row, col = action.sell
                 site = self._wildcatting.player_field.get_site(row, col)
-                if site.well.sold:
+                if site.well is not None and site.well.sold:
                     continue
                 self._server.game.sell(handle, row, col)
                 site = Site.deserialize(
@@ -267,7 +278,7 @@ class Client:
             if action.next_player:
                 break
 
-    def _run_weekly_summary(self):
+    def _run_weekly_summary(self) -> None:
         assert self._clientInfo is not None
         report = WeeklySummary.deserialize(
             self._server.game.get_weekly_summary(self._clientInfo.client_handle)
@@ -278,24 +289,27 @@ class Client:
         while not weeklySummaryView.input():
             pass
 
-    def _update_wildcatting(self):
+    def _update_wildcatting(self) -> tuple[bool, bool]:
         assert self._clientInfo is not None
         update = Update.deserialize(
             self._server.game.get_update(self._clientInfo.client_handle)
         )
         return self._wildcatting.update(update)
 
-    def _is_my_turn(self):
+    def _is_my_turn(self) -> bool:
         assert self._clientInfo is not None
-        return self._clientInfo.has_player(self._wildcatting.players_turn)
+        player = self._wildcatting.players_turn
+        if player is None:
+            return False
+        return self._clientInfo.has_player(player)
 
-    def _get_available_field_size(self):
+    def _get_available_field_size(self) -> tuple[int, int]:
         (h, w) = self._stdscr.getmaxyx()
         availableWidth = w - WildcattingView.SIDE_PADDING
         availableHeight = h - WildcattingView.TOP_PADDING
         return availableWidth, availableHeight
 
-    def _input_user_names(self, stdscr):
+    def _input_user_names(self, stdscr: Any) -> None:
         countView = PlayerCountView(stdscr)
         countView.display()
 
@@ -306,7 +320,7 @@ class Client:
 
         self._connectPlayers = namesView.input()
 
-    def wildcatting(self, stdscr):
+    def wildcatting(self, stdscr: Any) -> None:
         self._stdscr = stdscr
 
         if self._connectPlayers is None:

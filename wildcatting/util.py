@@ -2,7 +2,7 @@ import logging
 from logging.handlers import RotatingFileHandler
 
 
-def startLogger(filename):
+def startLogger(filename: str) -> None:
     root = logging.getLogger()
 
     # This specifies the deepest possible log level, so our handlers

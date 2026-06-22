@@ -1,5 +1,6 @@
 import logging
 import socket
+from optparse import Values
 
 import wildcatting.server
 import wildcatting.theme
@@ -11,7 +12,7 @@ from wildcatting.cmdparse import Command
 class ServerCommand(Command):
     log = logging.getLogger("Wildcatting")
 
-    def __init__(self):
+    def __init__(self) -> None:
         Command.__init__(self, "server", summary="Run the Wildcatting server")
         self.add_option(
             "-n",
@@ -30,7 +31,7 @@ class ServerCommand(Command):
             help="server port",
         )
 
-    def run(self, options, args):
+    def run(self, options: Values, args: list[str]) -> None:
         wildcatting.util.startLogger("server.log")
 
         host = options.host

@@ -5,11 +5,11 @@ from wildcatting.week import Week
 
 
 class TestWeek(unittest.TestCase):
-    def testGetOilPrice(self):
+    def testGetOilPrice(self) -> None:
         week = Week(1, [Player("alice", "A")], 5.00)
         self.assertAlmostEqual(5.00, week.price)
 
-    def testFirstSurveyTurn(self):
+    def testFirstSurveyTurn(self) -> None:
         players = []
         players.append(Player("alice", "A"))
         players.append(Player("bob", "B"))
@@ -18,7 +18,7 @@ class TestWeek(unittest.TestCase):
 
         self.assertEqual(players[0], week.survey_player)
 
-    def testTurnProgression(self):
+    def testTurnProgression(self) -> None:
         players = []
         players.append(Player("alice", "A"))
         players.append(Player("bob", "B"))

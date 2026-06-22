@@ -1,6 +1,7 @@
 import curses
 import logging
 from dataclasses import dataclass
+from typing import Any
 
 from .oilfieldview import ProbabilityColorChooser
 from .view import View
@@ -53,7 +54,7 @@ def _report_action(c: int, cursor_turn: int | None, report_dict: dict) -> Report
 
 
 class WeeklySummaryView(View):
-    def __init__(self, stdscr, report):
+    def __init__(self, stdscr: Any, report: Any) -> None:
         View.__init__(self, stdscr)
 
         self._report = report
@@ -61,7 +62,7 @@ class WeeklySummaryView(View):
         (h, w) = self._stdscr.getmaxyx()
         self._win = self._stdscr.derwin(16, 48, (h - 16) // 2, (w - 48) // 2)
 
-    def display(self, gameFinished=False):
+    def display(self, gameFinished: bool = False) -> None:
         self._stdscr.clear()
         self._stdscr.refresh()
 
@@ -103,7 +104,7 @@ class WeeklySummaryView(View):
 class WeeklyReportView(View):
     log = logging.getLogger("Wildcatting")
 
-    def __init__(self, stdscr, report, field):
+    def __init__(self, stdscr: Any, report: Any, field: Any) -> None:
         View.__init__(self, stdscr)
 
         self._report = report
@@ -115,13 +116,13 @@ class WeeklyReportView(View):
 
         self._cursor = _ReportCursor(page=(report.week - 1) // 13)
 
-    def set_report(self, report):
+    def set_report(self, report: Any) -> None:
         self._report = report
 
-    def set_field(self, field):
+    def set_field(self, field: Any) -> None:
         self._field = field
 
-    def display(self):
+    def display(self) -> None:
         self._stdscr.clear()
         self._stdscr.refresh()
         (h, w) = self._win.getmaxyx()
@@ -183,7 +184,7 @@ class WeeklyReportView(View):
         self._move_cursor()
         self._win.refresh()
 
-    def _move_cursor(self):
+    def _move_cursor(self) -> None:
         turn, page = self._cursor.turn, self._cursor.page
         row = 15 if turn is None else turn - (page * 13) + 1
         self._win.move(row, 0)
@@ -204,7 +205,7 @@ class WeeklyReportView(View):
         self._win.refresh()
         return action
 
-    def input(self):
+    def input(self) -> ReportInput:
         curses.cbreak()
         try:
             return self._input()
@@ -213,7 +214,7 @@ class WeeklyReportView(View):
 
 
 class SurveyorsReportView(View):
-    def __init__(self, stdscr, site, surveyed):
+    def __init__(self, stdscr: Any, site: Any, surveyed: bool) -> None:
         View.__init__(self, stdscr)
 
         self._site = site
@@ -221,7 +222,7 @@ class SurveyorsReportView(View):
         (h, w) = self._stdscr.getmaxyx()
         self._win = self._stdscr.derwin(16, 48, (h - 16) // 2, (w - 48) // 2)
 
-    def display(self):
+    def display(self) -> None:
         self._stdscr.clear()
         self._stdscr.refresh()
 
@@ -251,7 +252,7 @@ class SurveyorsReportView(View):
 
         self._win.refresh()
 
-    def input(self):
+    def input(self) -> bool:
         (h, w) = self._stdscr.getmaxyx()
         (wh, ww) = self._win.getmaxyx()
         done = False
@@ -303,7 +304,9 @@ class SurveyorsReportView(View):
 class PregameReportView(View):
     log = logging.getLogger("Wildcatting")
 
-    def __init__(self, stdscr, gameId, isMaster, players):
+    def __init__(
+        self, stdscr: Any, gameId: str, isMaster: bool, players: list[str]
+    ) -> None:
         View.__init__(self, stdscr)
 
         self._gameId = gameId
@@ -313,7 +316,7 @@ class PregameReportView(View):
         (h, w) = self._stdscr.getmaxyx()
         self._win = self._stdscr.derwin(16, 48, (h - 16) // 2, (w - 48) // 2)
 
-    def display(self):
+    def display(self) -> None:
         self._stdscr.clear()
         self._stdscr.refresh()
 
@@ -334,7 +337,7 @@ class PregameReportView(View):
 
         self._win.refresh()
 
-    def input(self):
+    def input(self) -> bool:
         (h, w) = self._stdscr.getmaxyx()
         (wh, ww) = self._win.getmaxyx()
 

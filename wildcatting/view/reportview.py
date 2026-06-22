@@ -43,7 +43,8 @@ def _report_key(
             return cursor_turn, page, ReportInput(next_player=True)
         if cursor_turn in report_dict:
             row_dict = report_dict[cursor_turn]
-            return cursor_turn, page, ReportInput(sell=(row_dict["row"], row_dict["col"]))
+            sell = (row_dict["row"], row_dict["col"])
+            return cursor_turn, page, ReportInput(sell=sell)
     return cursor_turn, page, ReportInput()
 
 

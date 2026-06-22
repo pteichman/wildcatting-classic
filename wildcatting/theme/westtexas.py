@@ -2,10 +2,10 @@ from wildcatting.oilprices import TrendingGaussianPrices
 from wildcatting.theme.theme import Theme
 from wildcatting.welltheory import SimpleWellTheory
 
-# we don't want to send _rawFacts into our importers' namespaces
+# we don't want to send _raw_facts into our importers' namespaces
 __all__ = ["WestTexas"]
 
-_rawFacts = """
+_raw_facts = """
 Anadarko will rule the world as we know it. They don't like partners, they now own the UPR strip, much of which is now looking like the biggest gas basins in the US, and they like to drill.
 Everywhere. East Texas Bossier. Cotton Valley. James Lime. Austin Chalk. Just heard of a new hot play? Anadarko probably started it and owns it.
 Bud Brigham is a geophysicist who believed in technology. He rode high and he fell hard.
@@ -66,7 +66,7 @@ Texas is more than an area. Texas is an idea and an experience that transcends p
 class WestTexas(Theme):
     def __init__(self) -> None:
         Theme.__init__(self)
-        self._load_facts(_rawFacts)
+        self._load_facts(_raw_facts)
         self._wellTheory = SimpleWellTheory(self.get_max_output())
         self._prices = TrendingGaussianPrices(4.50, 1.0, 25.0, 8.0, 5.0)
 

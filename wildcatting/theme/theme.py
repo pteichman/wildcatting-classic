@@ -14,9 +14,9 @@ class Theme(abc.ABC):
     def __init__(self) -> None:
         self._facts: list[str] = []
 
-    def _load_facts(self, rawFacts: str) -> None:
+    def _load_facts(self, raw_facts: str) -> None:
         facts = []
-        for line in rawFacts.split("\n"):
+        for line in raw_facts.split("\n"):
             fact = line.strip()
             if fact == "":
                 continue

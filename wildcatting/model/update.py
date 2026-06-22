@@ -10,15 +10,15 @@ class Update(Serializable):
     def __init__(
         self,
         week: int,
-        oilPrice: float,
-        playersTurn: str | None,
-        pendingPlayers: list[str],
-        gameFinished: bool,
+        oil_price: float,
+        players_turn: str | None,
+        pending_players: list[str],
+        game_finished: bool,
         sites: "list[Site]",
     ) -> None:
         self.week = week
-        self.oil_price = oilPrice
-        self.players_turn = playersTurn
-        self.pending_players = pendingPlayers
-        self.game_finished = gameFinished
+        self.oil_price = oil_price
+        self.players_turn = players_turn
+        self.pending_players = pending_players
+        self.game_finished = game_finished
         self.sites = sites

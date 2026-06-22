@@ -35,7 +35,7 @@ class TestDrilling(unittest.TestCase):
         oil_depth = 3
         site = Site(0, 0)
         site.drill_cost = 1
-        reservoir = Reservoir(initialDepth=oil_depth, initialReserves=500)
+        reservoir = Reservoir(initial_depth=oil_depth, initial_reserves=500)
         site.reservoir = reservoir
 
         player = Player("alice", "A")

@@ -239,7 +239,7 @@ class WildcattingView(View):
                     longest_label = len(view.get_key_label())
 
             players = self._wildcatting.pending_players
-            label = " WAITING FOR {}".format(", ".join(players).upper())
+            label = f" WAITING FOR {', '.join(players).upper()}"
             self.add_left(
                 self._border_win,
                 border_h - 2,

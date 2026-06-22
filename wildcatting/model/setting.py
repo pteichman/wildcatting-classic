@@ -40,8 +40,8 @@ class Setting(Serializable):
 
     @property
     def price_format(self) -> str:
-        return self._priceFormat
+        return self._price_format
 
     @price_format.setter
-    def price_format(self, priceFormat: str) -> None:
-        self._priceFormat = priceFormat
+    def price_format(self, price_format: str) -> None:
+        self._price_format = price_format

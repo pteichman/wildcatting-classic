@@ -8,13 +8,13 @@ from wildcatting.welltheory import SimpleWellTheory
 
 class TestReservoir(unittest.TestCase):
     def test_pump_forbids_drawing_last_barrel(self) -> None:
-        reservoir = Reservoir(initialDepth=5, initialReserves=10)
+        reservoir = Reservoir(initial_depth=5, initial_reserves=10)
         reservoir.pump(9)  # leaves 1 barrel
         with self.assertRaises(AssertionError):
             reservoir.pump(1)  # 1 is not < 1
 
     def test_ratio_pumped_monotonically_increases(self) -> None:
-        reservoir = Reservoir(initialDepth=5, initialReserves=100)
+        reservoir = Reservoir(initial_depth=5, initial_reserves=100)
         prev = reservoir.ratio_pumped()
         self.assertEqual(prev, 0.0)
 
@@ -26,7 +26,7 @@ class TestReservoir(unittest.TestCase):
             prev = current
 
     def test_join_averages_oil_depth(self) -> None:
-        reservoir = Reservoir(initialDepth=4, initialReserves=100)
+        reservoir = Reservoir(initial_depth=4, initial_reserves=100)
         reservoir.join(6, 100)
         self.assertEqual(reservoir.oil_depth, 5)  # floor((4+6)/2)
 
@@ -38,7 +38,7 @@ class TestWellOutputBounds(unittest.TestCase):
         player = Player("alice", "A")
         site = Site(0, 0)
         site.tax = 0
-        reservoir = Reservoir(initialDepth=5, initialReserves=reserves)
+        reservoir = Reservoir(initial_depth=5, initial_reserves=reserves)
         site.reservoir = reservoir
         well = Well(week=1, player=player)
         site.well = well

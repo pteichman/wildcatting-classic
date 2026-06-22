@@ -15,11 +15,11 @@ class WeeklyReport:
 
     def __init__(
         self,
-        field: OilField,
+        field: "OilField",
         username: str,
         symbol: str,
         week: int,
-        setting: Setting,
+        setting: "Setting",
         oil_price: float,
     ) -> None:
         self.username = username
@@ -32,15 +32,14 @@ class WeeklyReport:
 
         self.report_dict = self._build_report_dict(field)
 
-    def _build_report_dict(self, field: OilField) -> dict[int | None, dict[str, Any]]:
+    def _build_report_dict(self, field: "OilField") -> dict[int | None, dict[str, Any]]:
         sites: dict[int | None, dict[str, Any]] = {}
         for row in range(field.height):
             for col in range(field.width):
                 site = field.get_site(row, col)
                 well = site.well
                 if well and (
-                    well.player is not None
-                    and well.player.username == self.username
+                    well.player is not None and well.player.username == self.username
                 ):
                     output = well.output
                     if output is None:

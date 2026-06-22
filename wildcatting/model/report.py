@@ -7,7 +7,7 @@ if TYPE_CHECKING:
 
 
 class WeeklySummary(Serializable):
-    def __init__(self, player_order: list[Player], week: int) -> None:
+    def __init__(self, player_order: "list[Player]", week: int) -> None:
         self._player_order = player_order
         self.week = week
 

@@ -6,7 +6,7 @@ if TYPE_CHECKING:
 
 
 class Turn:
-    def __init__(self, week: int, player: Player) -> None:
+    def __init__(self, week: int, player: "Player") -> None:
         self.week: int = week
         self.player: Player = player
         self.drilled_site: Site | None = None

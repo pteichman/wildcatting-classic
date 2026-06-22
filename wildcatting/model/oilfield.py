@@ -18,7 +18,7 @@ class OilField(Serializable):
         ]
 
     def tick(
-        self, oil_price: float, well_theory: SimpleWellTheory, current_week: int
+        self, oil_price: float, well_theory: "SimpleWellTheory", current_week: int
     ) -> None:
         for row in self._rows:
             for site in row:
@@ -106,11 +106,11 @@ class Site(Serializable):
         self._tax = tax
 
     @property
-    def reservoir(self) -> Reservoir | None:
+    def reservoir(self) -> "Reservoir | None":
         return self.__reservoir
 
     @reservoir.setter
-    def reservoir(self, reservoir: Reservoir | None) -> None:
+    def reservoir(self, reservoir: "Reservoir | None") -> None:
         self.__reservoir = reservoir
 
     @property
@@ -122,7 +122,7 @@ class Site(Serializable):
         self.__oil_flag = oil_flag
 
     def tick(
-        self, oil_price: float, well_theory: SimpleWellTheory, current_week: int
+        self, oil_price: float, well_theory: "SimpleWellTheory", current_week: int
     ) -> None:
         if self._well is not None:
             reservoir = self.__reservoir

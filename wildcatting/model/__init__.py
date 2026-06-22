@@ -5,6 +5,9 @@ from .oilfield import (
     OilField as OilField,
 )
 from .oilfield import (
+    Site as Site,
+)
+from .oilfield import (
     Well as Well,
 )
 from .player import (
@@ -15,9 +18,6 @@ from .report import (
 )
 from .setting import (
     Setting as Setting,
-)
-from .update import (
-    Site as Site,
 )
 from .update import (
     Update as Update,

@@ -14,7 +14,7 @@ class Update(Serializable):
         playersTurn: str | None,
         pendingPlayers: list[str],
         gameFinished: bool,
-        sites: list[Site],
+        sites: "list[Site]",
     ) -> None:
         self.week = week
         self.oil_price = oilPrice

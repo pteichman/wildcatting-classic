@@ -81,9 +81,7 @@ class TestDrilling(unittest.TestCase):
         price = well.sell()
         player.income(price)
 
-        self.assertEqual(
-            player.profit_and_loss, pnl_after_drill + initial_cost // 2
-        )
+        self.assertEqual(player.profit_and_loss, pnl_after_drill + initial_cost // 2)
 
 
 class TestPlayerAccounting(unittest.TestCase):
@@ -131,7 +129,7 @@ class TestPlayerAccounting(unittest.TestCase):
         well.player = player
         well.week = 1
         well.output = 50.0
-        well._sold = True
+        well.sold = True
         site.well = well
 
         pnl_before = player.profit_and_loss

@@ -9,15 +9,15 @@ class WeeklyReport:
     log = logging.getLogger("Wildcatting")
 
     def __init__(self, field, username, symbol, week, setting, oilPrice):
-        self._username = username
-        self._symbol = symbol
-        self._week = week
+        self.username = username
+        self.symbol = symbol
+        self.week = week
         self._setting = setting
         self._oilPrice = oilPrice
 
-        self._profitAndLoss = 0
+        self.profit_and_loss = 0
 
-        self._reportDict = self._build_report_dict(field)
+        self.report_dict = self._build_report_dict(field)
 
     def _build_report_dict(self, field):
         sites = {}
@@ -26,7 +26,7 @@ class WeeklyReport:
                 site = field.get_site(row, col)
                 well = site.well
                 if well:
-                    if well.player.username == self._username:
+                    if well.player.username == self.username:
                         output = well.output
                         if output is None:
                             output = 0
@@ -39,31 +39,11 @@ class WeeklyReport:
                         rowDict["income"] = int(output * self._oilPrice)
                         wellProfitAndLoss = well.profit_and_loss
                         rowDict["profitAndLoss"] = wellProfitAndLoss
-                        self._profitAndLoss += wellProfitAndLoss
+                        self.profit_and_loss += wellProfitAndLoss
 
                         sites[well.week] = rowDict
         return sites
 
     @property
-    def report_dict(self):
-        return self._reportDict
-
-    @property
-    def week(self):
-        return self._week
-
-    @property
-    def username(self):
-        return self._username
-
-    @property
-    def symbol(self):
-        return self._symbol
-
-    @property
     def oil_price(self):
         return self._setting.price_format % self._oilPrice
-
-    @property
-    def profit_and_loss(self):
-        return self._profitAndLoss

@@ -134,9 +134,7 @@ class FadeInOilFieldCursesAnimator:
         self._field = field
 
         self._coords = [
-            (row, col)
-            for row in range(field.height)
-            for col in range(field.width)
+            (row, col) for row in range(field.height) for col in range(field.width)
         ]
 
     def is_done(self):

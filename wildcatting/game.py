@@ -367,9 +367,7 @@ class Game:
 
         players = sorted(self._players.values(), key=lambda p: -p.profit_and_loss)
 
-        playerStrs = [
-            f"{p.username} ({p.profit_and_loss})" for p in players
-        ]
+        playerStrs = [f"{p.username} ({p.profit_and_loss})" for p in players]
 
         self.log.info("Game is finished.  Scores: %s", ", ".join(playerStrs))
 

@@ -2,6 +2,10 @@ from .serialize import Serializable
 
 
 class Setting(Serializable):
+    def __init__(self):
+        self.min_drill_cost = None
+        self.max_drill_cost = None
+
     @property
     def location(self):
         return self._location
@@ -28,22 +32,6 @@ class Setting(Serializable):
     def facts(self, facts):
         assert isinstance(facts, list)
         self._facts = facts
-
-    @property
-    def min_drill_cost(self):
-        return self._minDrillCost
-
-    @min_drill_cost.setter
-    def min_drill_cost(self, minDrillCost):
-        self._minDrillCost = minDrillCost
-
-    @property
-    def max_drill_cost(self):
-        return self._maxDrillCost
-
-    @max_drill_cost.setter
-    def max_drill_cost(self, maxDrillCost):
-        self._maxDrillCost = maxDrillCost
 
     @property
     def drill_increment(self):

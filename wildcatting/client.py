@@ -28,64 +28,16 @@ from .view import (
 
 class Wildcatting:
     def __init__(self):
-        self._playerField = None
-        self._week = 0
-        self._oilPrice = 0
-        self._playersTurn = None
-        self._pendingPlayers = []
-        self._gameFinished = False
-
-    @property
-    def player_field(self):
-        return self._playerField
-
-    @player_field.setter
-    def player_field(self, playerField):
-        self._playerField = playerField
-
-    @property
-    def week(self):
-        return self._week
-
-    @week.setter
-    def week(self, week):
-        self._week = week
-
-    @property
-    def oil_price(self):
-        return self._oilPrice
-
-    @oil_price.setter
-    def oil_price(self, oilPrice):
-        self._oilPrice = oilPrice
-
-    @property
-    def players_turn(self):
-        return self._playersTurn
-
-    @players_turn.setter
-    def players_turn(self, playersTurn):
-        self._playersTurn = playersTurn
-
-    @property
-    def pending_players(self):
-        return self._pendingPlayers
-
-    @pending_players.setter
-    def pending_players(self, players):
-        self._pendingPlayers = players
-
-    @property
-    def game_finished(self):
-        return self._gameFinished
-
-    @game_finished.setter
-    def game_finished(self, gameFinished):
-        self._gameFinished = gameFinished
+        self.player_field = None
+        self.week = 0
+        self.oil_price = 0
+        self.players_turn = None
+        self.pending_players = []
+        self.game_finished = False
 
     def update_player_field(self, site):
-        assert self._playerField is not None
-        self._playerField.set_site(site.row, site.col, site)
+        assert self.player_field is not None
+        self.player_field.set_site(site.row, site.col, site)
 
     def update(self, update):
         gameFinished = update.game_finished
@@ -97,21 +49,21 @@ class Wildcatting:
 
         updated = (
             len(sites) > 0
-            or week > self._week
-            or oilPrice != self._oilPrice
-            or playersTurn != self._playersTurn
+            or week > self.week
+            or oilPrice != self.oil_price
+            or playersTurn != self.players_turn
             or gameFinished
         )
-        weekUpdated = week > self._week
+        weekUpdated = week > self.week
 
         for site in sites:
             self.update_player_field(site)
 
-        self._week = week
-        self._playersTurn = playersTurn
-        self._pendingPlayers = pendingPlayers
-        self._gameFinished = gameFinished
-        self._oilPrice = oilPrice
+        self.week = week
+        self.players_turn = playersTurn
+        self.pending_players = pendingPlayers
+        self.game_finished = gameFinished
+        self.oil_price = oilPrice
 
         return updated, weekUpdated
 
@@ -194,6 +146,7 @@ class Client:
         self._wildcatting.player_field = playerField
 
     def _survey(self, row, col):
+        assert self._wildcatting.player_field is not None
         site = self._wildcatting.player_field.get_site(row, col)
         surveyed = site.surveyed
         if not surveyed:
@@ -215,13 +168,11 @@ class Client:
             self._run_drill(row, col)
 
     def _run_drill(self, row, col):
+        assert self._wildcatting.player_field is not None
         last_stop = False
         site = self._wildcatting.player_field.get_site(row, col)
         drillView = DrillView(self._stdscr, site, self._setting)
-        while (
-            site.well.output is None
-            and site.well.drill_depth < 10
-        ):
+        while site.well.output is None and site.well.drill_depth < 10:
             drillView.display()
             action = drillView.input()
             if action.drill:
@@ -258,6 +209,7 @@ class Client:
         else:
             _updated, weekUpdated = False, False
 
+        assert self._wildcatting.player_field is not None
         for wellDict in wellUpdates:
             row, col = wellDict["row"], wellDict["col"]
             well = Well.deserialize(wellDict["well"])
@@ -268,6 +220,7 @@ class Client:
             self._run_weekly_summary()
 
     def _run_weekly_report(self):
+        assert self._wildcatting.player_field is not None
         assert self._clientInfo is not None
         player = self._wildcatting.players_turn
         handle = self._clientInfo.get_player_handle(player)
@@ -369,10 +322,8 @@ class Client:
         availableWidth, availableHeight = self._get_available_field_size()
 
         playerField = self._wildcatting.player_field
-        if (
-            availableHeight < playerField.height
-            or availableWidth < playerField.width
-        ):
+        assert playerField is not None
+        if availableHeight < playerField.height or availableWidth < playerField.width:
             w, h = self._stdscr.getmaxyx()
             min_w = playerField.width + WildcattingView.SIDE_PADDING
             min_h = playerField.height + WildcattingView.TOP_PADDING

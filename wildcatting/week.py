@@ -8,15 +8,15 @@ class Week:
     log = logging.getLogger("Wildcatting")
 
     def __init__(self, weekNum, players, price):
-        self._weekNum = weekNum
+        self.week_num = weekNum
 
         # copy the players array, so joins and exits don't affect this week
         self._players = players[:]
         self._surveyPlayerIndex = 0
         self._surveysDone = False
 
-        self._price = price
-        self._pending = self._players[:]
+        self.price = price
+        self.pending_players = self._players[:]
         self._turns = {}
 
         for player in self._players:
@@ -24,14 +24,6 @@ class Week:
             turn.player = player
             turn.week = weekNum
             self._turns[player] = turn
-
-    @property
-    def week_num(self):
-        return self._weekNum
-
-    @property
-    def price(self):
-        return self._price
 
     @property
     def survey_player(self):
@@ -61,26 +53,22 @@ class Week:
 
     def end_turn(self, player):
         assert isinstance(player, Player)
-        assert player in self._pending
+        assert player in self.pending_players
 
         if self.is_survey_turn(player):
             self.end_survey(player)
 
-        self._pending.remove(player)
+        self.pending_players.remove(player)
 
     def is_turn_finished(self, player):
         assert isinstance(player, Player)
         playerIndex = self._players.index(player)
 
-        if playerIndex < self._surveyPlayerIndex and player not in self._pending:
+        if playerIndex < self._surveyPlayerIndex and player not in self.pending_players:
             return True
 
         return False
 
     @property
-    def pending_players(self):
-        return self._pending
-
-    @property
     def finished(self):
-        return len(self._pending) == 0
+        return len(self.pending_players) == 0

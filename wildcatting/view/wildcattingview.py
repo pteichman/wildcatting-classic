@@ -44,10 +44,7 @@ class DrillView(View):
     def display(self):
         self._stdscr.clear()
 
-        drillDepth = (
-            self._site.well.drill_depth
-            * self._setting.drill_increment
-        )
+        drillDepth = self._site.well.drill_depth * self._setting.drill_increment
         drillCost = self._site.drill_cost
         cost = drillDepth * drillCost
 
@@ -162,9 +159,7 @@ class WildcattingView(View):
         if self._wildcatting.game_finished:
             self._stdscr.addstr(0, 4, topstr, curses.A_BOLD)
         else:
-            pricestr = (
-                self._setting.price_format % self._wildcatting.oil_price
-            )
+            pricestr = self._setting.price_format % self._wildcatting.oil_price
             topstr = topstr + f"  Oil is {pricestr}"
             self._stdscr.addstr(0, 4, topstr, curses.A_BOLD)
 

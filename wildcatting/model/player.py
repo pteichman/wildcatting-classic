@@ -7,19 +7,11 @@ class Player(Serializable):
         assert isinstance(symbol, str)
         assert len(symbol) == 1
 
-        self._username = username
-        self._symbol = symbol
+        self.username = username
+        self.symbol = symbol
         self._secret = None
 
-        self._profitAndLoss = 0
-
-    @property
-    def username(self):
-        return self._username
-
-    @property
-    def symbol(self):
-        return self._symbol
+        self.profit_and_loss = 0
 
     @property
     def secret(self):
@@ -30,12 +22,8 @@ class Player(Serializable):
         assert isinstance(secret, str)
         self._secret = secret
 
-    @property
-    def profit_and_loss(self):
-        return self._profitAndLoss
-
     def income(self, income):
-        self._profitAndLoss += income
+        self.profit_and_loss += income
 
     def expense(self, expense):
-        self._profitAndLoss -= expense
+        self.profit_and_loss -= expense

@@ -6,8 +6,8 @@ class OilField(Serializable):
         assert isinstance(width, int)
         assert isinstance(height, int)
 
-        self._width = width
-        self._height = height
+        self.width = width
+        self.height = height
 
         self._rows = [[Site(row, col) for col in range(width)] for row in range(height)]
 
@@ -17,8 +17,8 @@ class OilField(Serializable):
                 site.tick(oilPrice, wellTheory, currentWeek)
 
     def get_site(self, row, col):
-        assert row < self._height
-        assert col < self._width
+        assert row < self.height
+        assert col < self.width
 
         site = self._rows[row][col]
 
@@ -32,38 +32,26 @@ class OilField(Serializable):
 
         self._rows[row][col] = site
 
-    @property
-    def height(self):
-        return self._height
-
-    @property
-    def width(self):
-        return self._width
-
 
 class Site(Serializable):
     def __init__(self, row, col):
         assert isinstance(row, int)
         assert isinstance(col, int)
 
-        self._row = row
-        self._col = col
+        self.row = row
+        self.col = col
 
         self._prob = 0
         self._well = None
         self._drillCost = 0
         self._tax = 0
         self._surveyed = False
-        self._oilDepth = None
+        self.oil_depth = None
 
         ## don't serialize
         self.__reservoir = None
         self.__oilFlag = False
         self.__potentialOilDepth = None
-
-    @property
-    def col(self):
-        return self._col
 
     @property
     def drill_cost(self):
@@ -102,10 +90,6 @@ class Site(Serializable):
         self._well = well
 
     @property
-    def row(self):
-        return self._row
-
-    @property
     def surveyed(self):
         return self._surveyed
 
@@ -113,14 +97,6 @@ class Site(Serializable):
     def surveyed(self, surveyed):
         assert isinstance(surveyed, bool)
         self._surveyed = surveyed
-
-    @property
-    def oil_depth(self):
-        return self._oilDepth
-
-    @oil_depth.setter
-    def oil_depth(self, oilDepth):
-        self._oilDepth = oilDepth
 
     @property
     def tax(self):
@@ -158,92 +134,33 @@ class Site(Serializable):
 
 class Well(Serializable):
     def __init__(self):
-        self._drillDepth = 0
-        self._initialOutput = None
-        self._output = None
-        self._sold = False
-        self._player = None
-        self._initialCost = 0
-        self._profitAndLoss = 0
-        self._capacity = 1
+        self.week = None
+        self.drill_depth = 0
+        self.initial_output = None
+        self.output = None
+        self.sold = False
+        self.player = None
+        self.initial_cost = 0
+        self.profit_and_loss = 0
+        self.capacity = 1
 
     def __lt__(self, other):
-        return self._week < other._week
+        return self.week < other.week
 
     def __eq__(self, other):
-        return self._week == other._week
+        return self.week == other.week
 
     def __hash__(self):
         return id(self)
 
-    @property
-    def player(self):
-        return self._player
-
-    @player.setter
-    def player(self, player):
-        self._player = player
-
-    @property
-    def week(self):
-        return self._week
-
-    @week.setter
-    def week(self, week):
-        self._week = week
-
-    @property
-    def drill_depth(self):
-        return self._drillDepth
-
-    @drill_depth.setter
-    def drill_depth(self, drillDepth):
-        self._drillDepth = drillDepth
-
-    @property
-    def initial_output(self):
-        return self._initialOutput
-
-    @initial_output.setter
-    def initial_output(self, initialOutput):
-        self._initialOutput = initialOutput
-
-    @property
-    def output(self):
-        return self._output
-
-    @output.setter
-    def output(self, output):
-        self._output = output
-
-    @property
-    def sold(self):
-        return self._sold
-
-    @property
-    def initial_cost(self):
-        return self._initialCost
-
-    @property
-    def profit_and_loss(self):
-        return self._profitAndLoss
-
-    @property
-    def capacity(self):
-        return self._capacity
-
-    @capacity.setter
-    def capacity(self, capacity):
-        self._capacity = capacity
-
     def sell(self):
-        self._sold = True
-        price = self._initialCost // 2
-        self._profitAndLoss += price
+        self.sold = True
+        price = self.initial_cost // 2
+        self.profit_and_loss += price
         return price
 
     def drill(self, site, drillIncrement):
-        assert 0 <= self._drillDepth <= 10
+        assert 0 <= self.drill_depth <= 10
 
         oilDepth = None
         reservoir = site.reservoir
@@ -252,15 +169,15 @@ class Well(Serializable):
 
         drillCost = site.drill_cost
 
-        assert oilDepth is None or self._drillDepth < oilDepth
+        assert oilDepth is None or self.drill_depth < oilDepth
 
-        self._drillDepth += 1
+        self.drill_depth += 1
 
         cost = drillCost * drillIncrement
-        self._initialCost += cost
-        self._profitAndLoss -= cost
+        self.initial_cost += cost
+        self.profit_and_loss -= cost
 
-        return self._drillDepth == oilDepth, cost
+        return self.drill_depth == oilDepth, cost
 
     @staticmethod
     def _computeWeeklyPnl(output, oilPrice, tax):
@@ -268,8 +185,8 @@ class Well(Serializable):
         return income, tax
 
     def tick(self, site, oilPrice):
-        if not self._sold:
-            output = self._output if self._output is not None else 0
+        if not self.sold:
+            output = self.output if self.output is not None else 0
 
             reservoir = site.reservoir
             if reservoir is not None:
@@ -278,9 +195,9 @@ class Well(Serializable):
             tax = site.tax
             income, expense = self._computeWeeklyPnl(output, oilPrice, tax)
 
-            self._profitAndLoss -= expense
-            self._profitAndLoss += income
+            self.profit_and_loss -= expense
+            self.profit_and_loss += income
 
-            if self._player is not None:
-                self._player.expense(expense)
-                self._player.income(income)
+            if self.player is not None:
+                self.player.expense(expense)
+                self.player.income(income)

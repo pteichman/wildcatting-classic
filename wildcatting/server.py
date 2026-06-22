@@ -217,9 +217,7 @@ class GameService:
 
         for player in game.get_client_players(clientId):
             handle = self._encode_game_handle(gameId, player, player.secret)
-            clientInfo.add_player_info(
-                player.username, handle, player.symbol
-            )
+            clientInfo.add_player_info(player.username, handle, player.symbol)
 
         return clientInfo.serialize()
 
@@ -301,9 +299,7 @@ class GameService:
         turn = self._ensure_turn(game, player)
 
         drilledSite = turn.drilled_site
-        if drilledSite and not (
-            drilledSite.row == row and drilledSite.col == col
-        ):
+        if drilledSite and not (drilledSite.row == row and drilledSite.col == col):
             raise WildcattingException("Already drilled somewhere else this turn")
 
         game.drill(row, col)
@@ -382,10 +378,7 @@ class GameService:
         for row in range(field.height):
             for col in range(field.width):
                 well = field.get_site(row, col).well
-                if (
-                    well is not None
-                    and well.player.username == player.username
-                ):
+                if well is not None and well.player.username == player.username:
                     wellDict = {"row": row, "col": col, "well": well.serialize()}
                     wellUpdates.append(wellDict)
 

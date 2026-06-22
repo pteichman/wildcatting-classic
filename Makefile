@@ -1,5 +1,5 @@
 test:
-	uv run python -m unittest discover -s test
+	uv run pytest test
 
 check:
 	uv run ruff check wildcatting test

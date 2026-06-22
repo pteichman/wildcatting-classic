@@ -14,6 +14,7 @@ go-wildcatting = "wildcatting.cli:main"
 [dependency-groups]
 dev = [
     "mypy>=2.1.0",
+    "pytest>=8.0",
     "ruff>=0.15.18",
     "vulture>=2.16",
 ]

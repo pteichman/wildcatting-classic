@@ -1,4 +1,4 @@
-import unittest
+import pytest
 
 from wildcatting.model import Player, Site, Well
 from wildcatting.oilprices import GaussianPrices
@@ -6,32 +6,32 @@ from wildcatting.reservoir import Reservoir
 from wildcatting.welltheory import SimpleWellTheory
 
 
-class TestReservoir(unittest.TestCase):
+class TestReservoir:
     def test_pump_forbids_drawing_last_barrel(self) -> None:
         reservoir = Reservoir(initial_depth=5, initial_reserves=10)
         reservoir.pump(9)  # leaves 1 barrel
-        with self.assertRaises(AssertionError):
+        with pytest.raises(AssertionError):
             reservoir.pump(1)  # 1 is not < 1
 
     def test_ratio_pumped_monotonically_increases(self) -> None:
         reservoir = Reservoir(initial_depth=5, initial_reserves=100)
         prev = reservoir.ratio_pumped()
-        self.assertEqual(prev, 0.0)
+        assert prev == 0.0
 
         for barrels in [20, 15, 10, 5]:
             reservoir.pump(barrels)
             current = reservoir.ratio_pumped()
-            self.assertGreater(current, prev)
-            self.assertLess(current, 1.0)
+            assert current > prev
+            assert current < 1.0
             prev = current
 
     def test_join_averages_oil_depth(self) -> None:
         reservoir = Reservoir(initial_depth=4, initial_reserves=100)
         reservoir.join(6, 100)
-        self.assertEqual(reservoir.oil_depth, 5)  # floor((4+6)/2)
+        assert reservoir.oil_depth == 5  # floor((4+6)/2)
 
 
-class TestWellOutputBounds(unittest.TestCase):
+class TestWellOutputBounds:
     def _make_producing_site(
         self, reserves: int, max_output: int = 66
     ) -> tuple[Site, Well, Reservoir]:
@@ -56,22 +56,16 @@ class TestWellOutputBounds(unittest.TestCase):
             well.output = output
             well.capacity = capacity
             if output is not None and output > 0:
-                self.assertLess(
-                    output,
-                    reservoir.reserves,
+                assert output < reservoir.reserves, (
                     f"Week {week_num}: output {output:.2f} >= reserves "
-                    f"{reservoir.reserves:.2f}",
+                    f"{reservoir.reserves:.2f}"
                 )
             well.tick(site, oil_price=4.50)
 
 
-class TestOilPriceFloor(unittest.TestCase):
+class TestOilPriceFloor:
     def test_gaussian_prices_never_below_floor(self) -> None:
         # Extreme downward bias to stress-test the floor.
         prices = GaussianPrices(start=0.05, mu=-50.0, sigma=100.0)
         for _ in range(1000):
-            self.assertGreaterEqual(next(prices), 0.01)
-
-
-if __name__ == "__main__":
-    unittest.main()
+            assert next(prices) >= 0.01

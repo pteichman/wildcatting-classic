@@ -1,5 +1,4 @@
 import random
-import unittest
 
 from wildcatting.game import Game
 from wildcatting.model import Player, Well
@@ -7,7 +6,7 @@ from wildcatting.server import GameService
 from wildcatting.theme import DefaultTheme
 
 
-class TestSeededDeterminism(unittest.TestCase):
+class TestSeededDeterminism:
     def test_same_seed_same_field(self) -> None:
         random.seed(42)
         field1 = Game(10, 10).oil_field.serialize()
@@ -15,7 +14,7 @@ class TestSeededDeterminism(unittest.TestCase):
         random.seed(42)
         field2 = Game(10, 10).oil_field.serialize()
 
-        self.assertEqual(field1, field2)
+        assert field1 == field2
 
     def test_different_seeds_differ(self) -> None:
         random.seed(1)
@@ -24,10 +23,10 @@ class TestSeededDeterminism(unittest.TestCase):
         random.seed(2)
         field2 = Game(10, 10).oil_field.serialize()
 
-        self.assertNotEqual(field1, field2)
+        assert field1 != field2
 
 
-class TestFieldPropertyRanges(unittest.TestCase):
+class TestFieldPropertyRanges:
     def test_all_sites_within_theme_bounds(self) -> None:
         theme = DefaultTheme()
         field = Game(20, 20, theme=theme).oil_field
@@ -40,20 +39,20 @@ class TestFieldPropertyRanges(unittest.TestCase):
         for row in range(field.height):
             for col in range(field.width):
                 site = field.get_site(row, col)
-                self.assertGreaterEqual(site.probability, 0)
-                self.assertLessEqual(site.probability, 100)
-                self.assertGreaterEqual(site.drill_cost, min_drill)
-                self.assertLessEqual(site.drill_cost, max_drill)
-                self.assertGreaterEqual(site.tax, min_tax)
-                self.assertLessEqual(site.tax, max_tax)
+                assert site.probability >= 0
+                assert site.probability <= 100
+                assert site.drill_cost >= min_drill
+                assert site.drill_cost <= max_drill
+                assert site.tax >= min_tax
+                assert site.tax <= max_tax
 
     def test_oil_prices_always_positive(self) -> None:
         prices = DefaultTheme().get_oil_prices()
         for _ in range(100):
-            self.assertGreater(next(prices), 0.0)
+            assert next(prices) > 0.0
 
 
-class TestCompleteGameFlow(unittest.TestCase):
+class TestCompleteGameFlow:
     def test_idle_two_player_game_completes(self) -> None:
         turn_count = 5
         game = Game(10, 10, turn_count=turn_count)
@@ -68,7 +67,7 @@ class TestCompleteGameFlow(unittest.TestCase):
             if not game.finished:
                 game.end_turn(p2)
 
-        self.assertTrue(game.finished)
+        assert game.finished
 
     def test_idle_players_pnl_stays_zero(self) -> None:
         turn_count = 5
@@ -80,17 +79,17 @@ class TestCompleteGameFlow(unittest.TestCase):
         game.start()
 
         while not game.finished:
-            self.assertEqual(p1.profit_and_loss, 0)
-            self.assertEqual(p2.profit_and_loss, 0)
+            assert p1.profit_and_loss == 0
+            assert p2.profit_and_loss == 0
             game.end_turn(p1)
             if not game.finished:
                 game.end_turn(p2)
 
-        self.assertEqual(p1.profit_and_loss, 0)
-        self.assertEqual(p2.profit_and_loss, 0)
+        assert p1.profit_and_loss == 0
+        assert p2.profit_and_loss == 0
 
 
-class TestOilDiscovery(unittest.TestCase):
+class TestOilDiscovery:
     def test_drilling_finds_oil_at_correct_depth(self) -> None:
         random.seed(42)
         theme = DefaultTheme()
@@ -107,10 +106,7 @@ class TestOilDiscovery(unittest.TestCase):
             if oil_site is not None:
                 break
 
-        self.assertIsNotNone(
-            oil_site, "seed 42 must produce at least one oil site on 10x10"
-        )
-        assert oil_site is not None
+        assert oil_site is not None, "seed 42 must produce at least one oil site on 10x10"
 
         player = Player("alice", "A")
         well = Well(week=1, player=player)
@@ -122,17 +118,17 @@ class TestOilDiscovery(unittest.TestCase):
 
         for _ in range(oil_depth - 1):
             found, _ = well.drill(oil_site, theme.get_drill_increment())
-            self.assertFalse(found)
-            self.assertIsNone(oil_site.oil_depth)
+            assert not found
+            assert oil_site.oil_depth is None
 
         found, _ = well.drill(oil_site, theme.get_drill_increment())
-        self.assertTrue(found)
+        assert found
         oil_site.oil_depth = well.drill_depth
-        self.assertEqual(oil_site.oil_depth, oil_depth)
-        self.assertEqual(well.drill_depth, oil_depth)
+        assert oil_site.oil_depth == oil_depth
+        assert well.drill_depth == oil_depth
 
 
-class TestMultiplayerTurnOrder(unittest.TestCase):
+class TestMultiplayerTurnOrder:
     def test_three_player_survey_order_across_two_weeks(self) -> None:
         service = GameService(DefaultTheme())
         client_handle = service.new(10, 10, 5)
@@ -142,21 +138,17 @@ class TestMultiplayerTurnOrder(unittest.TestCase):
         service.start(h1)
 
         for week in range(2):
-            self.assertEqual(service.get_players_turn(client_handle), "alice")
+            assert service.get_players_turn(client_handle) == "alice"
             service.survey(h1, week, 0)
 
-            self.assertEqual(service.get_players_turn(client_handle), "bob")
+            assert service.get_players_turn(client_handle) == "bob"
             service.survey(h2, week, 1)
 
-            self.assertEqual(service.get_players_turn(client_handle), "carol")
+            assert service.get_players_turn(client_handle) == "carol"
             service.survey(h3, week, 2)
 
-            self.assertIsNone(service.get_players_turn(client_handle))
+            assert service.get_players_turn(client_handle) is None
 
             service.end_turn(h1)
             service.end_turn(h2)
             service.end_turn(h3)
-
-
-if __name__ == "__main__":
-    unittest.main()

@@ -1,23 +1,16 @@
-import unittest
-
 import wildcatting.model
 
 
-class TestOilField(unittest.TestCase):
+class TestOilField:
     def testEmptySites(self) -> None:
         cols = 5
         rows = 10
 
         field = wildcatting.model.OilField(cols, rows)
-        self.assertEqual(field.height, rows)
-        self.assertEqual(field.width, cols)
+        assert field.height == rows
+        assert field.width == cols
 
         for row in range(rows):
             for col in range(cols):
                 site = field.get_site(row, col)
-
-                self.assertNotEqual(site, None)
-
-
-if __name__ == "__main__":
-    unittest.main()
+                assert site is not None

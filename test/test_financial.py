@@ -1,10 +1,8 @@
-import unittest
-
 from wildcatting.model import Player, Site, Well
 from wildcatting.reservoir import Reservoir
 
 
-class TestDrilling(unittest.TestCase):
+class TestDrilling:
     def _make_well_on_site(self, drill_cost: int) -> tuple[Site, Well, Player]:
         player = Player("alice", "A")
         site = Site(0, 0)
@@ -21,15 +19,15 @@ class TestDrilling(unittest.TestCase):
         _, cost = well.drill(site, drill_increment)
         player.expense(cost)
 
-        self.assertEqual(well.initial_cost, drill_cost * drill_increment)
-        self.assertEqual(player.profit_and_loss, -(drill_cost * drill_increment))
+        assert well.initial_cost == drill_cost * drill_increment
+        assert player.profit_and_loss == -(drill_cost * drill_increment)
 
     def test_drill_depth_increments_by_one(self) -> None:
         site, well, player = self._make_well_on_site(drill_cost=1)
 
         for expected_depth in range(1, 6):
             well.drill(site, 10)
-            self.assertEqual(well.drill_depth, expected_depth)
+            assert well.drill_depth == expected_depth
 
     def test_drill_returns_true_exactly_at_oil_depth(self) -> None:
         oil_depth = 3
@@ -44,14 +42,14 @@ class TestDrilling(unittest.TestCase):
 
         for _ in range(oil_depth - 1):
             found, _ = well.drill(site, 10)
-            self.assertFalse(found)
-            self.assertIsNone(site.oil_depth)
+            assert not found
+            assert site.oil_depth is None
 
         found, _ = well.drill(site, 10)
-        self.assertTrue(found)
+        assert found
         site.oil_depth = well.drill_depth
-        self.assertEqual(site.oil_depth, oil_depth)
-        self.assertEqual(well.drill_depth, oil_depth)
+        assert site.oil_depth == oil_depth
+        assert well.drill_depth == oil_depth
 
     def test_sell_returns_half_initial_cost(self) -> None:
         site, well, player = self._make_well_on_site(drill_cost=7)
@@ -63,8 +61,8 @@ class TestDrilling(unittest.TestCase):
         initial_cost = well.initial_cost
         price = well.sell()
 
-        self.assertEqual(price, initial_cost // 2)
-        self.assertTrue(well.sold)
+        assert price == initial_cost // 2
+        assert well.sold
 
     def test_sell_credits_player_half_initial_cost(self) -> None:
         site, well, player = self._make_well_on_site(drill_cost=10)
@@ -77,17 +75,17 @@ class TestDrilling(unittest.TestCase):
         price = well.sell()
         player.income(price)
 
-        self.assertEqual(player.profit_and_loss, pnl_after_drill + initial_cost // 2)
+        assert player.profit_and_loss == pnl_after_drill + initial_cost // 2
 
 
-class TestPlayerAccounting(unittest.TestCase):
+class TestPlayerAccounting:
     def test_pnl_is_income_minus_expenses(self) -> None:
         player = Player("alice", "A")
         player.income(100)
         player.expense(30)
         player.income(50)
         player.expense(20)
-        self.assertEqual(player.profit_and_loss, 100)
+        assert player.profit_and_loss == 100
 
     def test_weekly_income_applied_to_player(self) -> None:
         player = Player("alice", "A")
@@ -99,7 +97,7 @@ class TestPlayerAccounting(unittest.TestCase):
 
         well.tick(site, oil_price=2.0)
 
-        self.assertEqual(player.profit_and_loss, int(10.0 * 2.0) - 5)
+        assert player.profit_and_loss == int(10.0 * 2.0) - 5
 
     def test_weekly_tax_charged_without_output(self) -> None:
         player = Player("alice", "A")
@@ -111,7 +109,7 @@ class TestPlayerAccounting(unittest.TestCase):
 
         well.tick(site, oil_price=5.0)
 
-        self.assertEqual(player.profit_and_loss, -100)
+        assert player.profit_and_loss == -100
 
     def test_sold_well_skips_weekly_income_and_tax(self) -> None:
         player = Player("alice", "A")
@@ -125,8 +123,4 @@ class TestPlayerAccounting(unittest.TestCase):
         pnl_before = player.profit_and_loss
         well.tick(site, oil_price=5.0)
 
-        self.assertEqual(player.profit_and_loss, pnl_before)
-
-
-if __name__ == "__main__":
-    unittest.main()
+        assert player.profit_and_loss == pnl_before

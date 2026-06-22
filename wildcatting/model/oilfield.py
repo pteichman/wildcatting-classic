@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 from typing import TYPE_CHECKING
 
 from .player import Player
@@ -26,7 +24,7 @@ class OilField(Serializable):
             for site in row:
                 site.tick(oil_price, well_theory, current_week)
 
-    def get_site(self, row: int, col: int) -> Site:
+    def get_site(self, row: int, col: int) -> "Site":
         assert row < self.height
         assert col < self.width
 
@@ -37,7 +35,7 @@ class OilField(Serializable):
 
         return site
 
-    def set_site(self, row: int, col: int, site: Site) -> None:
+    def set_site(self, row: int, col: int, site: "Site") -> None:
         self._rows[row][col] = site
 
 
@@ -84,11 +82,11 @@ class Site(Serializable):
         self._prob = prob
 
     @property
-    def well(self) -> Well | None:
+    def well(self) -> "Well | None":
         return self._well
 
     @well.setter
-    def well(self, well: Well | None) -> None:
+    def well(self, well: "Well | None") -> None:
         self._well = well
 
     @property
@@ -150,7 +148,7 @@ class Well(Serializable):
         self.profit_and_loss: int = 0
         self.capacity: int = 1
 
-    def __lt__(self, other: Well) -> bool:
+    def __lt__(self, other: "Well") -> bool:
         return self.week < other.week
 
     def __eq__(self, other: object) -> bool:

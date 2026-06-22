@@ -1,3 +1,4 @@
+import abc
 import curses
 import random
 
@@ -56,7 +57,7 @@ class OilFieldTextView(View):
             print(line)
 
 
-class ColorChooser:
+class ColorChooser(abc.ABC):
     def __init__(self):
         # increasing order of hotness
         self._colors = [
@@ -68,8 +69,8 @@ class ColorChooser:
             Colors.get(curses.COLOR_WHITE, curses.COLOR_RED),
         ]
 
-    def _choose_color(self, site, colors):
-        return "UnimplementedAbstractMethod"
+    @abc.abstractmethod
+    def _choose_color(self, site, colors): ...
 
     def get_colors(self):
         return self._colors[:]
@@ -149,7 +150,7 @@ class FadeInOilFieldCursesAnimator:
         site.set_surveyed(True)
 
 
-class OilFieldCursesView(View):
+class OilFieldCursesView(View, abc.ABC):
     def __init__(self, win, wildcatting_):
         View.__init__(self, win)
         self._win = win
@@ -157,11 +158,11 @@ class OilFieldCursesView(View):
 
         self._colorChooser = self._make_color_chooser()
 
-    def _make_color_chooser(self):
-        raise NotImplementedError("UnimplementedAbstractMethod")
+    @abc.abstractmethod
+    def _make_color_chooser(self): ...
 
-    def get_key_label(self):
-        raise NotImplementedError("UnimplementedAbstractMethod")
+    @abc.abstractmethod
+    def get_key_label(self): ...
 
     def display(self):
         field = self._wildcatting.get_player_field()

@@ -7,10 +7,10 @@ from dataclasses import dataclass
 from wildcatting.colors import Colors
 
 from .oilfieldview import (
-    ColorChooser,
     OilFieldDepthView,
     OilFieldDrillCostView,
     OilFieldProbabilityView,
+    ProbabilityColorChooser,
 )
 from .view import View
 
@@ -150,7 +150,7 @@ class WildcattingView(View):
         self._fact = None
 
         self._fh, self._fw = self._field_win.getmaxyx()
-        self._colorChooser = ColorChooser()
+        self._colorChooser = ProbabilityColorChooser()
         self._x, self._y = 0, 0
 
     def _draw_border(self):

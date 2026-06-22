@@ -15,7 +15,7 @@ from .theme import DefaultTheme
 
 
 def _to_camel_case(name: str) -> str:
-    return re.sub(r'_([a-z])', lambda m: m.group(1).upper(), name)
+    return re.sub(r"_([a-z])", lambda m: m.group(1).upper(), name)
 
 
 class TieredXMLRPCServer(SimpleXMLRPCServer):

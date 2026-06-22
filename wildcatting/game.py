@@ -1,3 +1,4 @@
+import abc
 import logging
 import math
 import random
@@ -12,9 +13,9 @@ from .reservoir import Reservoir
 from .theme import DefaultTheme, Theme
 
 
-class Filler:
-    def fill(self, field):
-        raise NotImplementedError("UnimplementedAbstractMethod")
+class Filler(abc.ABC):
+    @abc.abstractmethod
+    def fill(self, field): ...
 
 
 class PeakedFiller(Filler):
@@ -70,20 +71,20 @@ class PeakedFiller(Filler):
             )
         return peaks
 
-    def get_value_range(self):
-        raise NotImplementedError("AbstractMethodNotImplemented")
+    @abc.abstractmethod
+    def get_value_range(self): ...
 
-    def get_lesser_peak_factor(self):
-        raise NotImplementedError("AbstractMethodNotImplemented")
+    @abc.abstractmethod
+    def get_lesser_peak_factor(self): ...
 
-    def get_fudge(self):
-        raise NotImplementedError("AbstractMethodNotImplemented")
+    @abc.abstractmethod
+    def get_fudge(self): ...
 
-    def get_max_peaks(self):
-        raise NotImplementedError("AbstractMethodNotImplemented")
+    @abc.abstractmethod
+    def get_max_peaks(self): ...
 
-    def fill_site(self, site, value, roll):
-        raise NotImplementedError("AbstractMethodNotImplemented")
+    @abc.abstractmethod
+    def fill_site(self, site, value, roll): ...
 
 
 class OilFiller(PeakedFiller):

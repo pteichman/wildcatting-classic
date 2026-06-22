@@ -1,9 +1,10 @@
+import abc
 import logging
 
 import wildcatting.model
 
 
-class Theme:
+class Theme(abc.ABC):
     log = logging.getLogger("Wildcatting")
 
     def __init__(self):
@@ -40,79 +41,77 @@ class Theme:
     def set_facts(self, facts):
         self._facts = facts
 
-    ## themes must implement the following abstract methods
-
     ## literary setting
-    def get_location(self):
-        raise NotImplementedError
+    @abc.abstractmethod
+    def get_location(self): ...
 
-    def get_era(self):
-        raise NotImplementedError
+    @abc.abstractmethod
+    def get_era(self): ...
 
     # units
-    def get_drill_increment(self):
-        raise NotImplementedError
+    @abc.abstractmethod
+    def get_drill_increment(self): ...
 
-    def get_price_format(self):
-        raise NotImplementedError
+    @abc.abstractmethod
+    def get_price_format(self): ...
 
     ## extraction
-    def get_well_theory(self):
-        raise NotImplementedError
+    @abc.abstractmethod
+    def get_well_theory(self): ...
 
-    def get_mean_site_reserves(self):
-        raise NotImplementedError
+    @abc.abstractmethod
+    def get_mean_site_reserves(self): ...
 
     ## economics
-    def get_min_drill_cost(self):
-        raise NotImplementedError
+    @abc.abstractmethod
+    def get_min_drill_cost(self): ...
 
-    def get_max_drill_cost(self):
-        raise NotImplementedError
+    @abc.abstractmethod
+    def get_max_drill_cost(self): ...
 
-    def get_min_tax(self):
-        raise NotImplementedError
+    @abc.abstractmethod
+    def get_min_tax(self): ...
 
-    def get_max_tax(self):
-        raise NotImplementedError
+    @abc.abstractmethod
+    def get_max_tax(self): ...
 
-    def get_min_output(self):
-        raise NotImplementedError
+    @abc.abstractmethod
+    def get_min_output(self): ...
 
-    def get_max_output(self):
-        raise NotImplementedError
+    @abc.abstractmethod
+    def get_max_output(self): ...
 
-    def get_oil_prices(self):
-        raise NotImplementedError
+    @abc.abstractmethod
+    def get_oil_prices(self): ...
 
     ## oil probability distribution
-    def get_oil_min_dropoff(self):
-        raise NotImplementedError
+    @abc.abstractmethod
+    def get_oil_min_dropoff(self): ...
 
-    def get_oil_max_dropoff(self):
-        raise NotImplementedError
+    @abc.abstractmethod
+    def get_oil_max_dropoff(self): ...
 
-    def get_oil_max_peaks(self):
-        raise NotImplementedError
+    @abc.abstractmethod
+    def get_oil_max_peaks(self): ...
 
-    def get_oil_fudge(self):
-        raise NotImplementedError
+    @abc.abstractmethod
+    def get_oil_fudge(self): ...
 
-    def get_oil_lesser_peak_factor(self):
-        raise NotImplementedError
+    @abc.abstractmethod
+    def get_oil_lesser_peak_factor(self): ...
 
     ## drill cost distribution
-    def get_drill_cost_min_dropoff(self):
-        raise NotImplementedError
+    @abc.abstractmethod
+    def get_drill_cost_min_dropoff(self): ...
 
-    def get_drill_cost_max_dropoff(self):
-        raise NotImplementedError
+    @abc.abstractmethod
+    def get_drill_cost_max_dropoff(self): ...
 
-    def get_drill_cost_max_peaks(self):
-        raise NotImplementedError
+    @abc.abstractmethod
+    def get_drill_cost_max_peaks(self): ...
 
-    def get_drill_cost_fudge(self):
-        raise NotImplementedError
+    @abc.abstractmethod
+    def get_drill_cost_fudge(self): ...
 
-    def get_drill_cost_lesser_peak_factor(self):
-        raise NotImplementedError
+    @abc.abstractmethod
+    def get_drill_cost_lesser_peak_factor(self): ...

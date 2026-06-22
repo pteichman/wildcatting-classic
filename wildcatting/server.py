@@ -285,11 +285,11 @@ class GameService:
         game.start()
 
     def is_started(self, handle: str) -> bool:
-        game, clientId = self._read_client_handle(handle)
+        game, _ = self._read_client_handle(handle)
         return game.started
 
     def is_finished(self, handle: str) -> bool:
-        game, clientId = self._read_client_handle(handle)
+        game, _ = self._read_client_handle(handle)
         return game.finished
 
     def list_players(self, client_handle: str) -> list[str]:

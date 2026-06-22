@@ -280,7 +280,7 @@ class SurveyorsReportView(View):
             elif (c == ord(" ")) or (c == 10):
                 done = True
             elif c == curses.KEY_MOUSE:
-                mid, mx, my, mz, bstate = curses.getmouse()
+                _, mx, my, _, _ = curses.getmouse()
                 x = mx - (w - ww) // 2
                 y = my - (h - wh) // 2
 

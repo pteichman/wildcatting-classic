@@ -229,7 +229,7 @@ class TestGameService(unittest.TestCase):
 
         game, player1 = service._read_handle(handle1)
         game, player2 = service._read_handle(handle2)
-        game, player3 = service._read_handle(handle3)
+        game, _ = service._read_handle(handle3)
 
         service.start(handle1)
 

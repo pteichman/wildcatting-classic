@@ -2,7 +2,6 @@ import curses
 import logging
 import random
 import textwrap
-from typing import Any
 
 from wildcatting.colors import Colors
 
@@ -231,7 +230,7 @@ class WildcattingView(View):
         self._getCurrentView().display()
 
     def input(self, c=None, refresh=50):
-        actions: dict[str, Any] = {}
+        actions: dict[str, bool | tuple[int, int]] = {}
 
         self._stdscr.move(self._y + 2, self._x + 4)
         self._field_win.refresh()

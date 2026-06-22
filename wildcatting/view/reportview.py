@@ -1,6 +1,5 @@
 import curses
 import logging
-from typing import Any
 
 from .oilfieldview import ProbabilityColorChooser
 from .view import View
@@ -153,7 +152,7 @@ class WeeklyReportView(View):
         self._win.move(row, 0)
 
     def _input(self):
-        actions: dict[str, Any] = {}
+        actions: dict[str, bool | tuple[int, int]] = {}
 
         self._moveCursor()
         c = self._stdscr.getch()

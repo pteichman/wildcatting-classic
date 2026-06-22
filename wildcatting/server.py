@@ -440,15 +440,8 @@ class GameService:
         return wildcatting.model.WeeklySummary.serialize(game.getWeeklySummary())
 
 
-class StandaloneServer:
+class StandaloneServer(BaseService):
     def __init__(self):
-        import inspect
-
-        base = BaseService()
-        funcs = inspect.getmembers(base, inspect.ismethod)
-        for name, method in funcs:
-            setattr(self, name, method)
-
         theme = DefaultTheme()
         self.admin = AdminService()
         self.game = GameService(theme)

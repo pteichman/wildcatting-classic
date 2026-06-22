@@ -1,7 +1,6 @@
 import logging
 import os
 import sys
-from typing import Any
 from xmlrpc.client import ServerProxy
 
 from . import version
@@ -45,16 +44,15 @@ class ClientCommand(Command):
         startLogger("client.log")
 
         url = f"http://{options.host}:{options.port}/"
-        s: Any
         if options.no_network:
             from .server import StandaloneServer
 
-            s = StandaloneServer()
+            s: StandaloneServer | ServerProxy = StandaloneServer()
         else:
             s = ServerProxy(url, allow_none=True)
 
         try:
-            server_version = s.version()
+            server_version: str = str(s.version())
         except OSError as e:
             print(f"Socket error contacting {url}")
             print(e.args[1])

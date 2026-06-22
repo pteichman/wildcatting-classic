@@ -12,9 +12,6 @@ if TYPE_CHECKING:
 
 class OilField(Serializable):
     def __init__(self, width: int, height: int) -> None:
-        assert isinstance(width, int)
-        assert isinstance(height, int)
-
         self.width = width
         self.height = height
 
@@ -41,16 +38,11 @@ class OilField(Serializable):
         return site
 
     def set_site(self, row: int, col: int, site: Site) -> None:
-        assert isinstance(site, Site)
-
         self._rows[row][col] = site
 
 
 class Site(Serializable):
     def __init__(self, row: int, col: int) -> None:
-        assert isinstance(row, int)
-        assert isinstance(col, int)
-
         self.row = row
         self.col = col
 
@@ -72,7 +64,6 @@ class Site(Serializable):
 
     @drill_cost.setter
     def drill_cost(self, drillCost: int) -> None:
-        assert isinstance(drillCost, int)
         self._drillCost = drillCost
 
     @property
@@ -98,8 +89,6 @@ class Site(Serializable):
 
     @well.setter
     def well(self, well: Well | None) -> None:
-        if well is not None:
-            assert isinstance(well, Well)
         self._well = well
 
     @property
@@ -108,7 +97,6 @@ class Site(Serializable):
 
     @surveyed.setter
     def surveyed(self, surveyed: bool) -> None:
-        assert isinstance(surveyed, bool)
         self._surveyed = surveyed
 
     @property
@@ -117,7 +105,6 @@ class Site(Serializable):
 
     @tax.setter
     def tax(self, tax: int) -> None:
-        assert isinstance(tax, int)
         self._tax = tax
 
     @property
@@ -140,8 +127,13 @@ class Site(Serializable):
         self, oilPrice: float, wellTheory: SimpleWellTheory, currentWeek: int
     ) -> None:
         if self._well is not None:
-            if self._well.output is not None and not self._well.sold:
-                output, capacity = wellTheory.tick(self, currentWeek)
+            reservoir = self.__reservoir
+            if (
+                self._well.output is not None
+                and not self._well.sold
+                and reservoir is not None
+            ):
+                output, capacity = wellTheory.tick(self._well, reservoir, currentWeek)
                 self._well.output = output
                 self._well.capacity = capacity
             self._well.tick(self, oilPrice)

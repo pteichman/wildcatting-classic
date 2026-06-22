@@ -31,17 +31,12 @@ class Week:
         return self._players[self._surveyPlayerIndex]
 
     def get_player_turn(self, player: Player) -> Turn:
-        assert isinstance(player, Player)
-
         return self._turns[player]
 
     def is_survey_turn(self, player: Player) -> bool:
-        assert isinstance(player, Player)
-
         return self.survey_player == player
 
     def end_survey(self, player: Player) -> None:
-        assert isinstance(player, Player)
         assert self.is_survey_turn(player)
 
         self._surveyPlayerIndex = self._surveyPlayerIndex + 1
@@ -50,7 +45,6 @@ class Week:
             self._surveysDone = True
 
     def end_turn(self, player: Player) -> None:
-        assert isinstance(player, Player)
         assert player in self.pending_players
 
         if self.is_survey_turn(player):
@@ -59,7 +53,6 @@ class Week:
         self.pending_players.remove(player)
 
     def is_turn_finished(self, player: Player) -> bool:
-        assert isinstance(player, Player)
         playerIndex = self._players.index(player)
 
         if playerIndex < self._surveyPlayerIndex and player not in self.pending_players:

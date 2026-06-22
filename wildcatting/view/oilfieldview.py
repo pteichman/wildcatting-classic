@@ -12,7 +12,6 @@ from .view import View
 
 class OilFieldTextView(View):
     def __init__(self, model: wildcatting.model.OilField) -> None:
-        assert isinstance(model, wildcatting.model.OilField)
         self._model = model
 
     def bracket(self, site: wildcatting.model.Site) -> int:
@@ -32,7 +31,6 @@ class OilFieldTextView(View):
         return b
 
     def to_ascii(self, site: wildcatting.model.Site) -> str:
-        assert isinstance(site, wildcatting.model.Site)
         b = self.bracket(site)
         return ".x%*&#"[b]
 
@@ -80,15 +78,11 @@ class ColorChooser(abc.ABC):
         if site is None:
             return Colors.get(curses.COLOR_WHITE, curses.COLOR_BLACK)
 
-        assert isinstance(site, wildcatting.model.Site)
-
         return self._choose_color(site, self._colors)
 
     def blank_color(self, site: wildcatting.model.Site | None) -> int:
         if site is None:
             return Colors.get(curses.COLOR_WHITE, curses.COLOR_BLACK)
-
-        assert isinstance(site, wildcatting.model.Site)
 
         return self._choose_color(site, self._colors)
 
@@ -185,7 +179,6 @@ class OilFieldCursesView(View, abc.ABC):
                 symbol = " "
             color = self._colorChooser.blank_color(site)
         else:
-            assert well.player is not None
             symbol = well.player.symbol
             color = self._colorChooser.site_color(site)
 
@@ -236,7 +229,6 @@ class OilFieldDepthView(OilFieldCursesView):
             symbol = "."
             color = self._colorChooser.blank_color(site)
         else:
-            assert well.player is not None
             symbol = well.player.symbol
             color = self._colorChooser.site_color(site)
 

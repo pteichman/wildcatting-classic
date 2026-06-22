@@ -15,7 +15,6 @@ class ClientInfo(Serializable):
 
     @game_id.setter
     def game_id(self, gameId: str) -> None:
-        assert isinstance(gameId, str)
         self._gameId = gameId
 
     @property
@@ -24,7 +23,6 @@ class ClientInfo(Serializable):
 
     @client_handle.setter
     def client_handle(self, clientHandle: str) -> None:
-        assert isinstance(clientHandle, str)
         self._clientHandle = clientHandle
 
     def add_player_info(self, username: str, handle: str, symbol: str) -> None:

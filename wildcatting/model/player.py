@@ -3,8 +3,6 @@ from .serialize import Serializable
 
 class Player(Serializable):
     def __init__(self, username: str, symbol: str) -> None:
-        assert isinstance(username, str)
-        assert isinstance(symbol, str)
         assert len(symbol) == 1
 
         self.username = username
@@ -19,7 +17,6 @@ class Player(Serializable):
 
     @secret.setter
     def secret(self, secret: str) -> None:
-        assert isinstance(secret, str)
         self._secret = secret
 
     def income(self, income: int) -> None:

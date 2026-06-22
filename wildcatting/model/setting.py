@@ -12,7 +12,6 @@ class Setting(Serializable):
 
     @location.setter
     def location(self, location: str) -> None:
-        assert isinstance(location, str)
         self._location = location
 
     @property
@@ -21,7 +20,6 @@ class Setting(Serializable):
 
     @era.setter
     def era(self, era: str) -> None:
-        assert isinstance(era, str)
         self._era = era
 
     @property
@@ -30,7 +28,6 @@ class Setting(Serializable):
 
     @facts.setter
     def facts(self, facts: list[str]) -> None:
-        assert isinstance(facts, list)
         self._facts = facts
 
     @property
@@ -39,7 +36,6 @@ class Setting(Serializable):
 
     @drill_increment.setter
     def drill_increment(self, increment: int) -> None:
-        assert isinstance(increment, int)
         self._increment = increment
 
     @property
@@ -48,5 +44,4 @@ class Setting(Serializable):
 
     @price_format.setter
     def price_format(self, priceFormat: str) -> None:
-        assert isinstance(priceFormat, str)
         self._priceFormat = priceFormat

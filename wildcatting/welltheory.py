@@ -4,7 +4,8 @@ import math
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from wildcatting.model.oilfield import Site
+    from wildcatting.model.oilfield import Well
+    from wildcatting.reservoir import Reservoir
 
 
 class SimpleWellTheory:
@@ -14,11 +15,9 @@ class SimpleWellTheory:
     def __str__(self) -> str:
         return f"SimpleWellTheory(maxOutput={self._maxOutput})"
 
-    def _get_output(self, site: Site, capacity: int | None = None) -> float:
-        well = site.well
-        reservoir = site.reservoir
-        assert well is not None
-        assert reservoir is not None
+    def _get_output(
+        self, well: Well, reservoir: Reservoir, capacity: int | None = None
+    ) -> float:
         ratio_pumped = reservoir.ratio_pumped()
         if capacity is None:
             capacity = well.capacity
@@ -34,12 +33,12 @@ class SimpleWellTheory:
 
         return output
 
-    def start(self, site: Site) -> float:
-        return self._get_output(site)
+    def start(self, well: Well, reservoir: Reservoir) -> float:
+        return self._get_output(well, reservoir)
 
-    def tick(self, site: Site, currentWeek: int) -> tuple[float, int]:
-        well = site.well
-        assert well is not None
+    def tick(
+        self, well: Well, reservoir: Reservoir, currentWeek: int
+    ) -> tuple[float, int]:
         weeksOperational = currentWeek - well.week
 
         new_capacity = well.capacity
@@ -47,5 +46,5 @@ class SimpleWellTheory:
         if weeksOperational <= 3:
             new_capacity += 1
 
-        output = self._get_output(site, new_capacity)
+        output = self._get_output(well, reservoir, new_capacity)
         return output, new_capacity

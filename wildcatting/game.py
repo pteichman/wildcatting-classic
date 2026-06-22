@@ -20,7 +20,6 @@ class Filler(abc.ABC):
 
 class PeakedFiller(Filler):
     def fill(self, field: wildcatting.model.OilField) -> None:
-        assert isinstance(field, wildcatting.model.OilField)
         peaks = self._generate_peaks(field)
         self._fill_model(field, peaks)
 
@@ -92,7 +91,6 @@ class PeakedFiller(Filler):
 
 class OilFiller(PeakedFiller):
     def __init__(self, theme: Theme) -> None:
-        assert isinstance(theme, Theme)
         self._theme = theme
 
     def get_value_range(self) -> tuple[int, int]:
@@ -126,7 +124,6 @@ class OilFiller(PeakedFiller):
 
 class DrillCostFiller(PeakedFiller):
     def __init__(self, theme: Theme) -> None:
-        assert isinstance(theme, Theme)
         self._theme = theme
 
     def get_value_range(self) -> tuple[int, int]:
@@ -155,7 +152,6 @@ class DrillCostFiller(PeakedFiller):
 
 class PotentialOilDepthFiller(PeakedFiller):
     def __init__(self, theme: Theme) -> None:
-        assert isinstance(theme, Theme)
         self._theme = theme
 
     def get_value_range(self) -> tuple[int, int]:
@@ -187,8 +183,6 @@ class ReservoirFiller(Filler):
     log = logging.getLogger("Wildcatting")
 
     def __init__(self, theme: Theme) -> None:
-        assert isinstance(theme, Theme)
-
         self._theme = theme
 
     def fill(self, field: wildcatting.model.OilField) -> None:
@@ -257,12 +251,9 @@ class ReservoirFiller(Filler):
 
 class TaxFiller:
     def __init__(self, theme: Theme) -> None:
-        assert isinstance(theme, Theme)
         self._theme = theme
 
     def fill(self, field: wildcatting.model.OilField) -> None:
-        assert isinstance(field, wildcatting.model.OilField)
-
         for row in range(field.height):
             for col in range(field.width):
                 site = field.get_site(row, col)
@@ -277,14 +268,8 @@ class Game:
     def __init__(
         self, width: int, height: int, turnCount: int = 13, theme: Theme | None = None
     ) -> None:
-        assert isinstance(width, int)
-        assert isinstance(height, int)
-        assert isinstance(turnCount, int)
-
         if theme is None:
             theme = DefaultTheme()
-
-        assert isinstance(theme, Theme)
 
         self._turnCount = turnCount
         self._theme = theme
@@ -317,8 +302,6 @@ class Game:
         return self._clients.get(clientId, [])
 
     def add_player(self, clientId: str, player: wildcatting.model.Player) -> None:
-        assert isinstance(player, wildcatting.model.Player)
-
         playerNames = [p.username for p in list(self._players.values())]
         if player.username in playerNames:
             raise WildcattingException(
@@ -400,7 +383,9 @@ class Game:
         if foundOil:
             site.oil_depth = well.drill_depth
             theory = self._theme.get_well_theory()
-            output = theory.start(site)
+            reservoir = site.reservoir
+            assert reservoir is not None
+            output = theory.start(well, reservoir)
             well.output = output
             well.initial_output = output
 

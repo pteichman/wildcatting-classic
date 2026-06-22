@@ -4,26 +4,34 @@ class Turn:
         self._drilledSite = None
         self._surveyedSite = None
 
-    def get_week(self):
+    @property
+    def week(self):
         return self._week
 
-    def set_week(self, week):
+    @week.setter
+    def week(self, week):
         self._week = week
 
-    def set_player(self, player):
-        self._player = player
-
-    def get_player(self):
+    @property
+    def player(self):
         return self._player
 
-    def get_drilled_site(self):
+    @player.setter
+    def player(self, player):
+        self._player = player
+
+    @property
+    def drilled_site(self):
         return self._drilledSite
 
-    def set_drilled_site(self, drilledSite):
+    @drilled_site.setter
+    def drilled_site(self, drilledSite):
         self._drilledSite = drilledSite
 
-    def get_surveyed_site(self):
+    @property
+    def surveyed_site(self):
         return self._surveyedSite
 
-    def set_surveyed_site(self, surveyedSite):
+    @surveyed_site.setter
+    def surveyed_site(self, surveyedSite):
         self._surveyedSite = surveyedSite

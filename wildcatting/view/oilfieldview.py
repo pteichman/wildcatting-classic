@@ -15,7 +15,7 @@ class OilFieldTextView(View):
         self._model = model
 
     def bracket(self, site):
-        p = site.get_probability()
+        p = site.probability
         if p > 95:
             b = 0
         elif p > 85:
@@ -37,9 +37,9 @@ class OilFieldTextView(View):
 
     def ascii(self):
         model = self._model
-        for row in range(model.get_height()):
+        for row in range(model.height):
             line = ""
-            for col in range(model.get_width()):
+            for col in range(model.width):
                 line += self.to_ascii(model.get_site(row, col))
             print(line)
 
@@ -50,9 +50,9 @@ class OilFieldTextView(View):
 
     def ansi(self):
         model = self._model
-        for row in range(model.get_height()):
+        for row in range(model.height):
             line = ""
-            for col in range(model.get_width()):
+            for col in range(model.width):
                 line += self.to_ansi(model.get_site(row, col))
             print(line)
 
@@ -94,7 +94,7 @@ class ColorChooser(abc.ABC):
 
 class ProbabilityColorChooser(ColorChooser):
     def _choose_color(self, site, colors):
-        p = site.get_probability()
+        p = site.probability
         if p == 100:
             return colors[-1]
 
@@ -109,7 +109,7 @@ class DrillCostColorChooser(ColorChooser):
         self._maxDrillCost = maxDrillCost
 
     def _choose_color(self, site, colors):
-        drillCost = site.get_drill_cost() * 1.0
+        drillCost = site.drill_cost * 1.0
         costRange = self._maxDrillCost - self._minDrillCost
         idx = int(drillCost / costRange * (len(colors) - 1))
 
@@ -118,8 +118,8 @@ class DrillCostColorChooser(ColorChooser):
 
 class DepthColorChooser(ColorChooser):
     def _choose_color(self, site, colors):
-        oilDepth = site.get_oil_depth()
-        if site.get_oil_depth() is None:
+        oilDepth = site.oil_depth
+        if site.oil_depth is None:
             color = Colors.get(curses.COLOR_WHITE, curses.COLOR_BLACK)
         else:
             depthRange = 9
@@ -135,8 +135,8 @@ class FadeInOilFieldCursesAnimator:
 
         self._coords = [
             (row, col)
-            for row in range(field.get_height())
-            for col in range(field.get_width())
+            for row in range(field.height)
+            for col in range(field.width)
         ]
 
     def is_done(self):
@@ -147,7 +147,7 @@ class FadeInOilFieldCursesAnimator:
         self._coords.remove((row, col))
 
         site = self._field.get_site(row, col)
-        site.set_surveyed(True)
+        site.surveyed = True
 
 
 class OilFieldCursesView(View, abc.ABC):
@@ -165,17 +165,17 @@ class OilFieldCursesView(View, abc.ABC):
     def get_key_label(self): ...
 
     def display(self):
-        field = self._wildcatting.get_player_field()
-        for row in range(field.get_height()):
-            for col in range(field.get_width()):
+        field = self._wildcatting.player_field
+        for row in range(field.height):
+            for col in range(field.width):
                 site = field.get_site(row, col)
-                if site.is_surveyed():
+                if site.surveyed:
                     self.display_site(site)
 
         self._win.refresh()
 
     def display_site(self, site):
-        well = site.get_well()
+        well = site.well
         if well is None:
             # work around an MacOS X terminal problem with
             # displaying blank characters - it doesn't draw
@@ -186,13 +186,13 @@ class OilFieldCursesView(View, abc.ABC):
                 symbol = " "
             color = self._colorChooser.blank_color(site)
         else:
-            symbol = well.get_player().get_symbol()
+            symbol = well.player.symbol
             color = self._colorChooser.site_color(site)
 
-        self.putch(self._win, site.get_row(), site.get_col(), ord(symbol), color)
+        self.putch(self._win, site.row, site.col, ord(symbol), color)
 
     def animate_game_end(self):
-        animator = FadeInOilFieldCursesAnimator(self._wildcatting.get_player_field())
+        animator = FadeInOilFieldCursesAnimator(self._wildcatting.player_field)
         while not animator.is_done():
             animator.animate()
             self.display()
@@ -228,13 +228,13 @@ class OilFieldDepthView(OilFieldCursesView):
         return "OIL DEPTH"
 
     def display_site(self, site):
-        well = site.get_well()
+        well = site.well
         if well is None:
             # show a "." for surveyed sites
             symbol = "."
             color = self._colorChooser.blank_color(site)
         else:
-            symbol = well.get_player().get_symbol()
+            symbol = well.player.symbol
             color = self._colorChooser.site_color(site)
 
-        self.putch(self._win, site.get_row(), site.get_col(), ord(symbol), color)
+        self.putch(self._win, site.row, site.col, ord(symbol), color)

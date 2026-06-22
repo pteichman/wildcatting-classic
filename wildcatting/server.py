@@ -108,10 +108,10 @@ class GameService:
         return (game, clientId)
 
     def _ensure_survey_turn(self, game, player):
-        if game.is_finished():
+        if game.finished:
             raise WildcattingException("Game is over")
 
-        week = game.get_week()
+        week = game.week
 
         if not week.is_survey_turn(player):
             raise WildcattingException("Not player's turn")
@@ -119,10 +119,10 @@ class GameService:
         return week.get_player_turn(player)
 
     def _ensure_turn(self, game, player):
-        if game.is_finished():
+        if game.finished:
             raise WildcattingException("Game is over")
 
-        week = game.get_week()
+        week = game.week
 
         if week.is_turn_finished(player):
             raise WildcattingException("Player's turn is finished")
@@ -130,7 +130,7 @@ class GameService:
         return week.get_player_turn(player)
 
     def _encode_game_handle(self, gameId, player, secret):
-        handle = GameService.HANDLE_SEP.join((gameId, player.get_username(), secret))
+        handle = GameService.HANDLE_SEP.join((gameId, player.username, secret))
         return base64.b64encode(handle.encode("utf-8")).decode("utf-8")
 
     def _decode_game_handle(self, gameHandle):
@@ -200,9 +200,9 @@ class GameService:
         player = wildcatting.model.Player(username, symbol)
         game.add_player(clientId, player)
 
-        handle = self._encode_game_handle(gameId, player, player.get_secret())
+        handle = self._encode_game_handle(gameId, player, player.secret)
 
-        self.log.debug("%s joined game %s (%s)", player.get_username(), gameId, handle)
+        self.log.debug("%s joined game %s (%s)", player.username, gameId, handle)
 
         return handle
 
@@ -216,9 +216,9 @@ class GameService:
         clientInfo = wildcatting.model.ClientInfo(clientHandle, gameId)
 
         for player in game.get_client_players(clientId):
-            handle = self._encode_game_handle(gameId, player, player.get_secret())
+            handle = self._encode_game_handle(gameId, player, player.secret)
             clientInfo.add_player_info(
-                player.get_username(), handle, player.get_symbol()
+                player.username, handle, player.symbol
             )
 
         return clientInfo.serialize()
@@ -227,20 +227,20 @@ class GameService:
         game, player = self._read_handle(handle)
         turn = self._ensure_survey_turn(game, player)
 
-        if turn.get_surveyed_site():
+        if turn.surveyed_site:
             raise WildcattingException("Already surveyed this turn")
 
-        field = game.get_oil_field()
+        field = game.oil_field
 
         site = field.get_site(row, col)
-        if site.is_surveyed():
+        if site.surveyed:
             raise WildcattingException("Site is already surveyed")
 
-        site.set_surveyed(True)
-        turn.set_surveyed_site(site)
+        site.surveyed = True
+        turn.surveyed_site = site
 
         game.mark_site_updated(player, site)
-        game.get_week().end_survey(player)
+        game.week.end_survey(player)
 
         return site.serialize()
 
@@ -248,18 +248,18 @@ class GameService:
         game, player = self._read_handle(handle)
         turn = self._ensure_turn(game, player)
 
-        if turn.get_drilled_site():
+        if turn.drilled_site:
             raise WildcattingException("Already drilled this turn")
 
-        field = game.get_oil_field()
+        field = game.oil_field
 
         site = field.get_site(row, col)
         well = wildcatting.model.Well()
-        well.set_player(player)
-        well.set_week(game.get_week().get_week_num())
-        site.set_well(well)
+        well.player = player
+        well.week = game.week.week_num
+        site.well = well
         game.drill(row, col)
-        turn.set_drilled_site(site)
+        turn.drilled_site = site
         game.mark_site_updated(player, site)
 
         return self._make_player_site(site).serialize()
@@ -271,64 +271,64 @@ class GameService:
     def get_week(self, handle):
         game, player = self._read_handle(handle)
 
-        return game.get_week().get_week_num()
+        return game.week.week_num
 
     def start(self, handle):
         game, player = self._read_handle(handle)
 
-        master = game.get_master()
+        master = game.master
         if player != master:
             raise WildcattingException("Only the game master can start the game")
         game.start()
 
     def is_started(self, handle):
         game, clientId = self._read_client_handle(handle)
-        return game.is_started()
+        return game.started
 
     def is_finished(self, handle):
         game, clientId = self._read_client_handle(handle)
-        return game.is_finished()
+        return game.finished
 
     def list_players(self, clientHandle):
         game, clientId = self._read_client_handle(clientHandle)
 
         players = game.get_players()
-        ret = [player.get_username() for player in players]
+        ret = [player.username for player in players]
         return ret
 
     def drill(self, handle, row, col):
         game, player = self._read_handle(handle)
         turn = self._ensure_turn(game, player)
 
-        drilledSite = turn.get_drilled_site()
+        drilledSite = turn.drilled_site
         if drilledSite and not (
-            drilledSite.get_row() == row and drilledSite.get_col() == col
+            drilledSite.row == row and drilledSite.col == col
         ):
             raise WildcattingException("Already drilled somewhere else this turn")
 
         game.drill(row, col)
-        site = game.get_oil_field().get_site(row, col)
+        site = game.oil_field.get_site(row, col)
         game.mark_site_updated(player, site)
-        return site.get_well().serialize()
+        return site.well.serialize()
 
     def sell(self, handle, row, col):
         game, player = self._read_handle(handle)
 
-        field = game.get_oil_field()
+        field = game.oil_field
         site = field.get_site(row, col)
-        well = site.get_well()
+        well = site.well
 
         if well is None:
             raise WildcattingException("There is no well at this location")
 
-        if well.is_sold():
+        if well.sold:
             raise WildcattingException("Well has already been sold")
 
-        if well.get_player().get_username() != player.get_username():
+        if well.player.username != player.username:
             raise WildcattingException("Player does not own well")
 
         price = well.sell()
-        well.get_player().income(price)
+        well.player.income(price)
         return price
 
     def end_turn(self, handle):
@@ -342,31 +342,31 @@ class GameService:
     def get_players_turn(self, clientHandle):
         game, clientId = self._read_client_handle(clientHandle)
 
-        player = game.get_week().get_survey_player()
+        player = game.week.survey_player
         if player is not None:
-            return player.get_username()
+            return player.username
 
     def get_pending_players(self, clientHandle):
         game, clientId = self._read_client_handle(clientHandle)
 
-        players = game.get_week().get_pending_players()
+        players = game.week.pending_players
 
-        return [p.get_username() for p in players]
+        return [p.username for p in players]
 
     def get_update(self, clientHandle):
         game, clientId = self._read_client_handle(clientHandle)
 
-        week = game.get_week().get_week_num()
-        oilPrice = game.get_oil_price()
+        week = game.week.week_num
+        oilPrice = game.oil_price
 
-        currentPlayer = game.get_week().get_survey_player()
+        currentPlayer = game.week.survey_player
         if currentPlayer is None:
             playersTurn = None
         else:
-            playersTurn = currentPlayer.get_username()
+            playersTurn = currentPlayer.username
 
         pendingPlayers = self.get_pending_players(clientHandle)
-        gameFinished = game.is_finished()
+        gameFinished = game.finished
         sites = game.pop_updated_sites(clientId)
 
         update = wildcatting.model.Update(
@@ -378,13 +378,13 @@ class GameService:
         game, player = self._read_handle(handle)
 
         wellUpdates = []
-        field = game.get_oil_field()
-        for row in range(field.get_height()):
-            for col in range(field.get_width()):
-                well = field.get_site(row, col).get_well()
+        field = game.oil_field
+        for row in range(field.height):
+            for col in range(field.width):
+                well = field.get_site(row, col).well
                 if (
                     well is not None
-                    and well.get_player().get_username() == player.get_username()
+                    and well.player.username == player.username
                 ):
                     wellDict = {"row": row, "col": col, "well": well.serialize()}
                     wellUpdates.append(wellDict)
@@ -392,23 +392,23 @@ class GameService:
         return wellUpdates
 
     def _update_player_site(self, playerSite, site):
-        playerSite.set_drill_cost(site.get_drill_cost())
-        playerSite.set_probability(site.get_probability())
-        playerSite.set_well(site.get_well())
-        playerSite.set_tax(site.get_tax())
-        playerSite.set_surveyed(site.is_surveyed())
-        playerSite.set_oil_depth(site.get_oil_depth())
+        playerSite.drill_cost = site.drill_cost
+        playerSite.probability = site.probability
+        playerSite.well = site.well
+        playerSite.tax = site.tax
+        playerSite.surveyed = site.surveyed
+        playerSite.oil_depth = site.oil_depth
 
     def _make_player_site(self, site):
-        playerSite = wildcatting.model.Site(site.get_row(), site.get_col())
-        if site.is_surveyed():
+        playerSite = wildcatting.model.Site(site.row, site.col)
+        if site.surveyed:
             self._update_player_site(playerSite, site)
 
         return playerSite
 
     def get_player_site(self, handle, row, col):
         game, player = self._read_handle(handle)
-        field = game.get_oil_field()
+        field = game.oil_field
         site = field.get_site(row, col)
         playerSite = self._make_player_site(site)
 
@@ -416,36 +416,36 @@ class GameService:
 
     def get_oil_price(self, handle):
         game, player = self._read_handle(handle)
-        return game.get_oil_price()
+        return game.oil_price
 
     def get_player_field(self, clientHandle):
         game, player = self._read_client_handle(clientHandle)
-        field = game.get_oil_field()
+        field = game.oil_field
 
-        width, height = field.get_width(), field.get_height()
+        width, height = field.width, field.height
         playerField = wildcatting.model.OilField(width, height)
 
-        gameFinished = game.is_finished()
+        gameFinished = game.finished
 
         for row in range(height):
             for col in range(width):
                 site = field.get_site(row, col)
                 playerSite = playerField.get_site(row, col)
 
-                if site.is_surveyed() or gameFinished:
+                if site.surveyed or gameFinished:
                     self._update_player_site(playerSite, site)
 
                 if gameFinished:
-                    reservoir = site.get_reservoir()
+                    reservoir = site.reservoir
                     if reservoir is not None:
-                        playerSite.set_oil_depth(reservoir.get_oil_depth())
+                        playerSite.oil_depth = reservoir.oil_depth
 
         return playerField.serialize()
 
     def get_weekly_summary(self, clientHandle):
         game, clientId = self._read_client_handle(clientHandle)
 
-        return wildcatting.model.WeeklySummary.serialize(game.get_weekly_summary())
+        return wildcatting.model.WeeklySummary.serialize(game.weekly_summary)
 
 
 class GameProtocol(Protocol):

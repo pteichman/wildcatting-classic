@@ -26,20 +26,18 @@ class Theme(abc.ABC):
 
     def generate_setting(self):
         setting = wildcatting.model.Setting()
-        setting.set_location(self.get_location())
-        setting.set_era(self.get_era())
-        setting.set_price_format(self.get_price_format())
-        setting.set_facts(self.get_facts())
-        setting.set_min_drill_cost(self.get_min_drill_cost())
-        setting.set_max_drill_cost(self.get_max_drill_cost())
-        setting.set_drill_increment(self.get_drill_increment())
+        setting.location = self.get_location()
+        setting.era = self.get_era()
+        setting.price_format = self.get_price_format()
+        setting.facts = self.facts
+        setting.min_drill_cost = self.get_min_drill_cost()
+        setting.max_drill_cost = self.get_max_drill_cost()
+        setting.drill_increment = self.get_drill_increment()
         return setting
 
-    def get_facts(self):
+    @property
+    def facts(self):
         return self._facts
-
-    def set_facts(self, facts):
-        self._facts = facts
 
     ## literary setting
     @abc.abstractmethod

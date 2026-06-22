@@ -21,17 +21,20 @@ class Week:
 
         for player in self._players:
             turn = wildcatting.turn.Turn()
-            turn.set_player(player)
-            turn.set_week(weekNum)
+            turn.player = player
+            turn.week = weekNum
             self._turns[player] = turn
 
-    def get_week_num(self):
+    @property
+    def week_num(self):
         return self._weekNum
 
-    def get_price(self):
+    @property
+    def price(self):
         return self._price
 
-    def get_survey_player(self):
+    @property
+    def survey_player(self):
         if self._surveysDone:
             return None
 
@@ -45,7 +48,7 @@ class Week:
     def is_survey_turn(self, player):
         assert isinstance(player, Player)
 
-        return self.get_survey_player() == player
+        return self.survey_player == player
 
     def end_survey(self, player):
         assert isinstance(player, Player)
@@ -74,8 +77,10 @@ class Week:
 
         return False
 
-    def get_pending_players(self):
+    @property
+    def pending_players(self):
         return self._pending
 
-    def is_finished(self):
+    @property
+    def finished(self):
         return len(self._pending) == 0

@@ -35,53 +35,65 @@ class Wildcatting:
         self._pendingPlayers = []
         self._gameFinished = False
 
-    def get_player_field(self):
+    @property
+    def player_field(self):
         return self._playerField
 
-    def set_player_field(self, playerField):
+    @player_field.setter
+    def player_field(self, playerField):
         self._playerField = playerField
 
-    def get_week(self):
+    @property
+    def week(self):
         return self._week
 
-    def set_week(self, week):
+    @week.setter
+    def week(self, week):
         self._week = week
 
-    def get_oil_price(self):
+    @property
+    def oil_price(self):
         return self._oilPrice
 
-    def set_oil_price(self, oilPrice):
+    @oil_price.setter
+    def oil_price(self, oilPrice):
         self._oilPrice = oilPrice
 
-    def get_players_turn(self):
+    @property
+    def players_turn(self):
         return self._playersTurn
 
-    def set_players_turn(self, playersTurn):
+    @players_turn.setter
+    def players_turn(self, playersTurn):
         self._playersTurn = playersTurn
 
-    def get_pending_players(self):
+    @property
+    def pending_players(self):
         return self._pendingPlayers
 
-    def set_pending_players(self, players):
+    @pending_players.setter
+    def pending_players(self, players):
         self._pendingPlayers = players
 
-    def is_game_finished(self):
+    @property
+    def game_finished(self):
         return self._gameFinished
 
-    def set_game_finished(self, gameFinished):
+    @game_finished.setter
+    def game_finished(self, gameFinished):
         self._gameFinished = gameFinished
 
     def update_player_field(self, site):
         assert self._playerField is not None
-        self._playerField.set_site(site.get_row(), site.get_col(), site)
+        self._playerField.set_site(site.row, site.col, site)
 
     def update(self, update):
-        gameFinished = update.get_game_finished()
-        week = update.get_week()
-        playersTurn = update.get_players_turn()
-        pendingPlayers = update.get_pending_players()
-        oilPrice = update.get_oil_price()
-        sites = update.get_sites()
+        gameFinished = update.game_finished
+        week = update.week
+        playersTurn = update.players_turn
+        pendingPlayers = update.pending_players
+        oilPrice = update.oil_price
+        sites = update.sites
 
         updated = (
             len(sites) > 0
@@ -149,13 +161,13 @@ class Client:
 
     def _get_current_handle(self):
         assert self._clientInfo is not None
-        player = self._wildcatting.get_players_turn()
+        player = self._wildcatting.players_turn
         return self._clientInfo.get_player_handle(player)
 
     def _run_pre_game(self):
         assert self._clientInfo is not None
-        gameId = self._clientInfo.get_game_id()
-        handle = self._clientInfo.get_client_handle()
+        gameId = self._clientInfo.game_id
+        handle = self._clientInfo.client_handle
 
         self.log.info(self._clientInfo._players)
 
@@ -177,13 +189,13 @@ class Client:
 
     def _get_new_player_field(self):
         assert self._clientInfo is not None
-        handle = self._clientInfo.get_client_handle()
+        handle = self._clientInfo.client_handle
         playerField = OilField.deserialize(self._server.game.get_player_field(handle))
-        self._wildcatting.set_player_field(playerField)
+        self._wildcatting.player_field = playerField
 
     def _survey(self, row, col):
-        site = self._wildcatting.get_player_field().get_site(row, col)
-        surveyed = site.is_surveyed()
+        site = self._wildcatting.player_field.get_site(row, col)
+        surveyed = site.surveyed
         if not surveyed:
             site = Site.deserialize(
                 self._server.game.survey(self._get_current_handle(), row, col)
@@ -199,16 +211,16 @@ class Client:
             self._server.game.erect(self._get_current_handle(), row, col)
         )
         self._wildcatting.update_player_field(site)
-        if site.get_well().get_output() is None:
+        if site.well.output is None:
             self._run_drill(row, col)
 
     def _run_drill(self, row, col):
         last_stop = False
-        site = self._wildcatting.get_player_field().get_site(row, col)
+        site = self._wildcatting.player_field.get_site(row, col)
         drillView = DrillView(self._stdscr, site, self._setting)
         while (
-            site.get_well().get_output() is None
-            and site.get_well().get_drill_depth() < 10
+            site.well.output is None
+            and site.well.drill_depth < 10
         ):
             drillView.display()
             action = drillView.input()
@@ -217,13 +229,13 @@ class Client:
                     self._get_current_handle(), row, col
                 )
                 well = Well.deserialize(wellUpdate)
-                site.set_well(well)
+                site.well = well
                 drillView.display()
             if action.stop:
                 last_stop = True
                 break
 
-        if site.get_well().get_output() is None:
+        if site.well.output is None:
             if not last_stop:
                 drillView.set_message("DRY HOLE!")
                 drillView.display()
@@ -231,13 +243,13 @@ class Client:
         else:
             # extrapolate the site's oil depth rather than hit the
             # server again.  atleast for now.
-            site.set_oil_depth(well.get_drill_depth())
+            site.oil_depth = well.drill_depth
 
         return site
 
     def _end_turn(self):
         assert self._clientInfo is not None
-        player = self._wildcatting.get_players_turn()
+        player = self._wildcatting.players_turn
         handle = self._clientInfo.get_player_handle(player)
         u, wellUpdates = self._server.game.end_turn(handle)
         if u is not None:
@@ -249,28 +261,28 @@ class Client:
         for wellDict in wellUpdates:
             row, col = wellDict["row"], wellDict["col"]
             well = Well.deserialize(wellDict["well"])
-            site = self._wildcatting.get_player_field().get_site(row, col)
-            site.set_well(well)
+            site = self._wildcatting.player_field.get_site(row, col)
+            site.well = well
 
-        if weekUpdated and not self._wildcatting.is_game_finished():
+        if weekUpdated and not self._wildcatting.game_finished:
             self._run_weekly_summary()
 
     def _run_weekly_report(self):
         assert self._clientInfo is not None
-        player = self._wildcatting.get_players_turn()
+        player = self._wildcatting.players_turn
         handle = self._clientInfo.get_player_handle(player)
         symbol = self._clientInfo.get_player_symbol(player)
 
         report = WeeklyReport(
-            self._wildcatting.get_player_field(),
+            self._wildcatting.player_field,
             player,
             symbol,
-            self._wildcatting.get_week(),
+            self._wildcatting.week,
             self._setting,
-            self._wildcatting.get_oil_price(),
+            self._wildcatting.oil_price,
         )
         reportView = WeeklyReportView(
-            self._stdscr, report, self._wildcatting.get_player_field()
+            self._stdscr, report, self._wildcatting.player_field
         )
         reportView.display()
 
@@ -278,8 +290,8 @@ class Client:
             action = reportView.input()
             if action.sell is not None:
                 row, col = action.sell
-                site = self._wildcatting.get_player_field().get_site(row, col)
-                if site.get_well().is_sold():
+                site = self._wildcatting.player_field.get_site(row, col)
+                if site.well.sold:
                     continue
                 self._server.game.sell(handle, row, col)
                 site = Site.deserialize(
@@ -288,15 +300,15 @@ class Client:
                 self._wildcatting.update_player_field(site)
 
                 report = WeeklyReport(
-                    self._wildcatting.get_player_field(),
+                    self._wildcatting.player_field,
                     player,
                     symbol,
-                    self._wildcatting.get_week(),
+                    self._wildcatting.week,
                     self._setting,
-                    self._wildcatting.get_oil_price(),
+                    self._wildcatting.oil_price,
                 )
 
-                reportView.set_field(self._wildcatting.get_player_field())
+                reportView.set_field(self._wildcatting.player_field)
                 reportView.set_report(report)
                 reportView.display()
             if action.next_player:
@@ -305,10 +317,10 @@ class Client:
     def _run_weekly_summary(self):
         assert self._clientInfo is not None
         report = WeeklySummary.deserialize(
-            self._server.game.get_weekly_summary(self._clientInfo.get_client_handle())
+            self._server.game.get_weekly_summary(self._clientInfo.client_handle)
         )
         weeklySummaryView = WeeklySummaryView(self._stdscr, report)
-        weeklySummaryView.display(self._wildcatting.is_game_finished())
+        weeklySummaryView.display(self._wildcatting.game_finished)
 
         while not weeklySummaryView.input():
             pass
@@ -316,13 +328,13 @@ class Client:
     def _update_wildcatting(self):
         assert self._clientInfo is not None
         update = Update.deserialize(
-            self._server.game.get_update(self._clientInfo.get_client_handle())
+            self._server.game.get_update(self._clientInfo.client_handle)
         )
         return self._wildcatting.update(update)
 
     def _is_my_turn(self):
         assert self._clientInfo is not None
-        return self._clientInfo.has_player(self._wildcatting.get_players_turn())
+        return self._clientInfo.has_player(self._wildcatting.players_turn)
 
     def _get_available_field_size(self):
         (h, w) = self._stdscr.getmaxyx()
@@ -356,14 +368,14 @@ class Client:
         # make sure we can fit
         availableWidth, availableHeight = self._get_available_field_size()
 
-        playerField = self._wildcatting.get_player_field()
+        playerField = self._wildcatting.player_field
         if (
-            availableHeight < playerField.get_height()
-            or availableWidth < playerField.get_width()
+            availableHeight < playerField.height
+            or availableWidth < playerField.width
         ):
             w, h = self._stdscr.getmaxyx()
-            min_w = playerField.get_width() + WildcattingView.SIDE_PADDING
-            min_h = playerField.get_height() + WildcattingView.TOP_PADDING
+            min_w = playerField.width + WildcattingView.SIDE_PADDING
+            min_h = playerField.height + WildcattingView.TOP_PADDING
             raise Exception(f"Console must be at least {min_w}x{min_h} (is {w}x{h})")
 
         self._wildcattingView = wildcattingView = WildcattingView(
@@ -378,7 +390,7 @@ class Client:
         curses.halfdelay(refresh)
 
         moved = False
-        while not self._wildcatting.is_game_finished():
+        while not self._wildcatting.game_finished:
             c = None
             if self._is_my_turn() and not moved:
                 wildcattingView.indicate_turn()
@@ -400,7 +412,7 @@ class Client:
                 self._run_weekly_report()
                 self._end_turn()
                 updated, weekUpdated = self._update_wildcatting()
-                if weekUpdated and not self._wildcatting.is_game_finished():
+                if weekUpdated and not self._wildcatting.game_finished:
                     curses.flushinp()
                     self._run_weekly_summary()
                 if updated:
@@ -424,7 +436,7 @@ class Client:
                     )
                     curses.halfdelay(refresh)
 
-                if weekUpdated and not self._wildcatting.is_game_finished():
+                if weekUpdated and not self._wildcatting.game_finished:
                     curses.flushinp()
                     self._run_weekly_summary()
                 if updated:

@@ -45,10 +45,10 @@ class DrillView(View):
         self._stdscr.clear()
 
         drillDepth = (
-            self._site.get_well().get_drill_depth()
-            * self._setting.get_drill_increment()
+            self._site.well.drill_depth
+            * self._setting.drill_increment
         )
-        drillCost = self._site.get_drill_cost()
+        drillCost = self._site.drill_cost
         cost = drillDepth * drillCost
 
         height, width = self._stdscr.getmaxyx()
@@ -129,8 +129,8 @@ class WildcattingView(View):
         bwh = h - (self.TOP_BORDER * 2)
         bww = w - (self.SIDE_BORDER * 2)
 
-        field = wildcatting_.get_player_field()
-        rows, cols = field.get_height(), field.get_width()
+        field = wildcatting_.player_field
+        rows, cols = field.height, field.width
         self._border_win = stdscr.derwin(bwh, bww, 1, 3)
         self._field_win = stdscr.derwin(rows, cols, 2, 4)
         bkgd = Colors.get(curses.COLOR_WHITE, curses.COLOR_BLACK)
@@ -139,8 +139,8 @@ class WildcattingView(View):
         drillCostView = OilFieldDrillCostView(
             self._field_win,
             wildcatting_,
-            setting.get_min_drill_cost(),
-            setting.get_max_drill_cost(),
+            setting.min_drill_cost,
+            setting.max_drill_cost,
         )
         depthView = OilFieldDepthView(self._field_win, wildcatting_)
         self._views = [probView, drillCostView, depthView]
@@ -155,20 +155,20 @@ class WildcattingView(View):
 
     def _draw_border(self):
         (h, w) = self._stdscr.getmaxyx()
-        location = self._setting.get_location()
-        era = self._setting.get_era()
+        location = self._setting.location
+        era = self._setting.era
 
         topstr = f"{location}, {era}."
-        if self._wildcatting.is_game_finished():
+        if self._wildcatting.game_finished:
             self._stdscr.addstr(0, 4, topstr, curses.A_BOLD)
         else:
             pricestr = (
-                self._setting.get_price_format() % self._wildcatting.get_oil_price()
+                self._setting.price_format % self._wildcatting.oil_price
             )
             topstr = topstr + f"  Oil is {pricestr}"
             self._stdscr.addstr(0, 4, topstr, curses.A_BOLD)
 
-            week = f"Week {self._wildcatting.get_week()}"
+            week = f"Week {self._wildcatting.week}"
 
             newWeek = False
             if week != self._week:
@@ -181,7 +181,7 @@ class WildcattingView(View):
             )
 
             if newWeek:
-                self._fact = random.choice(self._setting.get_facts())
+                self._fact = random.choice(self._setting.facts)
             wrapped = self._wrap_fact(self._fact, " " * 4, w - 8)
             self._stdscr.addstr(h - 3, 0, wrapped)
 
@@ -226,11 +226,11 @@ class WildcattingView(View):
             self._border_win, border_h - 2, label, blackOnWhite, pad=len(colors) + 1
         )
 
-        turn = self._wildcatting.get_players_turn()
+        turn = self._wildcatting.players_turn
         if turn is not None:
             coordStr = f"X={str(self._x).rjust(2)}   Y={str(self._y).rjust(2)}"
             self.addCentered(self._border_win, border_h - 2, coordStr, blackOnWhite)
-            if not self._wildcatting.is_game_finished():
+            if not self._wildcatting.game_finished:
                 self.addRight(
                     self._border_win, border_h - 2, f"{turn}'s turn", blackOnWhite
                 )
@@ -240,7 +240,7 @@ class WildcattingView(View):
                 if len(view.get_key_label()) > longestLabel:
                     longestLabel = len(view.get_key_label())
 
-            players = self._wildcatting.get_pending_players()
+            players = self._wildcatting.pending_players
             label = " WAITING FOR {}".format(", ".join(players).upper())
             self.addLeft(
                 self._border_win,
@@ -263,7 +263,7 @@ class WildcattingView(View):
 
         blackOnGreen = Colors.get(curses.COLOR_BLACK, curses.COLOR_GREEN)
 
-        go = f"GO {self._wildcatting.get_players_turn().upper()}!"
+        go = f"GO {self._wildcatting.players_turn.upper()}!"
         if self._mac:
             bkgd, text = self.get_green_fgbg()
             self.addCentered(self._border_win, border_h - 2, "." * (border_w - 2), text)

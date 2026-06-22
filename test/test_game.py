@@ -14,13 +14,13 @@ class TestOilFiller(unittest.TestCase):
         filler = OilFiller(DefaultTheme())
         filler.fill(field)
 
-        for row in range(field.get_height()):
-            for col in range(field.get_width()):
+        for row in range(field.height):
+            for col in range(field.width):
                 site = field.get_site(row, col)
 
                 self.assertNotEqual(site, None)
-                self.assertTrue(site.get_probability() >= 0)
-                self.assertTrue(site.get_probability() <= 100)
+                self.assertTrue(site.probability >= 0)
+                self.assertTrue(site.probability <= 100)
 
 
 class TestTaxFiller(unittest.TestCase):
@@ -31,12 +31,12 @@ class TestTaxFiller(unittest.TestCase):
         OilFiller(DefaultTheme()).fill(field)
         TaxFiller(DefaultTheme()).fill(field)
 
-        for row in range(field.get_height()):
-            for col in range(field.get_width()):
+        for row in range(field.height):
+            for col in range(field.width):
                 site = field.get_site(row, col)
 
                 self.assertNotEqual(site, None)
-                self.assertTrue(site.get_tax() >= 0)
+                self.assertTrue(site.tax >= 0)
 
 
 class TestGame(unittest.TestCase):
@@ -91,9 +91,9 @@ class TestGame(unittest.TestCase):
         player1 = Player("alice", "A")
         game.add_player("test_client", player1)
 
-        self.assertEqual(False, game.is_started())
+        self.assertEqual(False, game.started)
         game.start()
-        self.assertEqual(True, game.is_started())
+        self.assertEqual(True, game.started)
 
     def testFinishGame(self):
         game = Game(10, 10, turnCount=1)
@@ -101,13 +101,13 @@ class TestGame(unittest.TestCase):
         player1 = Player("alice", "A")
         game.add_player("test_client", player1)
 
-        self.assertEqual(False, game.is_started())
+        self.assertEqual(False, game.started)
         game.start()
-        self.assertEqual(True, game.is_started())
+        self.assertEqual(True, game.started)
 
-        self.assertEqual(False, game.is_finished())
+        self.assertEqual(False, game.finished)
         game.end_turn(player1)
-        self.assertEqual(True, game.is_finished())
+        self.assertEqual(True, game.finished)
 
     def testWeekIncrement(self):
         game = Game(10, 10)
@@ -121,24 +121,24 @@ class TestGame(unittest.TestCase):
         self.assertTrue(player2 in game.get_players())
 
         game.start()
-        self.assertTrue(game.is_started())
+        self.assertTrue(game.started)
 
         # Week 1
-        self.assertEqual(1, game.get_week().get_week_num())
+        self.assertEqual(1, game.week.week_num)
         game.end_turn(player1)
-        self.assertEqual(1, game.get_week().get_week_num())
+        self.assertEqual(1, game.week.week_num)
         game.end_turn(player2)
 
         # Week 2
-        self.assertEqual(2, game.get_week().get_week_num())
+        self.assertEqual(2, game.week.week_num)
         game.end_turn(player1)
-        self.assertEqual(2, game.get_week().get_week_num())
+        self.assertEqual(2, game.week.week_num)
         game.end_turn(player2)
 
         # Week 3
-        self.assertEqual(3, game.get_week().get_week_num())
+        self.assertEqual(3, game.week.week_num)
         game.end_turn(player1)
-        self.assertEqual(3, game.get_week().get_week_num())
+        self.assertEqual(3, game.week.week_num)
         game.end_turn(player2)
 
 

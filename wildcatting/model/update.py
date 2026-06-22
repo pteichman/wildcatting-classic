@@ -12,38 +12,50 @@ class Update(Serializable):
         self._gameFinished = gameFinished
         self._sites = sites
 
-    def get_week(self):
+    @property
+    def week(self):
         return self._week
 
-    def set_week(self, week):
+    @week.setter
+    def week(self, week):
         self._week = week
 
-    def get_oil_price(self):
+    @property
+    def oil_price(self):
         return self._oilPrice
 
-    def set_oil_price(self, oilPrice):
+    @oil_price.setter
+    def oil_price(self, oilPrice):
         self._oilPrice = oilPrice
 
-    def get_players_turn(self):
+    @property
+    def players_turn(self):
         return self._playersTurn
 
-    def set_players_turn(self, playersTurn):
+    @players_turn.setter
+    def players_turn(self, playersTurn):
         self._playersTurn = playersTurn
 
-    def get_pending_players(self):
+    @property
+    def pending_players(self):
         return self._pendingPlayers
 
-    def set_pending_players(self, pendingPlayers):
+    @pending_players.setter
+    def pending_players(self, pendingPlayers):
         self._pendingPlayers = pendingPlayers
 
-    def get_game_finished(self):
+    @property
+    def game_finished(self):
         return self._gameFinished
 
-    def set_game_finished(self, gameFinished):
+    @game_finished.setter
+    def game_finished(self, gameFinished):
         self._gameFinished = gameFinished
 
-    def get_sites(self):
+    @property
+    def sites(self):
         return self._sites
 
-    def set_sites(self, sites):
+    @sites.setter
+    def sites(self, sites):
         self._sites = sites

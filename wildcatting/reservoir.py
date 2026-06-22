@@ -13,10 +13,12 @@ class Reservoir:
         self._initialReserves += initialReserves
         self._reserves = self._initialReserves
 
-    def get_oil_depth(self):
+    @property
+    def oil_depth(self):
         return self._oilDepth
 
-    def get_reserves(self):
+    @property
+    def reserves(self):
         return self._reserves
 
     def ratio_pumped(self):

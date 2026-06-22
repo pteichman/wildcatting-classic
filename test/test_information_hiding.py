@@ -31,11 +31,11 @@ class TestClientVisibility(unittest.TestCase):
         raw = service.get_player_site(player_handle, 0, 0)
         site = Site.deserialize(raw)
 
-        self.assertEqual(site.get_probability(), 0)
-        self.assertEqual(site.get_drill_cost(), 0)
-        self.assertEqual(site.get_tax(), 0)
-        self.assertIsNone(site.get_well())
-        self.assertFalse(site.is_surveyed())
+        self.assertEqual(site.probability, 0)
+        self.assertEqual(site.drill_cost, 0)
+        self.assertEqual(site.tax, 0)
+        self.assertIsNone(site.well)
+        self.assertFalse(site.surveyed)
 
     def test_oil_flag_never_serialized(self):
         # End the game so all sites are revealed — this is the worst case for leakage.
@@ -79,15 +79,15 @@ class TestClientVisibility(unittest.TestCase):
         service.start(player_handle)
 
         game, player = service._read_handle(player_handle)
-        field = game.get_oil_field()
+        field = game.oil_field
 
         # Find a site with a reservoir at depth > 1 so erect() alone won't find oil.
         target = None
-        for row in range(field.get_height()):
-            for col in range(field.get_width()):
+        for row in range(field.height):
+            for col in range(field.width):
                 site = field.get_site(row, col)
-                reservoir = site.get_reservoir()
-                if reservoir is not None and reservoir.get_oil_depth() > 1:
+                reservoir = site.reservoir
+                if reservoir is not None and reservoir.oil_depth > 1:
                     target = (row, col)
                     break
             if target:
@@ -101,7 +101,7 @@ class TestClientVisibility(unittest.TestCase):
         def get_oil_depth():
             return Site.deserialize(
                 service.get_player_site(player_handle, row, col)
-            ).get_oil_depth()
+            ).oil_depth
 
         service.survey(player_handle, row, col)
         self.assertIsNone(get_oil_depth())
@@ -109,7 +109,7 @@ class TestClientVisibility(unittest.TestCase):
         service.erect(player_handle, row, col)
         self.assertIsNone(get_oil_depth())
 
-        oil_depth = field.get_site(row, col).get_reservoir().get_oil_depth()
+        oil_depth = field.get_site(row, col).reservoir.oil_depth
         for _ in range(oil_depth - 2):  # erect already drilled once
             service.drill(player_handle, row, col)
             self.assertIsNone(get_oil_depth())
@@ -132,11 +132,11 @@ class TestClientVisibility(unittest.TestCase):
         field = OilField.deserialize(raw)
 
         # OilFiller clamps probability to [10, 100] for every site.
-        for row in range(field.get_height()):
-            for col in range(field.get_width()):
+        for row in range(field.height):
+            for col in range(field.width):
                 site = field.get_site(row, col)
                 self.assertGreater(
-                    site.get_probability(),
+                    site.probability,
                     0,
                     f"site ({row},{col}) has zero probability after game ended",
                 )
@@ -146,12 +146,12 @@ class TestSerializationRoundTrips(unittest.TestCase):
     def test_well_round_trip(self):
         player = Player("alice", "A")
         well1 = Well()
-        well1.set_player(player)
-        well1.set_week(3)
-        well1.set_drill_depth(4)
-        well1.set_initial_output(30.0)
-        well1.set_output(20.0)
-        well1.set_capacity(2)
+        well1.player = player
+        well1.week = 3
+        well1.drill_depth = 4
+        well1.initial_output = 30.0
+        well1.output = 20.0
+        well1.capacity = 2
 
         obj1 = well1.serialize()
         well2 = Well.deserialize(obj1)
@@ -161,7 +161,7 @@ class TestSerializationRoundTrips(unittest.TestCase):
 
     def test_player_round_trip(self):
         player1 = Player("bob", "B")
-        player1.set_secret("DEADBEEF12345678")
+        player1.secret = "DEADBEEF12345678"
         player1.income(500)
         player1.expense(200)
 

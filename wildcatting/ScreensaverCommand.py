@@ -48,7 +48,7 @@ class ScreensaverCommand(Command):
     def asciiScreensaver(self):
         while True:
             game = Game(80, 23)
-            field = game.get_oil_field()
+            field = game.oil_field
             OilFieldTextView(field).ascii()
             time.sleep(0.25)
 
@@ -56,7 +56,7 @@ class ScreensaverCommand(Command):
         try:
             while True:
                 game = Game(80, 23)
-                field = game.get_oil_field()
+                field = game.oil_field
                 OilFieldTextView(field).ansi()
                 time.sleep(0.25)
         except Exception:
@@ -90,10 +90,10 @@ class ScreensaverCommand(Command):
 
         while True:
             game = Game(win_w, win_h)
-            field = game.get_oil_field()
+            field = game.oil_field
 
             w = Wildcatting()
-            w.set_player_field(field)
+            w.player_field = field
             view: OilFieldCursesView
             if options.drill_cost:
                 view = OilFieldDrillCostView(win, w, 1, 25)
@@ -116,10 +116,10 @@ class ScreensaverCommand(Command):
 
         while True:
             game = Game(win_w, win_h)
-            field = game.get_oil_field()
+            field = game.oil_field
 
             w = Wildcatting()
-            w.set_player_field(field)
+            w.player_field = field
             view: OilFieldCursesView
             if options.drill_cost:
                 view = OilFieldDrillCostView(win, w, 1, 25)

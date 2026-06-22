@@ -70,11 +70,11 @@ class WeeklySummaryView(View):
 
         self.addCentered(self._win, 1, "... WILDCATTING ...")
         if not gameFinished:
-            self.addCentered(self._win, 3, f"WEEK {self._report.get_week()!s:>3}")
+            self.addCentered(self._win, 3, f"WEEK {self._report.week!s:>3}")
         else:
             self.addCentered(self._win, 3, "FINAL REPORT")
         row = 6
-        reportRows = self._report.get_report_rows()
+        reportRows = self._report.report_rows
         for rowDict in reportRows:
             username = rowDict["username"]
             profitAndLoss = rowDict["profitAndLoss"]
@@ -113,7 +113,7 @@ class WeeklyReportView(View):
         self._win = self._stdscr.derwin(16, 48, (h - 16) // 2, (w - 48) // 2)
         self._colorChooser = ProbabilityColorChooser()
 
-        self._cursor = _ReportCursor(page=(report.get_week() - 1) // 13)
+        self._cursor = _ReportCursor(page=(report.week - 1) // 13)
 
     def set_report(self, report):
         self._report = report
@@ -129,13 +129,13 @@ class WeeklyReportView(View):
         fg, bg = self.get_green_fgbg()
         self.setFGBG(self._win, fg, bg)
 
-        self._win.addstr(0, 0, self._report.get_username().upper())
-        self.addCentered(self._win, 0, f"{self._report.get_oil_price()} PER BARREL")
-        self.addRight(self._win, 0, f"WEEK {self._report.get_week()}")
+        self._win.addstr(0, 0, self._report.username.upper())
+        self.addCentered(self._win, 0, f"{self._report.oil_price} PER BARREL")
+        self.addRight(self._win, 0, f"WEEK {self._report.week}")
         self._win.addstr(1, 1, "  X   Y   COST     TAX     INCOME     P&L")
 
-        week = self._report.get_week()
-        reportDict = self._report.get_report_dict()
+        week = self._report.week
+        reportDict = self._report.report_dict
         page = self._cursor.page
         lastWeekOnPage = min(week, 13 * (page + 1))
         for turn in range((page * 13) + 1, lastWeekOnPage + 1):
@@ -144,10 +144,10 @@ class WeeklyReportView(View):
                 row = rowDict["row"]
                 col = rowDict["col"]
                 site = self._field.get_site(row, col)
-                if site.get_well().is_sold():
+                if site.well.sold:
                     symbol = " "
                 else:
-                    symbol = self._report.get_symbol()
+                    symbol = self._report.symbol
                 self._win.addstr(
                     turn - (page * 13) + 1,
                     0,
@@ -177,8 +177,8 @@ class WeeklyReportView(View):
             self._win.addstr(turn - (page * 13) + 1, 1, well_str)
 
         self._win.addstr(15, 0, " NEXT PLAYER")
-        if page == (self._report.get_week() - 1) // 13:
-            pl = str(self._report.get_profit_and_loss()).rjust(10)
+        if page == (self._report.week - 1) // 13:
+            pl = str(self._report.profit_and_loss).rjust(10)
             self._win.addstr(15, 35, f"$ {pl}")
         self._move_cursor()
         self._win.refresh()
@@ -193,8 +193,8 @@ class WeeklyReportView(View):
         c = self._stdscr.getch()
 
         old = self._cursor
-        self._cursor = _report_navigate(c, self._cursor, self._report.get_week())
-        action = _report_action(c, old.turn, self._report.get_report_dict())
+        self._cursor = _report_navigate(c, self._cursor, self._report.week)
+        action = _report_action(c, old.turn, self._report.report_dict)
 
         if self._cursor.page != old.page:
             self.display()
@@ -226,10 +226,10 @@ class SurveyorsReportView(View):
         self._stdscr.refresh()
 
         (h, w) = self._win.getmaxyx()
-        coord_str = f"X={self._site.get_col()}  Y={self._site.get_row()}"
-        prob_str = str(self._site.get_probability()).rjust(2) + "%"
-        cost_str = "$" + str(self._site.get_drill_cost()).rjust(4)
-        tax_str = "$" + str(self._site.get_tax()).rjust(4)
+        coord_str = f"X={self._site.col}  Y={self._site.row}"
+        prob_str = str(self._site.probability).rjust(2) + "%"
+        cost_str = "$" + str(self._site.drill_cost).rjust(4)
+        tax_str = "$" + str(self._site.tax).rjust(4)
 
         fg, bg = self.get_green_fgbg()
         self.setFGBG(self._win, fg, bg)

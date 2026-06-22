@@ -10,19 +10,19 @@ from wildcatting.theme import DefaultTheme
 class TestSeededDeterminism(unittest.TestCase):
     def test_same_seed_same_field(self):
         random.seed(42)
-        field1 = Game(10, 10).get_oil_field().serialize()
+        field1 = Game(10, 10).oil_field.serialize()
 
         random.seed(42)
-        field2 = Game(10, 10).get_oil_field().serialize()
+        field2 = Game(10, 10).oil_field.serialize()
 
         self.assertEqual(field1, field2)
 
     def test_different_seeds_differ(self):
         random.seed(1)
-        field1 = Game(10, 10).get_oil_field().serialize()
+        field1 = Game(10, 10).oil_field.serialize()
 
         random.seed(2)
-        field2 = Game(10, 10).get_oil_field().serialize()
+        field2 = Game(10, 10).oil_field.serialize()
 
         self.assertNotEqual(field1, field2)
 
@@ -30,22 +30,22 @@ class TestSeededDeterminism(unittest.TestCase):
 class TestFieldPropertyRanges(unittest.TestCase):
     def test_all_sites_within_theme_bounds(self):
         theme = DefaultTheme()
-        field = Game(20, 20, theme=theme).get_oil_field()
+        field = Game(20, 20, theme=theme).oil_field
 
         min_drill = theme.get_min_drill_cost()
         max_drill = theme.get_max_drill_cost()
         min_tax = theme.get_min_tax()
         max_tax = theme.get_max_tax()
 
-        for row in range(field.get_height()):
-            for col in range(field.get_width()):
+        for row in range(field.height):
+            for col in range(field.width):
                 site = field.get_site(row, col)
-                self.assertGreaterEqual(site.get_probability(), 0)
-                self.assertLessEqual(site.get_probability(), 100)
-                self.assertGreaterEqual(site.get_drill_cost(), min_drill)
-                self.assertLessEqual(site.get_drill_cost(), max_drill)
-                self.assertGreaterEqual(site.get_tax(), min_tax)
-                self.assertLessEqual(site.get_tax(), max_tax)
+                self.assertGreaterEqual(site.probability, 0)
+                self.assertLessEqual(site.probability, 100)
+                self.assertGreaterEqual(site.drill_cost, min_drill)
+                self.assertLessEqual(site.drill_cost, max_drill)
+                self.assertGreaterEqual(site.tax, min_tax)
+                self.assertLessEqual(site.tax, max_tax)
 
     def test_oil_prices_always_positive(self):
         prices = DefaultTheme().get_oil_prices()
@@ -63,12 +63,12 @@ class TestCompleteGameFlow(unittest.TestCase):
         game.add_player("c2", p2)
         game.start()
 
-        while not game.is_finished():
+        while not game.finished:
             game.end_turn(p1)
-            if not game.is_finished():
+            if not game.finished:
                 game.end_turn(p2)
 
-        self.assertTrue(game.is_finished())
+        self.assertTrue(game.finished)
 
     def test_idle_players_pnl_stays_zero(self):
         turn_count = 5
@@ -79,15 +79,15 @@ class TestCompleteGameFlow(unittest.TestCase):
         game.add_player("c2", p2)
         game.start()
 
-        while not game.is_finished():
-            self.assertEqual(p1.get_profit_and_loss(), 0)
-            self.assertEqual(p2.get_profit_and_loss(), 0)
+        while not game.finished:
+            self.assertEqual(p1.profit_and_loss, 0)
+            self.assertEqual(p2.profit_and_loss, 0)
             game.end_turn(p1)
-            if not game.is_finished():
+            if not game.finished:
                 game.end_turn(p2)
 
-        self.assertEqual(p1.get_profit_and_loss(), 0)
-        self.assertEqual(p2.get_profit_and_loss(), 0)
+        self.assertEqual(p1.profit_and_loss, 0)
+        self.assertEqual(p2.profit_and_loss, 0)
 
 
 class TestOilDiscovery(unittest.TestCase):
@@ -95,13 +95,13 @@ class TestOilDiscovery(unittest.TestCase):
         random.seed(42)
         theme = DefaultTheme()
         game = Game(10, 10, theme=theme)
-        field = game.get_oil_field()
+        field = game.oil_field
 
         oil_site = None
-        for row in range(field.get_height()):
-            for col in range(field.get_width()):
+        for row in range(field.height):
+            for col in range(field.width):
                 site = field.get_site(row, col)
-                if site.get_reservoir() is not None:
+                if site.reservoir is not None:
                     oil_site = site
                     break
             if oil_site is not None:
@@ -114,22 +114,22 @@ class TestOilDiscovery(unittest.TestCase):
 
         player = Player("alice", "A")
         well = Well()
-        well.set_player(player)
-        well.set_week(1)
-        oil_site.set_well(well)
+        well.player = player
+        well.week = 1
+        oil_site.well = well
 
-        oil_depth = oil_site.get_reservoir().get_oil_depth()
+        oil_depth = oil_site.reservoir.oil_depth
 
         for _ in range(oil_depth - 1):
             found, _ = well.drill(oil_site, theme.get_drill_increment())
             self.assertFalse(found)
-            self.assertIsNone(oil_site.get_oil_depth())
+            self.assertIsNone(oil_site.oil_depth)
 
         found, _ = well.drill(oil_site, theme.get_drill_increment())
         self.assertTrue(found)
-        oil_site.set_oil_depth(well.get_drill_depth())
-        self.assertEqual(oil_site.get_oil_depth(), oil_depth)
-        self.assertEqual(well.get_drill_depth(), oil_depth)
+        oil_site.oil_depth = well.drill_depth
+        self.assertEqual(oil_site.oil_depth, oil_depth)
+        self.assertEqual(well.drill_depth, oil_depth)
 
 
 class TestMultiplayerTurnOrder(unittest.TestCase):

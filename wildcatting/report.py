@@ -21,43 +21,49 @@ class WeeklyReport:
 
     def _build_report_dict(self, field):
         sites = {}
-        for row in range(field.get_height()):
-            for col in range(field.get_width()):
+        for row in range(field.height):
+            for col in range(field.width):
                 site = field.get_site(row, col)
-                well = site.get_well()
+                well = site.well
                 if well:
-                    if well.get_player().get_username() == self._username:
-                        output = well.get_output()
+                    if well.player.username == self._username:
+                        output = well.output
                         if output is None:
                             output = 0
 
                         rowDict = {}
                         rowDict["row"] = row
                         rowDict["col"] = col
-                        rowDict["cost"] = well.get_initial_cost()
-                        rowDict["tax"] = site.get_tax()
+                        rowDict["cost"] = well.initial_cost
+                        rowDict["tax"] = site.tax
                         rowDict["income"] = int(output * self._oilPrice)
-                        wellProfitAndLoss = well.get_profit_and_loss()
+                        wellProfitAndLoss = well.profit_and_loss
                         rowDict["profitAndLoss"] = wellProfitAndLoss
                         self._profitAndLoss += wellProfitAndLoss
 
-                        sites[well.get_week()] = rowDict
+                        sites[well.week] = rowDict
         return sites
 
-    def get_report_dict(self):
+    @property
+    def report_dict(self):
         return self._reportDict
 
-    def get_week(self):
+    @property
+    def week(self):
         return self._week
 
-    def get_username(self):
+    @property
+    def username(self):
         return self._username
 
-    def get_symbol(self):
+    @property
+    def symbol(self):
         return self._symbol
 
-    def get_oil_price(self):
-        return self._setting.get_price_format() % self._oilPrice
+    @property
+    def oil_price(self):
+        return self._setting.price_format % self._oilPrice
 
-    def get_profit_and_loss(self):
+    @property
+    def profit_and_loss(self):
         return self._profitAndLoss

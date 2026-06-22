@@ -12,27 +12,31 @@ class WeeklySummary(Serializable):
         rows = []
         maxProfitAndLoss = None
         for player in self._playerOrder:
-            profitAndLoss = player.get_profit_and_loss()
+            profitAndLoss = player.profit_and_loss
             if maxProfitAndLoss is None or profitAndLoss > maxProfitAndLoss:
                 maxProfitAndLoss = profitAndLoss
         for player in self._playerOrder:
-            profitAndLoss = player.get_profit_and_loss()
+            profitAndLoss = player.profit_and_loss
             row = {
-                "username": player.get_username(),
+                "username": player.username,
                 "profitAndLoss": profitAndLoss,
                 "leader": (profitAndLoss == maxProfitAndLoss),
             }
             rows.append(row)
         return rows
 
-    def get_week(self):
+    @property
+    def week(self):
         return self._week
 
-    def set_week(self, week):
+    @week.setter
+    def week(self, week):
         self._week = week
 
-    def get_report_rows(self):
+    @property
+    def report_rows(self):
         return self._reportRows
 
-    def set_report_rows(self, reportRows):
+    @report_rows.setter
+    def report_rows(self, reportRows):
         self._reportRows = reportRows

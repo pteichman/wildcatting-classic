@@ -55,7 +55,7 @@ class TestGameService(unittest.TestCase):
 
         # make sure it's week 1
         game, player = service._read_handle(handle1)
-        self.assertEqual(1, game.get_week().get_week_num())
+        self.assertEqual(1, game.week.week_num)
 
         # it's player 1's turn - make sure player 2 can't survey
         self.assertRaises(WildcattingException, service.survey, handle2, 0, 0)
@@ -74,7 +74,7 @@ class TestGameService(unittest.TestCase):
 
         # make sure it's still week 1
         game, player = service._read_handle(handle1)
-        self.assertEqual(1, game.get_week().get_week_num())
+        self.assertEqual(1, game.week.week_num)
 
         # survey as player 2
         Site.deserialize(service.survey(handle2, 0, 1))
@@ -87,7 +87,7 @@ class TestGameService(unittest.TestCase):
 
         # make sure week is 2
         game, player = service._read_handle(handle1)
-        self.assertEqual(2, game.get_week().get_week_num())
+        self.assertEqual(2, game.week.week_num)
 
         # make sure both players see the game ended
         self.assertEqual(True, service.is_finished(handle1))
@@ -117,8 +117,8 @@ class TestGameService(unittest.TestCase):
         site = Site.deserialize(service.survey(handle1, x, y))
         site = Site.deserialize(service.erect(handle1, x, y))
 
-        well = site.get_well()
-        while well.get_output() is None and well.get_drill_depth() < 10:
+        well = site.well
+        while well.output is None and well.drill_depth < 10:
             well = Well.deserialize(service.drill(handle1, x, y))
 
     def testSneakyErecting(self):

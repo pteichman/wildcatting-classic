@@ -28,8 +28,8 @@ class PeakedFiller(Filler):
         return None
 
     def _fill_model(self, model, peaks):
-        for row in range(model.get_height()):
-            for col in range(model.get_width()):
+        for row in range(model.height):
+            for col in range(model.width):
                 # calculate sum of distances from peak
                 minc: float = 99999
                 for p in range(len(peaks)):
@@ -45,7 +45,7 @@ class PeakedFiller(Filler):
                 minValue, maxValue = self.get_value_range()
                 lesserPeakFactor = self.get_lesser_peak_factor()
                 fudge = self.get_fudge()
-                field_size = math.sqrt(model.get_width() * model.get_height())
+                field_size = math.sqrt(model.width * model.height)
                 d = (minc + random.random() * fudge) / field_size
                 e = max(0.001, d)
                 f = 1 - max(min((math.log(e) + 3) / 3, 1.0), 0)
@@ -66,8 +66,8 @@ class PeakedFiller(Filler):
         peaks: list[tuple[int, int] | None] = [None] * random.randint(1, maxPeaks)
         for i in range(len(peaks)):
             peaks[i] = (
-                random.randint(0, model.get_height()),
-                random.randint(0, model.get_width()),
+                random.randint(0, model.height),
+                random.randint(0, model.width),
             )
         return peaks
 
@@ -99,9 +99,9 @@ class OilFiller(PeakedFiller):
         return random.randint(0, 100)
 
     def fill_site(self, site, value, roll):
-        site.set_probability(value)
+        site.probability = value
         if roll < value:
-            site.set_oil_flag(True)
+            site.oil_flag = True
 
     def get_min_dropoff(self):
         return self._theme.get_oil_min_dropoff()
@@ -128,7 +128,7 @@ class DrillCostFiller(PeakedFiller):
         return (self._theme.get_min_drill_cost(), self._theme.get_max_drill_cost())
 
     def fill_site(self, site, discount, roll):
-        site.set_drill_cost(self._theme.get_max_drill_cost() - discount)
+        site.drill_cost = self._theme.get_max_drill_cost() - discount
 
     def get_min_dropoff(self):
         return self._theme.get_drill_cost_min_dropoff()
@@ -155,8 +155,8 @@ class PotentialOilDepthFiller(PeakedFiller):
         return (1, 10)
 
     def fill_site(self, site, value, roll):
-        if site.get_oil_flag():
-            site.set_potential_oil_depth(11 - value)
+        if site.oil_flag:
+            site.potential_oil_depth = 11 - value
 
     def get_min_dropoff(self):
         return 0
@@ -183,13 +183,13 @@ class ReservoirFiller(Filler):
         self._theme = theme
 
     def fill(self, field):
-        height, width = field.get_height(), field.get_width()
+        height, width = field.height, field.width
         reservoir_count = 0
         site_count = 0
-        for row in range(field.get_height()):
-            for col in range(field.get_width()):
+        for row in range(field.height):
+            for col in range(field.width):
                 site = field.get_site(row, col)
-                if not site.get_oil_flag():
+                if not site.oil_flag:
                     continue
                 adjacentSites = []
                 for adjacentRow, adjacentCol in [(row + 1, col), (row, col + 1)]:
@@ -218,26 +218,26 @@ class ReservoirFiller(Filler):
         return int(depth * 1.0 / 9 * 6)
 
     def _fill_site(self, site, adjacentSites):
-        initialDepth = site.get_potential_oil_depth()
+        initialDepth = site.potential_oil_depth
         reservoir_count = 0
         site_count = 0
 
         for adjacentSite in adjacentSites:
             initialReserves = self._get_initial_reserves()
-            adj_depth = adjacentSite.get_potential_oil_depth()
+            adj_depth = adjacentSite.potential_oil_depth
             if self._depth_bracket(initialDepth) == self._depth_bracket(adj_depth):
                 site_count += 1
-                reservoir = site.get_reservoir()
+                reservoir = site.reservoir
                 if reservoir is None:
                     reservoir_count += 1
                     reservoir = Reservoir(initialDepth, initialReserves)
-                    site.set_reservoir(reservoir)
+                    site.reservoir = reservoir
 
-                reservoir.join(adjacentSite.get_potential_oil_depth(), initialReserves)
-                adjacentSite.set_reservoir(reservoir)
+                reservoir.join(adjacentSite.potential_oil_depth, initialReserves)
+                adjacentSite.reservoir = reservoir
             else:
                 reservoir_count += 1
-                site.set_reservoir(Reservoir(initialDepth, initialReserves))
+                site.reservoir = Reservoir(initialDepth, initialReserves)
 
         return reservoir_count, site_count
 
@@ -250,11 +250,11 @@ class TaxFiller:
     def fill(self, field):
         assert isinstance(field, wildcatting.model.OilField)
 
-        for row in range(field.get_height()):
-            for col in range(field.get_width()):
+        for row in range(field.height):
+            for col in range(field.width):
                 site = field.get_site(row, col)
-                site.set_tax(
-                    random.randint(self._theme.get_min_tax(), self._theme.get_max_tax())
+                site.tax = random.randint(
+                    self._theme.get_min_tax(), self._theme.get_max_tax()
                 )
 
 
@@ -304,21 +304,22 @@ class Game:
     def add_player(self, clientId, player):
         assert isinstance(player, wildcatting.model.Player)
 
-        playerNames = [p.get_username() for p in list(self._players.values())]
-        if player.get_username() in playerNames:
+        playerNames = [p.username for p in list(self._players.values())]
+        if player.username in playerNames:
             raise WildcattingException(
-                f"A user named {player.get_username()} has already joined this game"
+                f"A user named {player.username} has already joined this game"
             )
 
         secret = self._generate_secret()
-        player.set_secret(secret)
+        player.secret = secret
 
         self._players[secret] = player
         self._playerOrder.append(player)
 
         self._clients.setdefault(clientId, []).append(player)
 
-    def get_master(self):
+    @property
+    def master(self):
         if len(self._playerOrder) > 0:
             return self._playerOrder[0]
         return None
@@ -329,7 +330,7 @@ class Game:
 
         player = self._players.get(secret)
 
-        if player is None or player.get_username() != username:
+        if player is None or player.username != username:
             raise WildcattingException("Invalid login")
 
         return player
@@ -348,53 +349,57 @@ class Game:
 
         price = next(self._prices)
         self._week = wildcatting.week.Week(self._weekNum, self._playerOrder, price)
-        self._oilField.week(price, self._theme.get_well_theory(), self._weekNum)
+        self._oilField.tick(price, self._theme.get_well_theory(), self._weekNum)
 
         if self._weekNum > self._turnCount:
             self._finish()
 
-    def get_week(self):
+    @property
+    def week(self):
         return self._week
 
-    def is_started(self):
+    @property
+    def started(self):
         return self._isStarted
 
     def _finish(self):
         self._isFinished = True
 
-        players = sorted(self._players.values(), key=lambda p: -p.get_profit_and_loss())
+        players = sorted(self._players.values(), key=lambda p: -p.profit_and_loss)
 
         playerStrs = [
-            f"{p.get_username()} ({p.get_profit_and_loss()})" for p in players
+            f"{p.username} ({p.profit_and_loss})" for p in players
         ]
 
         self.log.info("Game is finished.  Scores: %s", ", ".join(playerStrs))
 
-    def is_finished(self):
+    @property
+    def finished(self):
         return self._isFinished
 
     def drill(self, row, col):
         site = self._oilField.get_site(row, col)
-        well = site.get_well()
+        well = site.well
         foundOil, cost = well.drill(site, self._theme.get_drill_increment())
-        well.get_player().expense(cost)
+        well.player.expense(cost)
 
         if foundOil:
-            site.set_oil_depth(well.get_drill_depth())
+            site.oil_depth = well.drill_depth
             theory = self._theme.get_well_theory()
             output = theory.start(site)
-            well.set_output(output)
-            well.set_initial_output(output)
+            well.output = output
+            well.initial_output = output
 
         return foundOil
 
     def end_turn(self, player):
         self._week.end_turn(player)
 
-        if self._week.is_finished():
+        if self._week.finished:
             self._next_week()
 
-    def get_weekly_summary(self):
+    @property
+    def weekly_summary(self):
         return wildcatting.model.WeeklySummary(self._playerOrder, self._weekNum)
 
     def mark_site_updated(self, player, site):
@@ -409,8 +414,10 @@ class Game:
         self._clientUpdates[clientId] = []
         return updates
 
-    def get_oil_price(self):
-        return self._week.get_price()
+    @property
+    def oil_price(self):
+        return self._week.price
 
-    def get_oil_field(self):
+    @property
+    def oil_field(self):
         return self._oilField

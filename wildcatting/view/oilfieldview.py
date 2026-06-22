@@ -14,7 +14,7 @@ class OilFieldTextView(View):
         self._model = model
 
     def bracket(self, site):
-        p = site.getProbability()
+        p = site.get_probability()
         if p > 95:
             b = 0
         elif p > 85:
@@ -29,30 +29,30 @@ class OilFieldTextView(View):
             b = 5
         return b
 
-    def toAscii(self, site):
+    def to_ascii(self, site):
         assert isinstance(site, wildcatting.model.Site)
         b = self.bracket(site)
         return ".x%*&#"[b]
 
     def ascii(self):
         model = self._model
-        for row in range(model.getHeight()):
+        for row in range(model.get_height()):
             line = ""
-            for col in range(model.getWidth()):
-                line += self.toAscii(model.getSite(row, col))
+            for col in range(model.get_width()):
+                line += self.to_ascii(model.get_site(row, col))
             print(line)
 
-    def toAnsi(self, site):
+    def to_ansi(self, site):
         b = self.bracket(site) % 9
         ansi = chr(27) + "[" + str(32 + b) + "m" + "O"
         return ansi
 
     def ansi(self):
         model = self._model
-        for row in range(model.getHeight()):
+        for row in range(model.get_height()):
             line = ""
-            for col in range(model.getWidth()):
-                line += self.toAnsi(model.getSite(row, col))
+            for col in range(model.get_width()):
+                line += self.to_ansi(model.get_site(row, col))
             print(line)
 
 
@@ -68,32 +68,32 @@ class ColorChooser:
             Colors.get(curses.COLOR_WHITE, curses.COLOR_RED),
         ]
 
-    def _chooseColor(self, site, colors):
+    def _choose_color(self, site, colors):
         return "UnimplementedAbstractMethod"
 
-    def getColors(self):
+    def get_colors(self):
         return self._colors[:]
 
-    def siteColor(self, site):
+    def site_color(self, site):
         if site is None:
             return Colors.get(curses.COLOR_WHITE, curses.COLOR_BLACK)
 
         assert isinstance(site, wildcatting.model.Site)
 
-        return self._chooseColor(site, self._colors)
+        return self._choose_color(site, self._colors)
 
-    def blankColor(self, site):
+    def blank_color(self, site):
         if site is None:
             return Colors.get(curses.COLOR_WHITE, curses.COLOR_BLACK)
 
         assert isinstance(site, wildcatting.model.Site)
 
-        return self._chooseColor(site, self._colors)
+        return self._choose_color(site, self._colors)
 
 
 class ProbabilityColorChooser(ColorChooser):
-    def _chooseColor(self, site, colors):
-        p = site.getProbability()
+    def _choose_color(self, site, colors):
+        p = site.get_probability()
         if p == 100:
             return colors[-1]
 
@@ -107,8 +107,8 @@ class DrillCostColorChooser(ColorChooser):
         self._minDrillCost = minDrillCost
         self._maxDrillCost = maxDrillCost
 
-    def _chooseColor(self, site, colors):
-        drillCost = site.getDrillCost() * 1.0
+    def _choose_color(self, site, colors):
+        drillCost = site.get_drill_cost() * 1.0
         costRange = self._maxDrillCost - self._minDrillCost
         idx = int(drillCost / costRange * (len(colors) - 1))
 
@@ -116,9 +116,9 @@ class DrillCostColorChooser(ColorChooser):
 
 
 class DepthColorChooser(ColorChooser):
-    def _chooseColor(self, site, colors):
-        oilDepth = site.getOilDepth()
-        if site.getOilDepth() is None:
+    def _choose_color(self, site, colors):
+        oilDepth = site.get_oil_depth()
+        if site.get_oil_depth() is None:
             color = Colors.get(curses.COLOR_WHITE, curses.COLOR_BLACK)
         else:
             depthRange = 9
@@ -134,19 +134,19 @@ class FadeInOilFieldCursesAnimator:
 
         self._coords = [
             (row, col)
-            for row in range(field.getHeight())
-            for col in range(field.getWidth())
+            for row in range(field.get_height())
+            for col in range(field.get_width())
         ]
 
-    def isDone(self):
+    def is_done(self):
         return len(self._coords) == 0
 
     def animate(self):
         row, col = random.choice(self._coords)
         self._coords.remove((row, col))
 
-        site = self._field.getSite(row, col)
-        site.setSurveyed(True)
+        site = self._field.get_site(row, col)
+        site.set_surveyed(True)
 
 
 class OilFieldCursesView(View):
@@ -155,26 +155,26 @@ class OilFieldCursesView(View):
         self._win = win
         self._wildcatting = wildcatting_
 
-        self._colorChooser = self._makeColorChooser()
+        self._colorChooser = self._make_color_chooser()
 
-    def _makeColorChooser(self):
+    def _make_color_chooser(self):
         raise NotImplementedError("UnimplementedAbstractMethod")
 
-    def getKeyLabel(self):
+    def get_key_label(self):
         raise NotImplementedError("UnimplementedAbstractMethod")
 
     def display(self):
-        field = self._wildcatting.getPlayerField()
-        for row in range(field.getHeight()):
-            for col in range(field.getWidth()):
-                site = field.getSite(row, col)
-                if site.isSurveyed():
-                    self.displaySite(site)
+        field = self._wildcatting.get_player_field()
+        for row in range(field.get_height()):
+            for col in range(field.get_width()):
+                site = field.get_site(row, col)
+                if site.is_surveyed():
+                    self.display_site(site)
 
         self._win.refresh()
 
-    def displaySite(self, site):
-        well = site.getWell()
+    def display_site(self, site):
+        well = site.get_well()
         if well is None:
             # work around an MacOS X terminal problem with
             # displaying blank characters - it doesn't draw
@@ -183,25 +183,25 @@ class OilFieldCursesView(View):
                 symbol = "."
             else:
                 symbol = " "
-            color = self._colorChooser.blankColor(site)
+            color = self._colorChooser.blank_color(site)
         else:
-            symbol = well.getPlayer().getSymbol()
-            color = self._colorChooser.siteColor(site)
+            symbol = well.get_player().get_symbol()
+            color = self._colorChooser.site_color(site)
 
-        self.putch(self._win, site.getRow(), site.getCol(), ord(symbol), color)
+        self.putch(self._win, site.get_row(), site.get_col(), ord(symbol), color)
 
-    def animateGameEnd(self):
-        animator = FadeInOilFieldCursesAnimator(self._wildcatting.getPlayerField())
-        while not animator.isDone():
+    def animate_game_end(self):
+        animator = FadeInOilFieldCursesAnimator(self._wildcatting.get_player_field())
+        while not animator.is_done():
             animator.animate()
             self.display()
 
 
 class OilFieldProbabilityView(OilFieldCursesView):
-    def _makeColorChooser(self):
+    def _make_color_chooser(self):
         return ProbabilityColorChooser()
 
-    def getKeyLabel(self):
+    def get_key_label(self):
         return "PROBABILITY"
 
 
@@ -212,28 +212,28 @@ class OilFieldDrillCostView(OilFieldCursesView):
 
         OilFieldCursesView.__init__(self, win, wildcatting_)
 
-    def getKeyLabel(self):
+    def get_key_label(self):
         return "DRILL COST"
 
-    def _makeColorChooser(self):
+    def _make_color_chooser(self):
         return DrillCostColorChooser(self._minDrillCost, self._maxDrillCost)
 
 
 class OilFieldDepthView(OilFieldCursesView):
-    def _makeColorChooser(self):
+    def _make_color_chooser(self):
         return DepthColorChooser()
 
-    def getKeyLabel(self):
+    def get_key_label(self):
         return "OIL DEPTH"
 
-    def displaySite(self, site):
-        well = site.getWell()
+    def display_site(self, site):
+        well = site.get_well()
         if well is None:
             # show a "." for surveyed sites
             symbol = "."
-            color = self._colorChooser.blankColor(site)
+            color = self._colorChooser.blank_color(site)
         else:
-            symbol = well.getPlayer().getSymbol()
-            color = self._colorChooser.siteColor(site)
+            symbol = well.get_player().get_symbol()
+            color = self._colorChooser.site_color(site)
 
-        self.putch(self._win, site.getRow(), site.getCol(), ord(symbol), color)
+        self.putch(self._win, site.get_row(), site.get_col(), ord(symbol), color)

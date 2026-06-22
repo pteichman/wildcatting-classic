@@ -12,7 +12,7 @@ class View:
         self._stdscr = stdscr
         self._mac = platform.system() == "Darwin"
 
-    def getGreenFGBG(self):
+    def get_green_fgbg(self):
         color = Colors.get(curses.COLOR_BLACK, curses.COLOR_GREEN)
         return color, color
 

@@ -9,7 +9,7 @@ class Theme:
     def __init__(self):
         self._facts = []
 
-    def _loadFacts(self, rawFacts):
+    def _load_facts(self, rawFacts):
         facts = []
         for line in rawFacts.split("\n"):
             fact = line.strip()
@@ -23,96 +23,96 @@ class Theme:
 
         self._facts = facts
 
-    def generateSetting(self):
+    def generate_setting(self):
         setting = wildcatting.model.Setting()
-        setting.setLocation(self.getLocation())
-        setting.setEra(self.getEra())
-        setting.setPriceFormat(self.getPriceFormat())
-        setting.setFacts(self.getFacts())
-        setting.setMinDrillCost(self.getMinDrillCost())
-        setting.setMaxDrillCost(self.getMaxDrillCost())
-        setting.setDrillIncrement(self.getDrillIncrement())
+        setting.set_location(self.get_location())
+        setting.set_era(self.get_era())
+        setting.set_price_format(self.get_price_format())
+        setting.set_facts(self.get_facts())
+        setting.set_min_drill_cost(self.get_min_drill_cost())
+        setting.set_max_drill_cost(self.get_max_drill_cost())
+        setting.set_drill_increment(self.get_drill_increment())
         return setting
 
-    def getFacts(self):
+    def get_facts(self):
         return self._facts
 
-    def setFacts(self, facts):
+    def set_facts(self, facts):
         self._facts = facts
 
     ## themes must implement the following abstract methods
 
     ## literary setting
-    def getLocation(self):
+    def get_location(self):
         raise NotImplementedError
 
-    def getEra(self):
+    def get_era(self):
         raise NotImplementedError
 
     # units
-    def getDrillIncrement(self):
+    def get_drill_increment(self):
         raise NotImplementedError
 
-    def getPriceFormat(self):
+    def get_price_format(self):
         raise NotImplementedError
 
     ## extraction
-    def getWellTheory(self):
+    def get_well_theory(self):
         raise NotImplementedError
 
-    def getMeanSiteReserves(self):
+    def get_mean_site_reserves(self):
         raise NotImplementedError
 
     ## economics
-    def getMinDrillCost(self):
+    def get_min_drill_cost(self):
         raise NotImplementedError
 
-    def getMaxDrillCost(self):
+    def get_max_drill_cost(self):
         raise NotImplementedError
 
-    def getMinTax(self):
+    def get_min_tax(self):
         raise NotImplementedError
 
-    def getMaxTax(self):
+    def get_max_tax(self):
         raise NotImplementedError
 
-    def getMinOutput(self):
+    def get_min_output(self):
         raise NotImplementedError
 
-    def getMaxOutput(self):
+    def get_max_output(self):
         raise NotImplementedError
 
-    def getOilPrices(self):
+    def get_oil_prices(self):
         raise NotImplementedError
 
     ## oil probability distribution
-    def getOilMinDropoff(self):
+    def get_oil_min_dropoff(self):
         raise NotImplementedError
 
-    def getOilMaxDropoff(self):
+    def get_oil_max_dropoff(self):
         raise NotImplementedError
 
-    def getOilMaxPeaks(self):
+    def get_oil_max_peaks(self):
         raise NotImplementedError
 
-    def getOilFudge(self):
+    def get_oil_fudge(self):
         raise NotImplementedError
 
-    def getOilLesserPeakFactor(self):
+    def get_oil_lesser_peak_factor(self):
         raise NotImplementedError
 
     ## drill cost distribution
-    def getDrillCostMinDropoff(self):
+    def get_drill_cost_min_dropoff(self):
         raise NotImplementedError
 
-    def getDrillCostMaxDropoff(self):
+    def get_drill_cost_max_dropoff(self):
         raise NotImplementedError
 
-    def getDrillCostMaxPeaks(self):
+    def get_drill_cost_max_peaks(self):
         raise NotImplementedError
 
-    def getDrillCostFudge(self):
+    def get_drill_cost_fudge(self):
         raise NotImplementedError
 
-    def getDrillCostLesserPeakFactor(self):
+    def get_drill_cost_lesser_peak_factor(self):
         raise NotImplementedError

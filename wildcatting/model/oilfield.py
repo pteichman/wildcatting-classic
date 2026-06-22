@@ -16,26 +16,26 @@ class OilField(Serializable):
             for site in row:
                 site.week(oilPrice, wellTheory, currentWeek)
 
-    def getSite(self, row, col):
+    def get_site(self, row, col):
         assert row < self._height
         assert col < self._width
 
         site = self._rows[row][col]
 
-        assert site.getRow() == row
-        assert site.getCol() == col
+        assert site.get_row() == row
+        assert site.get_col() == col
 
         return site
 
-    def setSite(self, row, col, site):
+    def set_site(self, row, col, site):
         assert isinstance(site, Site)
 
         self._rows[row][col] = site
 
-    def getHeight(self):
+    def get_height(self):
         return self._height
 
-    def getWidth(self):
+    def get_width(self):
         return self._width
 
 
@@ -59,78 +59,78 @@ class Site(Serializable):
         self.__oilFlag = False
         self.__potentialOilDepth = None
 
-    def getCol(self):
+    def get_col(self):
         return self._col
 
-    def getDrillCost(self):
+    def get_drill_cost(self):
         return self._drillCost
 
-    def setDrillCost(self, drillCost):
+    def set_drill_cost(self, drillCost):
         assert isinstance(drillCost, int)
         self._drillCost = drillCost
 
-    def getPotentialOilDepth(self):
+    def get_potential_oil_depth(self):
         return self.__potentialOilDepth
 
-    def setPotentialOilDepth(self, potentialOilDepth):
+    def set_potential_oil_depth(self, potentialOilDepth):
         self.__potentialOilDepth = potentialOilDepth
 
-    def getProbability(self):
+    def get_probability(self):
         return self._prob
 
-    def setProbability(self, prob):
+    def set_probability(self, prob):
         assert 0 <= prob <= 100
         self._prob = prob
 
-    def getWell(self):
+    def get_well(self):
         return self._well
 
-    def setWell(self, well):
+    def set_well(self, well):
         if well is not None:
             assert isinstance(well, Well)
         self._well = well
 
-    def getRow(self):
+    def get_row(self):
         return self._row
 
-    def isSurveyed(self):
+    def is_surveyed(self):
         return self._surveyed
 
-    def setSurveyed(self, surveyed):
+    def set_surveyed(self, surveyed):
         assert isinstance(surveyed, bool)
         self._surveyed = surveyed
 
-    def getOilDepth(self):
+    def get_oil_depth(self):
         return self._oilDepth
 
-    def setOilDepth(self, oilDepth):
+    def set_oil_depth(self, oilDepth):
         self._oilDepth = oilDepth
 
-    def getTax(self):
+    def get_tax(self):
         return self._tax
 
-    def setTax(self, tax):
+    def set_tax(self, tax):
         assert isinstance(tax, int)
         self._tax = tax
 
-    def getReservoir(self):
+    def get_reservoir(self):
         return self.__reservoir
 
-    def setReservoir(self, reservoir):
+    def set_reservoir(self, reservoir):
         self.__reservoir = reservoir
 
-    def getOilFlag(self):
+    def get_oil_flag(self):
         return self.__oilFlag
 
-    def setOilFlag(self, oilFlag):
+    def set_oil_flag(self, oilFlag):
         self.__oilFlag = oilFlag
 
     def week(self, oilPrice, wellTheory, currentWeek):
         if self._well is not None:
-            if self._well.getOutput() is not None and not self._well.isSold():
+            if self._well.get_output() is not None and not self._well.is_sold():
                 output, capacity = wellTheory.week(self, currentWeek)
-                self._well.setOutput(output)
-                self._well.setCapacity(capacity)
+                self._well.set_output(output)
+                self._well.set_capacity(capacity)
             self._well.week(self, oilPrice)
 
 
@@ -154,49 +154,49 @@ class Well(Serializable):
     def __hash__(self):
         return id(self)
 
-    def getPlayer(self):
+    def get_player(self):
         return self._player
 
-    def setPlayer(self, player):
+    def set_player(self, player):
         self._player = player
 
-    def getWeek(self):
+    def get_week(self):
         return self._week
 
-    def setWeek(self, week):
+    def set_week(self, week):
         self._week = week
 
-    def getDrillDepth(self):
+    def get_drill_depth(self):
         return self._drillDepth
 
-    def setDrillDepth(self, drillDepth):
+    def set_drill_depth(self, drillDepth):
         self._drillDepth = drillDepth
 
-    def getInitialOutput(self):
+    def get_initial_output(self):
         return self._initialOutput
 
-    def setInitialOutput(self, initialOutput):
+    def set_initial_output(self, initialOutput):
         self._initialOutput = initialOutput
 
-    def getOutput(self):
+    def get_output(self):
         return self._output
 
-    def setOutput(self, output):
+    def set_output(self, output):
         self._output = output
 
-    def isSold(self):
+    def is_sold(self):
         return self._sold
 
-    def getInitialCost(self):
+    def get_initial_cost(self):
         return self._initialCost
 
-    def getProfitAndLoss(self):
+    def get_profit_and_loss(self):
         return self._profitAndLoss
 
-    def getCapacity(self):
+    def get_capacity(self):
         return self._capacity
 
-    def setCapacity(self, capacity):
+    def set_capacity(self, capacity):
         self._capacity = capacity
 
     def sell(self):
@@ -209,11 +209,11 @@ class Well(Serializable):
         assert 0 <= self._drillDepth <= 10
 
         oilDepth = None
-        reservoir = site.getReservoir()
+        reservoir = site.get_reservoir()
         if reservoir is not None:
-            oilDepth = reservoir.getOilDepth()
+            oilDepth = reservoir.get_oil_depth()
 
-        drillCost = site.getDrillCost()
+        drillCost = site.get_drill_cost()
 
         assert oilDepth is None or self._drillDepth < oilDepth
 
@@ -234,11 +234,11 @@ class Well(Serializable):
         if not self._sold:
             output = self._output if self._output is not None else 0
 
-            reservoir = site.getReservoir()
+            reservoir = site.get_reservoir()
             if reservoir is not None:
                 reservoir.pump(output)
 
-            tax = site.getTax()
+            tax = site.get_tax()
             income, expense = self._computeWeeklyPnl(output, oilPrice, tax)
 
             self._profitAndLoss -= expense

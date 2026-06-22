@@ -9,30 +9,30 @@ class ClientInfo(Serializable):
         self._handles = {}
         self._symbols = {}
 
-    def getGameId(self):
+    def get_game_id(self):
         return self._gameId
 
-    def setGameId(self, gameId):
+    def set_game_id(self, gameId):
         assert isinstance(gameId, str)
         self._gameId = gameId
 
-    def getClientHandle(self):
+    def get_client_handle(self):
         return self._clientHandle
 
-    def setClientHandle(self, clientHandle):
+    def set_client_handle(self, clientHandle):
         assert isinstance(clientHandle, str)
         return self._clientHandle
 
-    def addPlayerInfo(self, username, handle, symbol):
+    def add_player_info(self, username, handle, symbol):
         self._players.append(username)
         self._handles[username] = handle
         self._symbols[username] = symbol
 
-    def hasPlayer(self, username):
+    def has_player(self, username):
         return username in self._players
 
-    def getPlayerHandle(self, username):
+    def get_player_handle(self, username):
         return self._handles[username]
 
-    def getPlayerSymbol(self, username):
+    def get_player_symbol(self, username):
         return self._symbols[username]

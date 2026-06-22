@@ -21,51 +21,51 @@ class Week:
 
         for player in self._players:
             turn = wildcatting.turn.Turn()
-            turn.setPlayer(player)
-            turn.setWeek(weekNum)
+            turn.set_player(player)
+            turn.set_week(weekNum)
             self._turns[player] = turn
 
-    def getWeekNum(self):
+    def get_week_num(self):
         return self._weekNum
 
-    def getPrice(self):
+    def get_price(self):
         return self._price
 
-    def getSurveyPlayer(self):
+    def get_survey_player(self):
         if self._surveysDone:
             return None
 
         return self._players[self._surveyPlayerIndex]
 
-    def getPlayerTurn(self, player):
+    def get_player_turn(self, player):
         assert isinstance(player, Player)
 
         return self._turns.get(player)
 
-    def isSurveyTurn(self, player):
+    def is_survey_turn(self, player):
         assert isinstance(player, Player)
 
-        return self.getSurveyPlayer() == player
+        return self.get_survey_player() == player
 
-    def endSurvey(self, player):
+    def end_survey(self, player):
         assert isinstance(player, Player)
-        assert self.isSurveyTurn(player)
+        assert self.is_survey_turn(player)
 
         self._surveyPlayerIndex = self._surveyPlayerIndex + 1
 
         if self._surveyPlayerIndex > len(self._players) - 1:
             self._surveysDone = True
 
-    def endTurn(self, player):
+    def end_turn(self, player):
         assert isinstance(player, Player)
         assert player in self._pending
 
-        if self.isSurveyTurn(player):
-            self.endSurvey(player)
+        if self.is_survey_turn(player):
+            self.end_survey(player)
 
         self._pending.remove(player)
 
-    def isTurnFinished(self, player):
+    def is_turn_finished(self, player):
         assert isinstance(player, Player)
         playerIndex = self._players.index(player)
 
@@ -74,8 +74,8 @@ class Week:
 
         return False
 
-    def getPendingPlayers(self):
+    def get_pending_players(self):
         return self._pending
 
-    def isFinished(self):
+    def is_finished(self):
         return len(self._pending) == 0

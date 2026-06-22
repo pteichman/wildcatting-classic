@@ -16,7 +16,7 @@ class PlayerCountView(View):
         self._stdscr.clear()
         self._stdscr.refresh()
 
-        fg, bg = self.getGreenFGBG()
+        fg, bg = self.get_green_fgbg()
         self.setFGBG(self._win, fg, bg)
 
         self.addCentered(self._win, 1, "WILDCATTING")
@@ -56,7 +56,7 @@ class PlayerNamesView(View):
         self._stdscr.refresh()
         (h, w) = self._win.getmaxyx()
 
-        fg, bg = self.getGreenFGBG()
+        fg, bg = self.get_green_fgbg()
         self.setFGBG(self._win, fg, bg)
 
         self.addCentered(self._win, 1, "PLAYERS")

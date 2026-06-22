@@ -28,14 +28,14 @@ class TestClientVisibility(unittest.TestCase):
     def test_unsurveyed_site_is_empty(self):
         service, client_handle, player_handle = self._one_player_game()
 
-        raw = service.getPlayerSite(player_handle, 0, 0)
+        raw = service.get_player_site(player_handle, 0, 0)
         site = Site.deserialize(raw)
 
-        self.assertEqual(site.getProbability(), 0)
-        self.assertEqual(site.getDrillCost(), 0)
-        self.assertEqual(site.getTax(), 0)
-        self.assertIsNone(site.getWell())
-        self.assertFalse(site.isSurveyed())
+        self.assertEqual(site.get_probability(), 0)
+        self.assertEqual(site.get_drill_cost(), 0)
+        self.assertEqual(site.get_tax(), 0)
+        self.assertIsNone(site.get_well())
+        self.assertFalse(site.is_surveyed())
 
     def test_oil_flag_never_serialized(self):
         # End the game so all sites are revealed — this is the worst case for leakage.
@@ -45,9 +45,9 @@ class TestClientVisibility(unittest.TestCase):
         player_handle = service.join(client_handle, "alice", "A")
         service.start(player_handle)
         service.survey(player_handle, 0, 0)
-        service.endTurn(player_handle)
+        service.end_turn(player_handle)
 
-        raw = service.getPlayerField(client_handle)
+        raw = service.get_player_field(client_handle)
         for key in _all_keys(raw):
             self.assertNotIn(
                 "oilFlag", key, f"oilFlag found in serialized key: {key!r}"
@@ -63,9 +63,9 @@ class TestClientVisibility(unittest.TestCase):
         player_handle = service.join(client_handle, "alice", "A")
         service.start(player_handle)
         service.survey(player_handle, 0, 0)
-        service.endTurn(player_handle)
+        service.end_turn(player_handle)
 
-        raw = service.getPlayerField(client_handle)
+        raw = service.get_player_field(client_handle)
         for key in _all_keys(raw):
             self.assertNotIn("reservoir", key.lower(), f"reservoir in key: {key!r}")
             self.assertNotIn("reserves", key.lower(), f"reserves in key: {key!r}")
@@ -78,16 +78,16 @@ class TestClientVisibility(unittest.TestCase):
         player_handle = service.join(client_handle, "alice", "A")
         service.start(player_handle)
 
-        game, player = service._readHandle(player_handle)
-        field = game.getOilField()
+        game, player = service._read_handle(player_handle)
+        field = game.get_oil_field()
 
         # Find a site with a reservoir at depth > 1 so erect() alone won't find oil.
         target = None
-        for row in range(field.getHeight()):
-            for col in range(field.getWidth()):
-                site = field.getSite(row, col)
-                reservoir = site.getReservoir()
-                if reservoir is not None and reservoir.getOilDepth() > 1:
+        for row in range(field.get_height()):
+            for col in range(field.get_width()):
+                site = field.get_site(row, col)
+                reservoir = site.get_reservoir()
+                if reservoir is not None and reservoir.get_oil_depth() > 1:
                     target = (row, col)
                     break
             if target:
@@ -100,8 +100,8 @@ class TestClientVisibility(unittest.TestCase):
 
         def get_oil_depth():
             return Site.deserialize(
-                service.getPlayerSite(player_handle, row, col)
-            ).getOilDepth()
+                service.get_player_site(player_handle, row, col)
+            ).get_oil_depth()
 
         service.survey(player_handle, row, col)
         self.assertIsNone(get_oil_depth())
@@ -109,7 +109,7 @@ class TestClientVisibility(unittest.TestCase):
         service.erect(player_handle, row, col)
         self.assertIsNone(get_oil_depth())
 
-        oil_depth = field.getSite(row, col).getReservoir().getOilDepth()
+        oil_depth = field.get_site(row, col).get_reservoir().get_oil_depth()
         for _ in range(oil_depth - 2):  # erect already drilled once
             service.drill(player_handle, row, col)
             self.assertIsNone(get_oil_depth())
@@ -125,18 +125,18 @@ class TestClientVisibility(unittest.TestCase):
         service.start(player_handle)
 
         service.survey(player_handle, 0, 0)
-        service.endTurn(player_handle)
-        self.assertTrue(service.isFinished(client_handle))
+        service.end_turn(player_handle)
+        self.assertTrue(service.is_finished(client_handle))
 
-        raw = service.getPlayerField(client_handle)
+        raw = service.get_player_field(client_handle)
         field = OilField.deserialize(raw)
 
         # OilFiller clamps probability to [10, 100] for every site.
-        for row in range(field.getHeight()):
-            for col in range(field.getWidth()):
-                site = field.getSite(row, col)
+        for row in range(field.get_height()):
+            for col in range(field.get_width()):
+                site = field.get_site(row, col)
                 self.assertGreater(
-                    site.getProbability(),
+                    site.get_probability(),
                     0,
                     f"site ({row},{col}) has zero probability after game ended",
                 )
@@ -146,12 +146,12 @@ class TestSerializationRoundTrips(unittest.TestCase):
     def test_well_round_trip(self):
         player = Player("alice", "A")
         well1 = Well()
-        well1.setPlayer(player)
-        well1.setWeek(3)
-        well1.setDrillDepth(4)
-        well1.setInitialOutput(30.0)
-        well1.setOutput(20.0)
-        well1.setCapacity(2)
+        well1.set_player(player)
+        well1.set_week(3)
+        well1.set_drill_depth(4)
+        well1.set_initial_output(30.0)
+        well1.set_output(20.0)
+        well1.set_capacity(2)
 
         obj1 = well1.serialize()
         well2 = Well.deserialize(obj1)
@@ -161,7 +161,7 @@ class TestSerializationRoundTrips(unittest.TestCase):
 
     def test_player_round_trip(self):
         player1 = Player("bob", "B")
-        player1.setSecret("DEADBEEF12345678")
+        player1.set_secret("DEADBEEF12345678")
         player1.income(500)
         player1.expense(200)
 

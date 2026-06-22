@@ -17,47 +17,47 @@ class WeeklyReport:
 
         self._profitAndLoss = 0
 
-        self._reportDict = self._buildReportDict(field)
+        self._reportDict = self._build_report_dict(field)
 
-    def _buildReportDict(self, field):
+    def _build_report_dict(self, field):
         sites = {}
-        for row in range(field.getHeight()):
-            for col in range(field.getWidth()):
-                site = field.getSite(row, col)
-                well = site.getWell()
+        for row in range(field.get_height()):
+            for col in range(field.get_width()):
+                site = field.get_site(row, col)
+                well = site.get_well()
                 if well:
-                    if well.getPlayer().getUsername() == self._username:
-                        output = well.getOutput()
+                    if well.get_player().get_username() == self._username:
+                        output = well.get_output()
                         if output is None:
                             output = 0
 
                         rowDict = {}
                         rowDict["row"] = row
                         rowDict["col"] = col
-                        rowDict["cost"] = well.getInitialCost()
-                        rowDict["tax"] = site.getTax()
+                        rowDict["cost"] = well.get_initial_cost()
+                        rowDict["tax"] = site.get_tax()
                         rowDict["income"] = int(output * self._oilPrice)
-                        wellProfitAndLoss = well.getProfitAndLoss()
+                        wellProfitAndLoss = well.get_profit_and_loss()
                         rowDict["profitAndLoss"] = wellProfitAndLoss
                         self._profitAndLoss += wellProfitAndLoss
 
-                        sites[well.getWeek()] = rowDict
+                        sites[well.get_week()] = rowDict
         return sites
 
-    def getReportDict(self):
+    def get_report_dict(self):
         return self._reportDict
 
-    def getWeek(self):
+    def get_week(self):
         return self._week
 
-    def getUsername(self):
+    def get_username(self):
         return self._username
 
-    def getSymbol(self):
+    def get_symbol(self):
         return self._symbol
 
-    def getOilPrice(self):
-        return self._setting.getPriceFormat() % self._oilPrice
+    def get_oil_price(self):
+        return self._setting.get_price_format() % self._oilPrice
 
-    def getProfitAndLoss(self):
+    def get_profit_and_loss(self):
         return self._profitAndLoss

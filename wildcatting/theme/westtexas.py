@@ -66,81 +66,81 @@ Texas is more than an area. Texas is an idea and an experience that transcends p
 class WestTexas(Theme):
     def __init__(self):
         Theme.__init__(self)
-        self._loadFacts(_rawFacts)
-        self._wellTheory = SimpleWellTheory(self.getMaxOutput())
+        self._load_facts(_rawFacts)
+        self._wellTheory = SimpleWellTheory(self.get_max_output())
         self._prices = TrendingGaussianPrices(4.50, 1.0, 25.0, 8.0, 5.0)
 
     ## literary setting
-    def getLocation(self):
+    def get_location(self):
         return "West Texas"
 
-    def getEra(self):
+    def get_era(self):
         return "Turn of The Century"
 
     ## units
-    def getDrillIncrement(self):
+    def get_drill_increment(self):
         return 10
 
-    def getPriceFormat(self):
+    def get_price_format(self):
         return "$%.2f"
 
     ## extraction
-    def getWellTheory(self):
+    def get_well_theory(self):
         return self._wellTheory
 
-    def getMeanSiteReserves(self):
+    def get_mean_site_reserves(self):
         return 666
 
-    def getMinOutput(self):
+    def get_min_output(self):
         return 1
 
-    def getMaxOutput(self):
+    def get_max_output(self):
         return 66
 
     ## economics
-    def getMinDrillCost(self):
+    def get_min_drill_cost(self):
         return 1
 
-    def getMaxDrillCost(self):
+    def get_max_drill_cost(self):
         return 25
 
-    def getMinTax(self):
+    def get_min_tax(self):
         return 100
 
-    def getMaxTax(self):
+    def get_max_tax(self):
         return 550
 
-    def getOilPrices(self):
+    def get_oil_prices(self):
         return self._prices
 
     ## oil probability distribution
-    def getOilMinDropoff(self):
+    def get_oil_min_dropoff(self):
         return 5
 
-    def getOilMaxDropoff(self):
+    def get_oil_max_dropoff(self):
         return 10
 
-    def getOilMaxPeaks(self):
+    def get_oil_max_peaks(self):
         return 5
 
-    def getOilFudge(self):
+    def get_oil_fudge(self):
         return 4
 
-    def getOilLesserPeakFactor(self):
+    def get_oil_lesser_peak_factor(self):
         return 5
 
     ## drill cost distribution
-    def getDrillCostMinDropoff(self):
+    def get_drill_cost_min_dropoff(self):
         return 5
 
-    def getDrillCostMaxDropoff(self):
+    def get_drill_cost_max_dropoff(self):
         return 6
 
-    def getDrillCostMaxPeaks(self):
+    def get_drill_cost_max_peaks(self):
         return 10
 
-    def getDrillCostFudge(self):
+    def get_drill_cost_fudge(self):
         return 1
 
-    def getDrillCostLesserPeakFactor(self):
+    def get_drill_cost_lesser_peak_factor(self):
         return 1

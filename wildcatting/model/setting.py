@@ -2,54 +2,54 @@ from .serialize import Serializable
 
 
 class Setting(Serializable):
-    def getLocation(self):
+    def get_location(self):
         return self._location
 
-    def setLocation(self, location):
+    def set_location(self, location):
         assert isinstance(location, str)
 
         self._location = location
 
-    def getEra(self):
+    def get_era(self):
         return self._era
 
-    def setEra(self, era):
+    def set_era(self, era):
         assert isinstance(era, str)
 
         self._era = era
 
-    def getFacts(self):
+    def get_facts(self):
         return self._facts
 
-    def setFacts(self, facts):
+    def set_facts(self, facts):
         assert isinstance(facts, list)
 
         self._facts = facts
 
-    def getMinDrillCost(self):
+    def get_min_drill_cost(self):
         return self._minDrillCost
 
-    def setMinDrillCost(self, minDrillCost):
+    def set_min_drill_cost(self, minDrillCost):
         self._minDrillCost = minDrillCost
 
-    def getMaxDrillCost(self):
+    def get_max_drill_cost(self):
         return self._maxDrillCost
 
-    def setMaxDrillCost(self, maxDrillCost):
+    def set_max_drill_cost(self, maxDrillCost):
         self._maxDrillCost = maxDrillCost
 
-    def getDrillIncrement(self):
+    def get_drill_increment(self):
         return self._increment
 
-    def setDrillIncrement(self, increment):
+    def set_drill_increment(self, increment):
         assert isinstance(increment, int)
 
         self._increment = increment
 
-    def getPriceFormat(self):
+    def get_price_format(self):
         return self._priceFormat
 
-    def setPriceFormat(self, priceFormat):
+    def set_price_format(self, priceFormat):
         assert isinstance(priceFormat, str)
 
         self._priceFormat = priceFormat

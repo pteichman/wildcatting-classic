@@ -13,20 +13,20 @@ class Player(Serializable):
 
         self._profitAndLoss = 0
 
-    def getUsername(self):
+    def get_username(self):
         return self._username
 
-    def getSymbol(self):
+    def get_symbol(self):
         return self._symbol
 
-    def getSecret(self):
+    def get_secret(self):
         return self._secret or ""
 
-    def setSecret(self, secret):
+    def set_secret(self, secret):
         assert isinstance(secret, str)
         self._secret = secret
 
-    def getProfitAndLoss(self):
+    def get_profit_and_loss(self):
         return self._profitAndLoss
 
     def income(self, income):

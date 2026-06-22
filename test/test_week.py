@@ -7,7 +7,7 @@ from wildcatting.week import Week
 class TestWeek(unittest.TestCase):
     def testGetOilPrice(self):
         week = Week(1, [Player("alice", "A")], 5.00)
-        self.assertAlmostEqual(5.00, week.getPrice())
+        self.assertAlmostEqual(5.00, week.get_price())
 
     def testFirstSurveyTurn(self):
         players = []
@@ -16,7 +16,7 @@ class TestWeek(unittest.TestCase):
 
         week = Week(1, players, 5.00)
 
-        self.assertEqual(players[0], week.getSurveyPlayer())
+        self.assertEqual(players[0], week.get_survey_player())
 
     def testTurnProgression(self):
         players = []
@@ -24,36 +24,36 @@ class TestWeek(unittest.TestCase):
         players.append(Player("bob", "B"))
 
         week = Week(1, players, 5.00)
-        self.assertEqual(players[0], week.getSurveyPlayer())
-        self.assertTrue(week.isSurveyTurn(players[0]))
-        self.assertFalse(week.isSurveyTurn(players[1]))
+        self.assertEqual(players[0], week.get_survey_player())
+        self.assertTrue(week.is_survey_turn(players[0]))
+        self.assertFalse(week.is_survey_turn(players[1]))
 
         for player in players:
-            self.assertFalse(week.isTurnFinished(player))
+            self.assertFalse(week.is_turn_finished(player))
 
-        week.endSurvey(players[0])
-        self.assertEqual(players[1], week.getSurveyPlayer())
-        self.assertTrue(week.isSurveyTurn(players[1]))
-        self.assertFalse(week.isSurveyTurn(players[0]))
+        week.end_survey(players[0])
+        self.assertEqual(players[1], week.get_survey_player())
+        self.assertTrue(week.is_survey_turn(players[1]))
+        self.assertFalse(week.is_survey_turn(players[0]))
 
-        week.endSurvey(players[1])
-        self.assertEqual(None, week.getSurveyPlayer())
-
-        for player in players:
-            self.assertFalse(week.isTurnFinished(player))
-
-        self.assertTrue(players[0] in week.getPendingPlayers())
-        week.endTurn(players[0])
-        self.assertTrue(players[0] not in week.getPendingPlayers())
-
-        self.assertTrue(players[1] in week.getPendingPlayers())
-        week.endTurn(players[1])
-        self.assertTrue(players[1] not in week.getPendingPlayers())
+        week.end_survey(players[1])
+        self.assertEqual(None, week.get_survey_player())
 
         for player in players:
-            self.assertTrue(week.isTurnFinished(player))
+            self.assertFalse(week.is_turn_finished(player))
 
-        self.assertTrue(week.isFinished())
+        self.assertTrue(players[0] in week.get_pending_players())
+        week.end_turn(players[0])
+        self.assertTrue(players[0] not in week.get_pending_players())
+
+        self.assertTrue(players[1] in week.get_pending_players())
+        week.end_turn(players[1])
+        self.assertTrue(players[1] not in week.get_pending_players())
+
+        for player in players:
+            self.assertTrue(week.is_turn_finished(player))
+
+        self.assertTrue(week.is_finished())
 
 
 if __name__ == "__main__":

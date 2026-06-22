@@ -16,11 +16,11 @@ class TestGameService(unittest.TestCase):
         gameId = service.new(10, 10, 13)
         handle1 = service.join(gameId, name1, well1)
 
-        game, player1 = service._readHandle(handle1)
+        game, player1 = service._read_handle(handle1)
 
-        self.assertEqual(False, service.isStarted(handle1))
+        self.assertEqual(False, service.is_started(handle1))
         service.start(handle1)
-        self.assertEqual(True, service.isStarted(handle1))
+        self.assertEqual(True, service.is_started(handle1))
 
     def testShortGame(self):
         # start a game, survey once by each player
@@ -37,11 +37,11 @@ class TestGameService(unittest.TestCase):
         handle1 = service.join(gameId, name1, well1)
         handle2 = service.join(gameId, name2, well2)
 
-        game, player1 = service._readHandle(handle1)
-        game, player2 = service._readHandle(handle2)
+        game, player1 = service._read_handle(handle1)
+        game, player2 = service._read_handle(handle2)
 
-        self.assertEqual(False, service.isStarted(handle1))
-        self.assertEqual(False, service.isStarted(handle2))
+        self.assertEqual(False, service.is_started(handle1))
+        self.assertEqual(False, service.is_started(handle2))
 
         # make sure player 2 isn't the game master
         self.assertRaises(WildcattingException, service.start, handle2)
@@ -50,12 +50,12 @@ class TestGameService(unittest.TestCase):
         service.start(handle1)
 
         # make sure both players see the game started
-        self.assertEqual(True, service.isStarted(handle1))
-        self.assertEqual(True, service.isStarted(handle2))
+        self.assertEqual(True, service.is_started(handle1))
+        self.assertEqual(True, service.is_started(handle2))
 
         # make sure it's week 1
-        game, player = service._readHandle(handle1)
-        self.assertEqual(1, game.getWeek().getWeekNum())
+        game, player = service._read_handle(handle1)
+        self.assertEqual(1, game.get_week().get_week_num())
 
         # it's player 1's turn - make sure player 2 can't survey
         self.assertRaises(WildcattingException, service.survey, handle2, 0, 0)
@@ -67,31 +67,31 @@ class TestGameService(unittest.TestCase):
         self.assertRaises(WildcattingException, service.survey, handle1, 0, 0)
 
         # end player 1's turn
-        service.endTurn(handle1)
+        service.end_turn(handle1)
 
         # make sure player 1 can't survey anymore
         self.assertRaises(WildcattingException, service.survey, handle1, 0, 0)
 
         # make sure it's still week 1
-        game, player = service._readHandle(handle1)
-        self.assertEqual(1, game.getWeek().getWeekNum())
+        game, player = service._read_handle(handle1)
+        self.assertEqual(1, game.get_week().get_week_num())
 
         # survey as player 2
         Site.deserialize(service.survey(handle2, 0, 1))
 
         # end player 2's turn
-        service.endTurn(handle2)
+        service.end_turn(handle2)
 
         # make sure player 2 can't survey anymore
         self.assertRaises(WildcattingException, service.survey, handle2, 0, 0)
 
         # make sure week is 2
-        game, player = service._readHandle(handle1)
-        self.assertEqual(2, game.getWeek().getWeekNum())
+        game, player = service._read_handle(handle1)
+        self.assertEqual(2, game.get_week().get_week_num())
 
         # make sure both players see the game ended
-        self.assertEqual(True, service.isFinished(handle1))
-        self.assertEqual(True, service.isFinished(handle2))
+        self.assertEqual(True, service.is_finished(handle1))
+        self.assertEqual(True, service.is_finished(handle2))
 
     def testDrilling(self):
         # start a game, survey once by each player
@@ -104,12 +104,12 @@ class TestGameService(unittest.TestCase):
         gameId = service.new(10, 10, 1)
         handle1 = service.join(gameId, name1, well1)
 
-        game, player1 = service._readHandle(handle1)
-        self.assertEqual(False, service.isStarted(handle1))
+        game, player1 = service._read_handle(handle1)
+        self.assertEqual(False, service.is_started(handle1))
 
         # start the game
         service.start(handle1)
-        self.assertEqual(True, service.isStarted(handle1))
+        self.assertEqual(True, service.is_started(handle1))
 
         x, y = 0, 0
 
@@ -117,8 +117,8 @@ class TestGameService(unittest.TestCase):
         site = Site.deserialize(service.survey(handle1, x, y))
         site = Site.deserialize(service.erect(handle1, x, y))
 
-        well = site.getWell()
-        while well.getOutput() is None and well.getDrillDepth() < 10:
+        well = site.get_well()
+        while well.get_output() is None and well.get_drill_depth() < 10:
             well = Well.deserialize(service.drill(handle1, x, y))
 
     def testSneakyErecting(self):
@@ -132,13 +132,13 @@ class TestGameService(unittest.TestCase):
         gameId = service.new(10, 10, 1)
         handle1 = service.join(gameId, name1, well1)
 
-        game, player1 = service._readHandle(handle1)
-        self.assertEqual(False, service.isStarted(handle1))
+        game, player1 = service._read_handle(handle1)
+        self.assertEqual(False, service.is_started(handle1))
 
         # start the game
         service.start(handle1)
 
-        self.assertEqual(True, service.isStarted(handle1))
+        self.assertEqual(True, service.is_started(handle1))
 
         # survey
         Site.deserialize(service.survey(handle1, 0, 0))
@@ -157,13 +157,13 @@ class TestGameService(unittest.TestCase):
         gameId = service.new(10, 10, 1)
         handle1 = service.join(gameId, name1, well1)
 
-        game, player1 = service._readHandle(handle1)
-        self.assertEqual(False, service.isStarted(handle1))
+        game, player1 = service._read_handle(handle1)
+        self.assertEqual(False, service.is_started(handle1))
 
         # start the game
         service.start(handle1)
 
-        self.assertEqual(True, service.isStarted(handle1))
+        self.assertEqual(True, service.is_started(handle1))
 
         x, y = 0, 0
 
@@ -189,24 +189,24 @@ class TestGameService(unittest.TestCase):
         handle1 = service.join(gameId, name1, well1)
         handle2 = service.join(gameId, name2, well2)
 
-        game, player1 = service._readHandle(handle1)
-        game, player2 = service._readHandle(handle2)
+        game, player1 = service._read_handle(handle1)
+        game, player2 = service._read_handle(handle2)
 
-        self.assertEqual(False, service.isStarted(handle1))
-        self.assertEqual(False, service.isStarted(handle2))
+        self.assertEqual(False, service.is_started(handle1))
+        self.assertEqual(False, service.is_started(handle2))
 
         service.start(handle1)
 
-        self.assertEqual(name1, service.getPlayersTurn(handle1))
-        self.assertEqual(name1, service.getPlayersTurn(handle2))
+        self.assertEqual(name1, service.get_players_turn(handle1))
+        self.assertEqual(name1, service.get_players_turn(handle2))
         Site.deserialize(service.survey(handle1, 0, 0))
 
-        self.assertEqual(name2, service.getPlayersTurn(handle1))
-        self.assertEqual(name2, service.getPlayersTurn(handle2))
+        self.assertEqual(name2, service.get_players_turn(handle1))
+        self.assertEqual(name2, service.get_players_turn(handle2))
         Site.deserialize(service.survey(handle2, 0, 1))
 
-        service.endTurn(handle1)
-        service.endTurn(handle2)
+        service.end_turn(handle1)
+        service.end_turn(handle2)
 
     def testGameWithoutSurvey(self):
         service = GameService(DefaultTheme())
@@ -226,34 +226,34 @@ class TestGameService(unittest.TestCase):
         handle2 = service.join(gameId, name2, well2)
         handle3 = service.join(gameId, name3, well3)
 
-        game, player1 = service._readHandle(handle1)
-        game, player2 = service._readHandle(handle2)
-        game, player3 = service._readHandle(handle3)
+        game, player1 = service._read_handle(handle1)
+        game, player2 = service._read_handle(handle2)
+        game, player3 = service._read_handle(handle3)
 
         service.start(handle1)
 
-        self.assertEqual(name1, service.getPlayersTurn(handle1))
-        self.assertEqual(name1, service.getPlayersTurn(handle2))
-        self.assertEqual(name1, service.getPlayersTurn(handle3))
+        self.assertEqual(name1, service.get_players_turn(handle1))
+        self.assertEqual(name1, service.get_players_turn(handle2))
+        self.assertEqual(name1, service.get_players_turn(handle3))
         Site.deserialize(service.survey(handle1, 0, 0))
 
-        service.endTurn(handle1)
+        service.end_turn(handle1)
 
-        self.assertEqual(name2, service.getPlayersTurn(handle1))
-        self.assertEqual(name2, service.getPlayersTurn(handle2))
-        self.assertEqual(name2, service.getPlayersTurn(handle3))
+        self.assertEqual(name2, service.get_players_turn(handle1))
+        self.assertEqual(name2, service.get_players_turn(handle2))
+        self.assertEqual(name2, service.get_players_turn(handle3))
 
-        service.endTurn(handle2)
+        service.end_turn(handle2)
 
-        self.assertEqual(name3, service.getPlayersTurn(handle1))
-        self.assertEqual(name3, service.getPlayersTurn(handle2))
-        self.assertEqual(name3, service.getPlayersTurn(handle3))
+        self.assertEqual(name3, service.get_players_turn(handle1))
+        self.assertEqual(name3, service.get_players_turn(handle2))
+        self.assertEqual(name3, service.get_players_turn(handle3))
 
-        service.endTurn(handle3)
+        service.end_turn(handle3)
 
-        self.assertEqual(name1, service.getPlayersTurn(handle1))
-        self.assertEqual(name1, service.getPlayersTurn(handle2))
-        self.assertEqual(name1, service.getPlayersTurn(handle3))
+        self.assertEqual(name1, service.get_players_turn(handle1))
+        self.assertEqual(name1, service.get_players_turn(handle2))
+        self.assertEqual(name1, service.get_players_turn(handle3))
 
 
 if __name__ == "__main__":

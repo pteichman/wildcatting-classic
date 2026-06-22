@@ -9,12 +9,12 @@ class TestOilField(unittest.TestCase):
         rows = 10
 
         field = wildcatting.model.OilField(cols, rows)
-        self.assertEqual(field.getHeight(), rows)
-        self.assertEqual(field.getWidth(), cols)
+        self.assertEqual(field.get_height(), rows)
+        self.assertEqual(field.get_width(), cols)
 
         for row in range(rows):
             for col in range(cols):
-                site = field.getSite(row, col)
+                site = field.get_site(row, col)
 
                 self.assertNotEqual(site, None)
 

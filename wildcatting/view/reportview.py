@@ -65,16 +65,16 @@ class WeeklySummaryView(View):
         self._stdscr.clear()
         self._stdscr.refresh()
 
-        fg, bg = self.getGreenFGBG()
+        fg, bg = self.get_green_fgbg()
         self.setFGBG(self._win, fg, bg)
 
         self.addCentered(self._win, 1, "... WILDCATTING ...")
         if not gameFinished:
-            self.addCentered(self._win, 3, f"WEEK {self._report.getWeek()!s:>3}")
+            self.addCentered(self._win, 3, f"WEEK {self._report.get_week()!s:>3}")
         else:
             self.addCentered(self._win, 3, "FINAL REPORT")
         row = 6
-        reportRows = self._report.getReportRows()
+        reportRows = self._report.get_report_rows()
         for rowDict in reportRows:
             username = rowDict["username"]
             profitAndLoss = rowDict["profitAndLoss"]
@@ -113,12 +113,12 @@ class WeeklyReportView(View):
         self._win = self._stdscr.derwin(16, 48, (h - 16) // 2, (w - 48) // 2)
         self._colorChooser = ProbabilityColorChooser()
 
-        self._cursor = _ReportCursor(page=(report.getWeek() - 1) // 13)
+        self._cursor = _ReportCursor(page=(report.get_week() - 1) // 13)
 
-    def setReport(self, report):
+    def set_report(self, report):
         self._report = report
 
-    def setField(self, field):
+    def set_field(self, field):
         self._field = field
 
     def display(self):
@@ -126,16 +126,16 @@ class WeeklyReportView(View):
         self._stdscr.refresh()
         (h, w) = self._win.getmaxyx()
 
-        fg, bg = self.getGreenFGBG()
+        fg, bg = self.get_green_fgbg()
         self.setFGBG(self._win, fg, bg)
 
-        self._win.addstr(0, 0, self._report.getUsername().upper())
-        self.addCentered(self._win, 0, f"{self._report.getOilPrice()} PER BARREL")
-        self.addRight(self._win, 0, f"WEEK {self._report.getWeek()}")
+        self._win.addstr(0, 0, self._report.get_username().upper())
+        self.addCentered(self._win, 0, f"{self._report.get_oil_price()} PER BARREL")
+        self.addRight(self._win, 0, f"WEEK {self._report.get_week()}")
         self._win.addstr(1, 1, "  X   Y   COST     TAX     INCOME     P&L")
 
-        week = self._report.getWeek()
-        reportDict = self._report.getReportDict()
+        week = self._report.get_week()
+        reportDict = self._report.get_report_dict()
         page = self._cursor.page
         lastWeekOnPage = min(week, 13 * (page + 1))
         for turn in range((page * 13) + 1, lastWeekOnPage + 1):
@@ -143,16 +143,16 @@ class WeeklyReportView(View):
                 rowDict = reportDict[turn]
                 row = rowDict["row"]
                 col = rowDict["col"]
-                site = self._field.getSite(row, col)
-                if site.getWell().isSold():
+                site = self._field.get_site(row, col)
+                if site.get_well().is_sold():
                     symbol = " "
                 else:
-                    symbol = self._report.getSymbol()
+                    symbol = self._report.get_symbol()
                 self._win.addstr(
                     turn - (page * 13) + 1,
                     0,
                     symbol,
-                    self._colorChooser.siteColor(site),
+                    self._colorChooser.site_color(site),
                 )
             else:
                 rowDict = {
@@ -177,29 +177,29 @@ class WeeklyReportView(View):
             self._win.addstr(turn - (page * 13) + 1, 1, well_str)
 
         self._win.addstr(15, 0, " NEXT PLAYER")
-        if page == (self._report.getWeek() - 1) // 13:
-            pl = str(self._report.getProfitAndLoss()).rjust(10)
+        if page == (self._report.get_week() - 1) // 13:
+            pl = str(self._report.get_profit_and_loss()).rjust(10)
             self._win.addstr(15, 35, f"$ {pl}")
-        self._moveCursor()
+        self._move_cursor()
         self._win.refresh()
 
-    def _moveCursor(self):
+    def _move_cursor(self):
         turn, page = self._cursor.turn, self._cursor.page
         row = 15 if turn is None else turn - (page * 13) + 1
         self._win.move(row, 0)
 
     def _input(self) -> ReportInput:
-        self._moveCursor()
+        self._move_cursor()
         c = self._stdscr.getch()
 
         old = self._cursor
-        self._cursor = _report_navigate(c, self._cursor, self._report.getWeek())
-        action = _report_action(c, old.turn, self._report.getReportDict())
+        self._cursor = _report_navigate(c, self._cursor, self._report.get_week())
+        action = _report_action(c, old.turn, self._report.get_report_dict())
 
         if self._cursor.page != old.page:
             self.display()
         elif self._cursor != old:
-            self._moveCursor()
+            self._move_cursor()
 
         self._win.refresh()
         return action
@@ -226,12 +226,12 @@ class SurveyorsReportView(View):
         self._stdscr.refresh()
 
         (h, w) = self._win.getmaxyx()
-        coord_str = f"X={self._site.getCol()}  Y={self._site.getRow()}"
-        prob_str = str(self._site.getProbability()).rjust(2) + "%"
-        cost_str = "$" + str(self._site.getDrillCost()).rjust(4)
-        tax_str = "$" + str(self._site.getTax()).rjust(4)
+        coord_str = f"X={self._site.get_col()}  Y={self._site.get_row()}"
+        prob_str = str(self._site.get_probability()).rjust(2) + "%"
+        cost_str = "$" + str(self._site.get_drill_cost()).rjust(4)
+        tax_str = "$" + str(self._site.get_tax()).rjust(4)
 
-        fg, bg = self.getGreenFGBG()
+        fg, bg = self.get_green_fgbg()
         self.setFGBG(self._win, fg, bg)
 
         self._win.addstr(1, 14, "SURVEYOR'S REPORT")
@@ -319,7 +319,7 @@ class PregameReportView(View):
 
         (h, w) = self._win.getmaxyx()
 
-        fg, bg = self.getGreenFGBG()
+        fg, bg = self.get_green_fgbg()
         self.setFGBG(self._win, fg, bg)
 
         self.addCentered(self._win, 1, f"PLAYERS: GAME {self._gameId}")

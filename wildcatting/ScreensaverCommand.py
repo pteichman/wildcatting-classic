@@ -48,7 +48,7 @@ class ScreensaverCommand(Command):
     def asciiScreensaver(self):
         while True:
             game = Game(80, 23)
-            field = game.getOilField()
+            field = game.get_oil_field()
             OilFieldTextView(field).ascii()
             time.sleep(0.25)
 
@@ -56,7 +56,7 @@ class ScreensaverCommand(Command):
         try:
             while True:
                 game = Game(80, 23)
-                field = game.getOilField()
+                field = game.get_oil_field()
                 OilFieldTextView(field).ansi()
                 time.sleep(0.25)
         except Exception:
@@ -90,10 +90,10 @@ class ScreensaverCommand(Command):
 
         while True:
             game = Game(win_w, win_h)
-            field = game.getOilField()
+            field = game.get_oil_field()
 
             w = Wildcatting()
-            w.setPlayerField(field)
+            w.set_player_field(field)
             view: OilFieldCursesView
             if options.drill_cost:
                 view = OilFieldDrillCostView(win, w, 1, 25)
@@ -102,7 +102,7 @@ class ScreensaverCommand(Command):
 
             win.clear()
             animator = FadeInOilFieldCursesAnimator(field)
-            while not animator.isDone():
+            while not animator.is_done():
                 animator.animate()
                 view.display()
 
@@ -116,20 +116,20 @@ class ScreensaverCommand(Command):
 
         while True:
             game = Game(win_w, win_h)
-            field = game.getOilField()
+            field = game.get_oil_field()
 
             w = Wildcatting()
-            w.setPlayerField(field)
+            w.set_player_field(field)
             view: OilFieldCursesView
             if options.drill_cost:
                 view = OilFieldDrillCostView(win, w, 1, 25)
             else:
                 view = OilFieldProbabilityView(win, w)
 
-            for row in range(field.getHeight()):
-                for col in range(field.getWidth()):
-                    site = field.getSite(row, col)
-                    site.setSurveyed(True)
+            for row in range(field.get_height()):
+                for col in range(field.get_width()):
+                    site = field.get_site(row, col)
+                    site.set_surveyed(True)
 
             view.display()
             time.sleep(0.25)

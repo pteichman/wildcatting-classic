@@ -12,40 +12,44 @@ class ReportInput:
     sell: tuple[int, int] | None = None
 
 
-def _report_key(
-    c: int,
-    cursor_turn: int | None,
-    page: int,
-    week: int,
-    report_dict: dict,
-) -> tuple[int | None, int, ReportInput]:
+@dataclass
+class _ReportCursor:
+    turn: int | None = None
+    page: int = 0
+
+
+def _report_navigate(c: int, cursor: _ReportCursor, week: int) -> _ReportCursor:
+    turn, page = cursor.turn, cursor.page
     if c == curses.KEY_UP:
-        if cursor_turn is None:
-            cursor_turn = min(week, 13 * (page + 1))
-        elif cursor_turn - (page * 13) > 1:
-            cursor_turn -= 1
+        if turn is None:
+            turn = min(week, 13 * (page + 1))
+        elif turn - (page * 13) > 1:
+            turn -= 1
     elif c == curses.KEY_DOWN:
-        if cursor_turn is not None:
-            if cursor_turn == min(week, 13 * (page + 1)):
-                cursor_turn = None
+        if turn is not None:
+            if turn == min(week, 13 * (page + 1)):
+                turn = None
             else:
-                cursor_turn += 1
+                turn += 1
     elif c == curses.KEY_PPAGE:
         if page > 0:
             page -= 1
-            cursor_turn = None
+            turn = None
     elif c == curses.KEY_NPAGE:
         if page < (week - 1) // 13:
             page += 1
-            cursor_turn = None
-    elif c == ord(" ") or c == ord("\n"):
+            turn = None
+    return _ReportCursor(turn=turn, page=page)
+
+
+def _report_action(c: int, cursor_turn: int | None, report_dict: dict) -> ReportInput:
+    if c == ord(" ") or c == ord("\n"):
         if cursor_turn is None:
-            return cursor_turn, page, ReportInput(next_player=True)
+            return ReportInput(next_player=True)
         if cursor_turn in report_dict:
             row_dict = report_dict[cursor_turn]
-            sell = (row_dict["row"], row_dict["col"])
-            return cursor_turn, page, ReportInput(sell=sell)
-    return cursor_turn, page, ReportInput()
+            return ReportInput(sell=(row_dict["row"], row_dict["col"]))
+    return ReportInput()
 
 
 class WeeklySummaryView(View):
@@ -109,9 +113,7 @@ class WeeklyReportView(View):
         self._win = self._stdscr.derwin(16, 48, (h - 16) // 2, (w - 48) // 2)
         self._colorChooser = ProbabilityColorChooser()
 
-        # start cursor on nextPlayer prompt
-        self._cursorTurn = None
-        self._page = (report.getWeek() - 1) // 13
+        self._cursor = _ReportCursor(page=(report.getWeek() - 1) // 13)
 
     def setReport(self, report):
         self._report = report
@@ -134,8 +136,9 @@ class WeeklyReportView(View):
 
         week = self._report.getWeek()
         reportDict = self._report.getReportDict()
-        lastWeekOnPage = min(week, 13 * (self._page + 1))
-        for turn in range((self._page * 13) + 1, lastWeekOnPage + 1):
+        page = self._cursor.page
+        lastWeekOnPage = min(week, 13 * (page + 1))
+        for turn in range((page * 13) + 1, lastWeekOnPage + 1):
             if turn in reportDict:
                 rowDict = reportDict[turn]
                 row = rowDict["row"]
@@ -146,7 +149,7 @@ class WeeklyReportView(View):
                 else:
                     symbol = self._report.getSymbol()
                 self._win.addstr(
-                    turn - (self._page * 13) + 1,
+                    turn - (page * 13) + 1,
                     0,
                     symbol,
                     self._colorChooser.siteColor(site),
@@ -171,35 +174,31 @@ class WeeklyReportView(View):
                 f" {col!s:>2} {row_num!s:>3}   ${cost!s:>4}    ${tax!s:>4}"
                 f"   ${income!s:>4}      ${pl!s:>7}"
             )
-            self._win.addstr(turn - (self._page * 13) + 1, 1, well_str)
+            self._win.addstr(turn - (page * 13) + 1, 1, well_str)
 
         self._win.addstr(15, 0, " NEXT PLAYER")
-        if self._page == (self._report.getWeek() - 1) // 13:
+        if page == (self._report.getWeek() - 1) // 13:
             pl = str(self._report.getProfitAndLoss()).rjust(10)
             self._win.addstr(15, 35, f"$ {pl}")
         self._moveCursor()
         self._win.refresh()
 
     def _moveCursor(self):
-        if self._cursorTurn is None:
-            row = 15
-        else:
-            row = self._cursorTurn - (self._page * 13) + 1
+        turn, page = self._cursor.turn, self._cursor.page
+        row = 15 if turn is None else turn - (page * 13) + 1
         self._win.move(row, 0)
 
     def _input(self) -> ReportInput:
         self._moveCursor()
         c = self._stdscr.getch()
 
-        old_cursor, old_page = self._cursorTurn, self._page
-        self._cursorTurn, self._page, action = _report_key(
-            c, self._cursorTurn, self._page,
-            self._report.getWeek(), self._report.getReportDict()
-        )
+        old = self._cursor
+        self._cursor = _report_navigate(c, self._cursor, self._report.getWeek())
+        action = _report_action(c, old.turn, self._report.getReportDict())
 
-        if self._page != old_page:
+        if self._cursor.page != old.page:
             self.display()
-        elif self._cursorTurn != old_cursor:
+        elif self._cursor != old:
             self._moveCursor()
 
         self._win.refresh()

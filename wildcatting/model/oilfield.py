@@ -148,19 +148,19 @@ class Site(Serializable):
 
 
 class Well(Serializable):
-    def __init__(self) -> None:
-        self.week: int | None = None
+    def __init__(self, week: int, player: Player) -> None:
+        self.week: int = week
         self.drill_depth: int = 0
         self.initial_output: float | None = None
         self.output: float | None = None
         self.sold: bool = False
-        self.player: Player | None = None
+        self.player: Player = player
         self.initial_cost: int = 0
         self.profit_and_loss: int = 0
         self.capacity: int = 1
 
     def __lt__(self, other: Well) -> bool:
-        return self.week < other.week  # type: ignore[operator]
+        return self.week < other.week
 
     def __eq__(self, other: object) -> bool:
         return isinstance(other, Well) and self.week == other.week

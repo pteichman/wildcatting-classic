@@ -40,9 +40,7 @@ class TestWellOutputBounds(unittest.TestCase):
         site.tax = 0
         reservoir = Reservoir(initialDepth=5, initialReserves=reserves)
         site.reservoir = reservoir
-        well = Well()
-        well.player = player
-        well.week = 1
+        well = Well(week=1, player=player)
         site.well = well
         return site, well, reservoir
 

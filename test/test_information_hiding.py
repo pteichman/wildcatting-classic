@@ -154,9 +154,7 @@ class TestClientVisibility(unittest.TestCase):
 class TestSerializationRoundTrips(unittest.TestCase):
     def test_well_round_trip(self) -> None:
         player = Player("alice", "A")
-        well1 = Well()
-        well1.player = player
-        well1.week = 3
+        well1 = Well(week=3, player=player)
         well1.drill_depth = 4
         well1.initial_output = 30.0
         well1.output = 20.0

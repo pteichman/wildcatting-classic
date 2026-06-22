@@ -395,7 +395,6 @@ class Game:
         well = site.well
         assert well is not None
         foundOil, cost = well.drill(site, self._theme.get_drill_increment())
-        assert well.player is not None
         well.player.expense(cost)
 
         if foundOil:

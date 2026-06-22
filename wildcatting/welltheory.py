@@ -40,7 +40,6 @@ class SimpleWellTheory:
     def tick(self, site: Site, currentWeek: int) -> tuple[float, int]:
         well = site.well
         assert well is not None
-        assert well.week is not None
         weeksOperational = currentWeek - well.week
 
         new_capacity = well.capacity

@@ -21,10 +21,7 @@ class Week:
         self._turns: dict[Player, Turn] = {}
 
         for player in self._players:
-            turn = wildcatting.turn.Turn()
-            turn.player = player
-            turn.week = weekNum
-            self._turns[player] = turn
+            self._turns[player] = wildcatting.turn.Turn(week=weekNum, player=player)
 
     @property
     def survey_player(self) -> Player | None:
@@ -33,10 +30,10 @@ class Week:
 
         return self._players[self._surveyPlayerIndex]
 
-    def get_player_turn(self, player: Player) -> Turn | None:
+    def get_player_turn(self, player: Player) -> Turn:
         assert isinstance(player, Player)
 
-        return self._turns.get(player)
+        return self._turns[player]
 
     def is_survey_turn(self, player: Player) -> bool:
         assert isinstance(player, Player)

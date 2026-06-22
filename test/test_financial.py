@@ -9,9 +9,7 @@ class TestDrilling(unittest.TestCase):
         player = Player("alice", "A")
         site = Site(0, 0)
         site.drill_cost = drill_cost
-        well = Well()
-        well.player = player
-        well.week = 1
+        well = Well(week=1, player=player)
         site.well = well
         return site, well, player
 
@@ -41,9 +39,7 @@ class TestDrilling(unittest.TestCase):
         site.reservoir = reservoir
 
         player = Player("alice", "A")
-        well = Well()
-        well.player = player
-        well.week = 1
+        well = Well(week=1, player=player)
         site.well = well
 
         for _ in range(oil_depth - 1):
@@ -97,9 +93,7 @@ class TestPlayerAccounting(unittest.TestCase):
         player = Player("alice", "A")
         site = Site(0, 0)
         site.tax = 5
-        well = Well()
-        well.player = player
-        well.week = 1
+        well = Well(week=1, player=player)
         well.output = 10.0
         site.well = well
 
@@ -111,9 +105,7 @@ class TestPlayerAccounting(unittest.TestCase):
         player = Player("alice", "A")
         site = Site(0, 0)
         site.tax = 100
-        well = Well()
-        well.player = player
-        well.week = 1
+        well = Well(week=1, player=player)
         # output is None by default — no oil found yet
         site.well = well
 
@@ -125,9 +117,7 @@ class TestPlayerAccounting(unittest.TestCase):
         player = Player("alice", "A")
         site = Site(0, 0)
         site.tax = 500
-        well = Well()
-        well.player = player
-        well.week = 1
+        well = Well(week=1, player=player)
         well.output = 50.0
         well.sold = True
         site.well = well

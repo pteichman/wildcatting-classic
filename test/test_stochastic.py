@@ -113,9 +113,7 @@ class TestOilDiscovery(unittest.TestCase):
         assert oil_site is not None
 
         player = Player("alice", "A")
-        well = Well()
-        well.player = player
-        well.week = 1
+        well = Well(week=1, player=player)
         oil_site.well = well
 
         assert oil_site.reservoir is not None

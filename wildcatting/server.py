@@ -112,7 +112,7 @@ class GameService:
 
     def _ensure_survey_turn(
         self, game: Game, player: wildcatting.model.Player
-    ) -> wildcatting.turn.Turn | None:
+    ) -> wildcatting.turn.Turn:
         if game.finished:
             raise WildcattingException("Game is over")
 
@@ -125,7 +125,7 @@ class GameService:
 
     def _ensure_turn(
         self, game: Game, player: wildcatting.model.Player
-    ) -> wildcatting.turn.Turn | None:
+    ) -> wildcatting.turn.Turn:
         if game.finished:
             raise WildcattingException("Game is over")
 
@@ -233,7 +233,6 @@ class GameService:
     def survey(self, handle: str, row: int, col: int) -> dict[str, Any]:
         game, player = self._read_handle(handle)
         turn = self._ensure_survey_turn(game, player)
-        assert turn is not None
 
         if turn.surveyed_site:
             raise WildcattingException("Already surveyed this turn")
@@ -255,7 +254,6 @@ class GameService:
     def erect(self, handle: str, row: int, col: int) -> dict[str, Any]:
         game, player = self._read_handle(handle)
         turn = self._ensure_turn(game, player)
-        assert turn is not None
 
         if turn.drilled_site:
             raise WildcattingException("Already drilled this turn")
@@ -263,9 +261,7 @@ class GameService:
         field = game.oil_field
 
         site = field.get_site(row, col)
-        well = wildcatting.model.Well()
-        well.player = player
-        well.week = game.week.week_num
+        well = wildcatting.model.Well(week=game.week.week_num, player=player)
         site.well = well
         game.drill(row, col)
         turn.drilled_site = site
@@ -308,7 +304,6 @@ class GameService:
     def drill(self, handle: str, row: int, col: int) -> dict[str, Any]:
         game, player = self._read_handle(handle)
         turn = self._ensure_turn(game, player)
-        assert turn is not None
 
         drilledSite = turn.drilled_site
         if drilledSite and not (drilledSite.row == row and drilledSite.col == col):
@@ -333,7 +328,6 @@ class GameService:
         if well.sold:
             raise WildcattingException("Well has already been sold")
 
-        assert well.player is not None
         if well.player.username != player.username:
             raise WildcattingException("Player does not own well")
 

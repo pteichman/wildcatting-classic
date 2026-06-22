@@ -114,12 +114,6 @@ class WestTexas(Theme):
         return self._prices
 
     ## oil probability distribution
-    def get_oil_min_dropoff(self) -> int:
-        return 5
-
-    def get_oil_max_dropoff(self) -> int:
-        return 10
-
     def get_oil_max_peaks(self) -> int:
         return 5
 
@@ -130,12 +124,6 @@ class WestTexas(Theme):
         return 5
 
     ## drill cost distribution
-    def get_drill_cost_min_dropoff(self) -> int:
-        return 5
-
-    def get_drill_cost_max_dropoff(self) -> int:
-        return 6
-
     def get_drill_cost_max_peaks(self) -> int:
         return 10
 

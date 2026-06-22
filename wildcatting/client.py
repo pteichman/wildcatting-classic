@@ -345,7 +345,7 @@ class Client:
             min_h = player_field.height + WildcattingView.TOP_PADDING
             raise Exception(f"Console must be at least {min_w}x{min_h} (is {w}x{h})")
 
-        self._wildcatting_view = wildcattingView = WildcattingView(
+        wildcattingView = WildcattingView(
             self._stdscr, self._wildcatting, self._setting
         )
         wildcattingView.display()

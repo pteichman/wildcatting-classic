@@ -90,12 +90,6 @@ class Theme(abc.ABC):
 
     ## oil probability distribution
     @abc.abstractmethod
-    def get_oil_min_dropoff(self) -> int: ...
-
-    @abc.abstractmethod
-    def get_oil_max_dropoff(self) -> int: ...
-
-    @abc.abstractmethod
     def get_oil_max_peaks(self) -> int: ...
 
     @abc.abstractmethod
@@ -105,12 +99,6 @@ class Theme(abc.ABC):
     def get_oil_lesser_peak_factor(self) -> int: ...
 
     ## drill cost distribution
-    @abc.abstractmethod
-    def get_drill_cost_min_dropoff(self) -> int: ...
-
-    @abc.abstractmethod
-    def get_drill_cost_max_dropoff(self) -> int: ...
-
     @abc.abstractmethod
     def get_drill_cost_max_peaks(self) -> int: ...
 

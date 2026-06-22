@@ -489,7 +489,6 @@ class StandaloneServer(BaseService):
 
     def __init__(self) -> None:
         theme = DefaultTheme()
-        self.admin = AdminService()
         self.game = GameService(theme)
         self.setting = SettingService(theme)
 

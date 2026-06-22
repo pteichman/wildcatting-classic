@@ -93,29 +93,9 @@ class CommandParser(OptionParser):
         self.commands: list[Command] = []
         self.groups: dict[str, list[Command]] = {}
 
-    def check_required(self, opt: str) -> None:
-        option = self.get_option(opt)
-        assert option is not None
-        assert option.dest is not None
-
-        # Assumes the options's 'default' is set to None!
-        if getattr(self.values, option.dest) is None:
-            self.error(f"{option} option not supplied")
-
     def add_command(self, command: Command, group: str = "Other") -> None:
         self.commands.append(command)
         self.groups.setdefault(group, []).append(command)
-
-    def add_commands(self, module: Any, group: str = "Other") -> None:
-        # add all the Command subclasses found in a module
-        for attr in dir(module):
-            cls = getattr(module, attr)
-
-            if type(cls) is not type:
-                continue
-
-            if (cls is not Command) and issubclass(getattr(module, attr), Command):
-                self.add_command(cls(), group)
 
     def find_command(self, alias: str) -> Command | None:
         for command in self.commands:

@@ -106,12 +106,6 @@ class OilFiller(PeakedFiller):
         if roll is not None and roll < value:
             site.oil_flag = True
 
-    def get_min_dropoff(self) -> int:
-        return self._theme.get_oil_min_dropoff()
-
-    def get_max_dropoff(self) -> int:
-        return self._theme.get_oil_max_dropoff()
-
     def get_max_peaks(self) -> int:
         return self._theme.get_oil_max_peaks()
 
@@ -133,12 +127,6 @@ class DrillCostFiller(PeakedFiller):
         self, site: wildcatting.model.Site, discount: int, roll: int | None
     ) -> None:
         site.drill_cost = self._theme.get_max_drill_cost() - discount
-
-    def get_min_dropoff(self) -> int:
-        return self._theme.get_drill_cost_min_dropoff()
-
-    def get_max_dropoff(self) -> int:
-        return self._theme.get_drill_cost_max_dropoff()
 
     def get_max_peaks(self) -> int:
         return self._theme.get_drill_cost_max_peaks()
@@ -162,12 +150,6 @@ class PotentialOilDepthFiller(PeakedFiller):
     ) -> None:
         if site.oil_flag:
             site.potential_oil_depth = 11 - value
-
-    def get_min_dropoff(self) -> int:
-        return 0
-
-    def get_max_dropoff(self) -> int:
-        return 0
 
     def get_max_peaks(self) -> int:
         return 10

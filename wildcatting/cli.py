@@ -21,11 +21,11 @@ def main() -> None:
         "", "--version", action="store_true", help="print the version and exit"
     )
 
-    parser.add_commands(ClientCommand)
-    parser.add_commands(ScreensaverCommand)
-    parser.add_commands(ServerCommand)
-    parser.add_commands(PingCommand)
-    parser.add_commands(ThemeInfoCommand)
+    parser.add_command(ClientCommand.ClientCommand())
+    parser.add_command(ScreensaverCommand.ScreensaverCommand())
+    parser.add_command(ServerCommand.ServerCommand())
+    parser.add_command(PingCommand.ClientCommand())
+    parser.add_command(ThemeInfoCommand.ThemeInfo())
 
     (command, options, args) = parser.parse_args()
 

@@ -105,7 +105,8 @@ class TestOilDiscovery:
             if oil_site is not None:
                 break
 
-        assert oil_site is not None, "seed 42 must produce at least one oil site on 10x10"
+        msg = "seed 42 must produce at least one oil site on 10x10"
+        assert oil_site is not None, msg
 
         player = Player("alice", "A")
         well = Well(week=1, player=player)

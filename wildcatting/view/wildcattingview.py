@@ -1,17 +1,12 @@
-from __future__ import annotations
-
 import curses
 import logging
 import random
 import textwrap
 from dataclasses import dataclass
-from typing import TYPE_CHECKING
 
 from wildcatting.colors import Colors
 from wildcatting.model import Setting, Site
-
-if TYPE_CHECKING:
-    from wildcatting.client import Wildcatting
+from wildcatting.state import Wildcatting
 
 from .oilfieldview import (
     OilFieldCursesView,

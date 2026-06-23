@@ -3,9 +3,9 @@ import logging
 import time
 from argparse import Namespace
 
-from wildcatting.client import Wildcatting
 from wildcatting.cmdparse import Command
 from wildcatting.game import Game
+from wildcatting.state import Wildcatting
 from wildcatting.view import (
     FadeInOilFieldCursesAnimator,
     OilFieldCursesView,

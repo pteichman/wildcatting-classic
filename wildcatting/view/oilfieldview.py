@@ -1,17 +1,12 @@
-from __future__ import annotations
-
 import abc
 import curses
 import random
-from typing import TYPE_CHECKING
 
 from wildcatting.colors import Colors
 from wildcatting.model import OilField, Site
+from wildcatting.state import Wildcatting
 
 from .view import View
-
-if TYPE_CHECKING:
-    from wildcatting.client import Wildcatting
 
 
 class OilFieldTextView(View):

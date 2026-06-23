@@ -1,5 +1,12 @@
 import logging
 import random
+from typing import Protocol
+
+
+class OilPrices(Protocol):
+    def __next__(self) -> float: ...
+
+    def get_initial_price(self) -> float: ...
 
 
 class GaussianPrices:

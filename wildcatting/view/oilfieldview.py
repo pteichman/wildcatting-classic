@@ -1,12 +1,17 @@
+from __future__ import annotations
+
 import abc
 import curses
 import random
-from typing import Any
+from typing import TYPE_CHECKING
 
 from wildcatting.colors import Colors
 from wildcatting.model import OilField, Site
 
 from .view import View
+
+if TYPE_CHECKING:
+    from wildcatting.client import Wildcatting
 
 
 class OilFieldTextView(View):
@@ -143,7 +148,7 @@ class FadeInOilFieldCursesAnimator:
 
 
 class OilFieldCursesView(View, abc.ABC):
-    def __init__(self, win: Any, wildcatting_: Any) -> None:
+    def __init__(self, win: curses.window, wildcatting_: Wildcatting) -> None:
         View.__init__(self, win)
         self._win = win
         self._wildcatting = wildcatting_
@@ -158,6 +163,7 @@ class OilFieldCursesView(View, abc.ABC):
 
     def display(self) -> None:
         field = self._wildcatting.player_field
+        assert field is not None
         for row in range(field.height):
             for col in range(field.width):
                 site = field.get_site(row, col)
@@ -181,7 +187,9 @@ class OilFieldCursesView(View, abc.ABC):
         self.putch(self._win, site.row, site.col, ord(symbol), color)
 
     def animate_game_end(self) -> None:
-        animator = FadeInOilFieldCursesAnimator(self._wildcatting.player_field)
+        field = self._wildcatting.player_field
+        assert field is not None
+        animator = FadeInOilFieldCursesAnimator(field)
         while not animator.is_done():
             animator.animate()
             self.display()
@@ -197,7 +205,11 @@ class OilFieldProbabilityView(OilFieldCursesView):
 
 class OilFieldDrillCostView(OilFieldCursesView):
     def __init__(
-        self, win: Any, wildcatting_: Any, min_drill_cost: int, max_drill_cost: int
+        self,
+        win: curses.window,
+        wildcatting_: Wildcatting,
+        min_drill_cost: int,
+        max_drill_cost: int,
     ) -> None:
         self._min_drill_cost = min_drill_cost
         self._max_drill_cost = max_drill_cost

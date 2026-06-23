@@ -2,7 +2,6 @@ import curses
 import logging
 import time
 from argparse import Namespace
-from typing import Any
 
 from wildcatting.client import Wildcatting
 from wildcatting.cmdparse import Command
@@ -62,7 +61,9 @@ class ScreensaverCommand(Command):
         except Exception:
             print(chr(27) + "[0m")
 
-    def border_win(self, parent: Any, no_border: bool) -> tuple[int, Any]:
+    def border_win(
+        self, parent: curses.window, no_border: bool
+    ) -> tuple[int, curses.window]:
         if no_border:
             win = parent
             border = 0
@@ -81,7 +82,7 @@ class ScreensaverCommand(Command):
         return border, win
 
     def player_screensaver(
-        self, stdscr: Any, options: Namespace, args: list[str]
+        self, stdscr: curses.window, options: Namespace, args: list[str]
     ) -> None:
         border, border_win = self.border_win(stdscr, options.no_border)
         border_win_h, border_win_w = border_win.getmaxyx()
@@ -109,7 +110,7 @@ class ScreensaverCommand(Command):
                 view.display()
 
     def view_screensaver(
-        self, stdscr: Any, options: Namespace, args: list[str]
+        self, stdscr: curses.window, options: Namespace, args: list[str]
     ) -> None:
         border, border_win = self.border_win(stdscr, options.no_border)
         border_win_h, border_win_w = border_win.getmaxyx()

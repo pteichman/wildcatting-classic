@@ -1,10 +1,11 @@
+import curses
 import logging
 from typing import Any
 
 from wildcatting.model import OilField, Setting
 
 
-def main(stdscr: Any) -> None:
+def main(stdscr: curses.window) -> None:
     pass
 
 

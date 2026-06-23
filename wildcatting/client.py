@@ -1,7 +1,7 @@
 import curses
 import logging
 import time
-from typing import Any, NamedTuple
+from typing import NamedTuple
 
 from wildcatting.model import (
     ClientInfo,
@@ -314,7 +314,7 @@ class Client:
         available_height = h - WildcattingView.TOP_PADDING
         return available_width, available_height
 
-    def _input_user_names(self, stdscr: Any) -> None:
+    def _input_user_names(self, stdscr: curses.window) -> None:
         count_view = PlayerCountView(stdscr)
         count_view.display()
 
@@ -325,7 +325,7 @@ class Client:
 
         self._connect_players = names_view.input()
 
-    def wildcatting(self, stdscr: Any) -> None:
+    def wildcatting(self, stdscr: curses.window) -> None:
         self._stdscr = stdscr
 
         if self._connect_players is None:

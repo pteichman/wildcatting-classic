@@ -1,13 +1,12 @@
 import curses
 import curses.textpad
 import time
-from typing import Any
 
 from .view import View
 
 
 class PlayerCountView(View):
-    def __init__(self, stdscr: Any) -> None:
+    def __init__(self, stdscr: curses.window) -> None:
         View.__init__(self, stdscr)
 
         (h, w) = self._stdscr.getmaxyx()
@@ -43,11 +42,11 @@ class PlayerCountView(View):
 
 
 class PlayerNamesView(View):
-    def __init__(self, stdscr: Any, count: int) -> None:
+    def __init__(self, stdscr: curses.window, count: int) -> None:
         View.__init__(self, stdscr)
 
         self._count = count
-        self._textpads: list[Any] = []
+        self._textpads: list[curses.textpad.Textbox] = []
 
         (h, w) = self._stdscr.getmaxyx()
         self._win = self._stdscr.derwin(16, 48, (h - 16) // 2, (w - 48) // 2)
@@ -90,7 +89,7 @@ class PlayerNamesView(View):
 
             default_symbol = name[0].upper()
 
-            symbol_field.win.addch(0, 0, default_symbol)
+            symbol_field.win.addch(0, 0, default_symbol)  # type: ignore[attr-defined]
             symbol_field.edit()
             symbol = symbol_field.gather().strip()
 
@@ -108,7 +107,7 @@ class PlayerNamesView(View):
 
 if __name__ == "__main__":
 
-    def main(stdscr: Any) -> list[tuple[str, str]]:
+    def main(stdscr: curses.window) -> list[tuple[str, str]]:
         count_view = PlayerCountView(stdscr)
         count_view.display()
 

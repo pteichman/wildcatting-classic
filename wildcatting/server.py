@@ -17,6 +17,7 @@ from wildcatting.model import (
     WeeklySummary,
     Well,
 )
+from wildcatting.theme.theme import Theme
 from wildcatting.turn import Turn
 
 from . import version
@@ -64,7 +65,7 @@ class BaseService:
 
 
 class SettingService:
-    def __init__(self, theme: Any) -> None:
+    def __init__(self, theme: Theme) -> None:
         self._setting = theme.generate_setting()
 
     def get_setting(self) -> dict[str, Any]:
@@ -76,7 +77,7 @@ class GameService:
 
     log = logging.getLogger("Wildcatting")
 
-    def __init__(self, theme: Any) -> None:
+    def __init__(self, theme: Theme) -> None:
         self._games: dict[str, Game] = {}
         self._next_game_id: int = 0
         self._theme = theme
@@ -333,7 +334,7 @@ class GameService:
         well.player.income(price)
         return price
 
-    def end_turn(self, handle: str) -> tuple[None, list[Any]]:
+    def end_turn(self, handle: str) -> tuple[None, list[dict[str, Any]]]:
         game, player = self._read_handle(handle)
 
         game.end_turn(player)
@@ -455,7 +456,7 @@ class GameService:
 
 class GameProtocol(Protocol):
     def drill(self, handle: str, row: int, col: int) -> dict: ...
-    def end_turn(self, handle: str) -> tuple[None, list[Any]]: ...
+    def end_turn(self, handle: str) -> tuple[None, list[dict[str, Any]]]: ...
     def erect(self, handle: str, row: int, col: int) -> dict: ...
     def get_client_info(self, client_handle: str) -> dict: ...
     def get_player_field(self, client_handle: str) -> dict: ...
@@ -500,7 +501,7 @@ class _XmlRpcGame:
     def drill(self, handle: str, row: int, col: int) -> dict:
         return cast(dict, self._p.drill(handle, row, col))
 
-    def end_turn(self, handle: str) -> tuple[None, list[Any]]:
+    def end_turn(self, handle: str) -> tuple[None, list[dict[str, Any]]]:
         _u, well_updates = self._p.endTurn(handle)
         return None, list(well_updates)
 

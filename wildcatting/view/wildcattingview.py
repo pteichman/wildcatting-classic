@@ -1,11 +1,17 @@
+from __future__ import annotations
+
 import curses
 import logging
 import random
 import textwrap
 from dataclasses import dataclass
-from typing import Any
+from typing import TYPE_CHECKING
 
 from wildcatting.colors import Colors
+from wildcatting.model import Setting, Site
+
+if TYPE_CHECKING:
+    from wildcatting.client import Wildcatting
 
 from .oilfieldview import (
     OilFieldCursesView,
@@ -34,7 +40,7 @@ def _drill_key(c: int) -> DrillInput:
 class DrillView(View):
     log = logging.getLogger("Wildcatting")
 
-    def __init__(self, stdscr: Any, site: Any, setting: Any) -> None:
+    def __init__(self, stdscr: curses.window, site: Site, setting: Setting) -> None:
         self._stdscr = stdscr
         self._site = site
         self._setting = setting
@@ -46,6 +52,7 @@ class DrillView(View):
     def display(self) -> None:
         self._stdscr.clear()
 
+        assert self._site.well is not None
         drill_depth = self._site.well.drill_depth * self._setting.drill_increment
         drill_cost = self._site.drill_cost
         cost = drill_depth * drill_cost
@@ -118,7 +125,9 @@ class WildcattingView(View):
     TOP_PADDING = TOP_BORDER * 2 + 3
     SIDE_PADDING = SIDE_BORDER * 2 + 2
 
-    def __init__(self, stdscr: Any, wildcatting_: Any, setting: Any) -> None:
+    def __init__(
+        self, stdscr: curses.window, wildcatting_: Wildcatting, setting: Setting
+    ) -> None:
         View.__init__(self, stdscr)
 
         self._wildcatting = wildcatting_
@@ -129,12 +138,15 @@ class WildcattingView(View):
         bww = w - (self.SIDE_BORDER * 2)
 
         field = wildcatting_.player_field
+        assert field is not None
         rows, cols = field.height, field.width
         self._border_win = stdscr.derwin(bwh, bww, 1, 3)
         self._field_win = stdscr.derwin(rows, cols, 2, 4)
         bkgd = Colors.get(curses.COLOR_WHITE, curses.COLOR_BLACK)
         self._field_win.bkgdset(" ", bkgd)
         prob_view = OilFieldProbabilityView(self._field_win, wildcatting_)
+        assert setting.min_drill_cost is not None
+        assert setting.max_drill_cost is not None
         drill_cost_view = OilFieldDrillCostView(
             self._field_win,
             wildcatting_,
@@ -261,6 +273,7 @@ class WildcattingView(View):
 
         black_on_green = Colors.get(curses.COLOR_BLACK, curses.COLOR_GREEN)
 
+        assert self._wildcatting.players_turn is not None
         go = f"GO {self._wildcatting.players_turn.upper()}!"
         if self._mac:
             bkgd, text = self.get_green_fgbg()

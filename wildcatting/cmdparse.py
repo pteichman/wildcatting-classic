@@ -1,6 +1,6 @@
 import sys
 from argparse import ArgumentParser, Namespace
-from typing import Any
+from typing import Any, TextIO
 
 
 class Command(ArgumentParser):
@@ -69,7 +69,7 @@ class CommandParser(ArgumentParser):
 
         return cmd, options, remaining
 
-    def print_unknown_command(self, cmdname: str, file: Any = None) -> None:
+    def print_unknown_command(self, cmdname: str, file: TextIO | None = None) -> None:
         if file is None:
             file = sys.stdout
         file.write(f"Unknown command '{cmdname}'\n")

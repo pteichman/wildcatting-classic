@@ -1,8 +1,8 @@
 import abc
 import logging
-from typing import Any
 
 from wildcatting.model import Setting
+from wildcatting.oilprices import OilPrices
 from wildcatting.welltheory import SimpleWellTheory
 
 
@@ -82,7 +82,7 @@ class Theme(abc.ABC):
     def get_max_output(self) -> int: ...
 
     @abc.abstractmethod
-    def get_oil_prices(self) -> Any: ...
+    def get_oil_prices(self) -> OilPrices: ...
 
     ## oil probability distribution
     @abc.abstractmethod

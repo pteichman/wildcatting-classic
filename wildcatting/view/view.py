@@ -1,7 +1,6 @@
 import curses
 import logging
 import platform
-from typing import Any
 
 from wildcatting.colors import Colors
 
@@ -9,7 +8,7 @@ from wildcatting.colors import Colors
 class View:
     log = logging.getLogger("Wildcatting")
 
-    def __init__(self, stdscr: Any) -> None:
+    def __init__(self, stdscr: curses.window) -> None:
         self._stdscr = stdscr
         self._mac: bool = platform.system() == "Darwin"
 
@@ -18,7 +17,7 @@ class View:
         return color, color
 
     def add_centered(
-        self, win: Any, row: int, text: str, color: int | None = None
+        self, win: curses.window, row: int, text: str, color: int | None = None
     ) -> None:
         (h, w) = win.getmaxyx()
 
@@ -29,7 +28,12 @@ class View:
             win.addstr(row, col, text, color)
 
     def add_left(
-        self, win: Any, row: int, text: str, color: int | None = None, pad: int = 0
+        self,
+        win: curses.window,
+        row: int,
+        text: str,
+        color: int | None = None,
+        pad: int = 0,
     ) -> None:
         (h, w) = win.getmaxyx()
 
@@ -40,7 +44,12 @@ class View:
             win.addstr(row, col, text, color)
 
     def add_right(
-        self, win: Any, row: int, text: str, color: int | None = None, pad: int = 0
+        self,
+        win: curses.window,
+        row: int,
+        text: str,
+        color: int | None = None,
+        pad: int = 0,
     ) -> None:
         (h, w) = win.getmaxyx()
 
@@ -50,11 +59,13 @@ class View:
         else:
             win.addstr(row, col, text, color)
 
-    def set_fgbg(self, win: Any, fg: int, bg: int) -> None:
+    def set_fgbg(self, win: curses.window, fg: int, bg: int) -> None:
         win.bkgdset(" ", fg)
         win.clear()
 
-    def putch(self, win: Any, y: int, x: int, ch: int, attr: int | None = None) -> None:
+    def putch(
+        self, win: curses.window, y: int, x: int, ch: int, attr: int | None = None
+    ) -> None:
         # workaround so we can write things to the bottom corner
         # or otherwise with the same method call
         (h, w) = win.getmaxyx()

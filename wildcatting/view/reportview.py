@@ -1,7 +1,9 @@
 import curses
 import logging
 from dataclasses import dataclass
-from typing import Any
+
+from wildcatting.model import OilField, Site, WeeklySummary
+from wildcatting.report import WeeklyReport
 
 from .oilfieldview import ProbabilityColorChooser
 from .view import View
@@ -53,7 +55,7 @@ def _report_action(c: int, cursor_turn: int | None, report_dict: dict) -> Report
 
 
 class WeeklySummaryView(View):
-    def __init__(self, stdscr: Any, report: Any) -> None:
+    def __init__(self, stdscr: curses.window, report: WeeklySummary) -> None:
         View.__init__(self, stdscr)
 
         self._report = report
@@ -103,7 +105,9 @@ class WeeklySummaryView(View):
 class WeeklyReportView(View):
     log = logging.getLogger("Wildcatting")
 
-    def __init__(self, stdscr: Any, report: Any, field: Any) -> None:
+    def __init__(
+        self, stdscr: curses.window, report: WeeklyReport, field: OilField
+    ) -> None:
         View.__init__(self, stdscr)
 
         self._report = report
@@ -115,10 +119,10 @@ class WeeklyReportView(View):
 
         self._cursor = _ReportCursor(page=(report.week - 1) // 13)
 
-    def set_report(self, report: Any) -> None:
+    def set_report(self, report: WeeklyReport) -> None:
         self._report = report
 
-    def set_field(self, field: Any) -> None:
+    def set_field(self, field: OilField) -> None:
         self._field = field
 
     def display(self) -> None:
@@ -144,6 +148,7 @@ class WeeklyReportView(View):
                 row = row_dict["row"]
                 col = row_dict["col"]
                 site = self._field.get_site(row, col)
+                assert site.well is not None
                 symbol = " " if site.well.sold else self._report.symbol
                 self._win.addstr(
                     turn - (page * 13) + 1,
@@ -210,7 +215,7 @@ class WeeklyReportView(View):
 
 
 class SurveyorsReportView(View):
-    def __init__(self, stdscr: Any, site: Any, surveyed: bool) -> None:
+    def __init__(self, stdscr: curses.window, site: Site, surveyed: bool) -> None:
         View.__init__(self, stdscr)
 
         self._site = site
@@ -253,7 +258,7 @@ class SurveyorsReportView(View):
         (wh, ww) = self._win.getmaxyx()
         done = False
         cur = "n"
-        self._win.keypad(1)
+        self._win.keypad(True)
         self._win.move(15, 30)
         self._win.refresh()
         curses.mousemask(curses.BUTTON1_CLICKED)
@@ -301,7 +306,7 @@ class PregameReportView(View):
     log = logging.getLogger("Wildcatting")
 
     def __init__(
-        self, stdscr: Any, game_id: str, is_master: bool, players: list[str]
+        self, stdscr: curses.window, game_id: str, is_master: bool, players: list[str]
     ) -> None:
         View.__init__(self, stdscr)
 

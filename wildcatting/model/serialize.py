@@ -1,9 +1,5 @@
-from pprint import PrettyPrinter
+from pprint import pformat
 from typing import Any, Self
-
-# pretty-printer for getting a single line (but sorted nicely)
-# representation of objects
-_pp = PrettyPrinter(width=100000)
 
 
 class Serializable:
@@ -17,7 +13,9 @@ class Serializable:
 
     def __repr__(self) -> str:
         cls = self.__class__.__name__
-        return f"<{cls} instance at 0x{id(self):x}> {_pp.pformat(self.__dict__)}"
+        return (
+            f"<{cls} instance at 0x{id(self):x}> {pformat(self.__dict__, width=100000)}"
+        )
 
     def serialize(self) -> dict[str, Any]:
         return self.__serialize_instance(self)

@@ -1,13 +1,14 @@
 import logging
 import os
 import sys
+import textwrap
 from argparse import Namespace
 from xmlrpc.client import ServerProxy
 
 from . import version
 from .client import Client
 from .cmdparse import Command
-from .server import ServerProtocol, XmlRpcServer
+from .server import ServerProtocol, StandaloneServer, XmlRpcServer
 from .util import start_logger
 
 
@@ -39,8 +40,6 @@ class ClientCommand(Command):
 
         url = f"http://{options.host}:{options.port}/"
         if options.no_network:
-            from .server import StandaloneServer
-
             s: ServerProtocol = StandaloneServer()
         else:
             s = XmlRpcServer(ServerProxy(url, allow_none=True))
@@ -53,8 +52,6 @@ class ClientCommand(Command):
             sys.exit(0)
 
         if server_version != version.VERSION_STRING:
-            import textwrap
-
             cols = int(os.getenv("COLUMNS", 80)) - 5
             print(
                 textwrap.fill(

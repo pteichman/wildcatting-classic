@@ -1,14 +1,7 @@
 import logging
 import sys
 
-from wildcatting import (
-    ClientCommand,
-    PingCommand,
-    ScreensaverCommand,
-    ServerCommand,
-    ThemeInfoCommand,
-    version,
-)
+from wildcatting import commands, version
 from wildcatting.cmdparse import CommandParser
 
 
@@ -17,11 +10,11 @@ def main() -> None:
     parser.add_argument("--debug", action="store_true", help="enable debugging output")
     parser.add_argument("--version", action="version", version=version.VERSION_STRING)
 
-    parser.add_command(ClientCommand.ClientCommand())
-    parser.add_command(ScreensaverCommand.ScreensaverCommand())
-    parser.add_command(ServerCommand.ServerCommand())
-    parser.add_command(PingCommand.ClientCommand())
-    parser.add_command(ThemeInfoCommand.ThemeInfo())
+    parser.add_command(commands.ClientCommand())
+    parser.add_command(commands.ScreensaverCommand())
+    parser.add_command(commands.ServerCommand())
+    parser.add_command(commands.PingCommand())
+    parser.add_command(commands.ThemeInfoCommand())
 
     (command, options, args) = parser.parse_args()
 

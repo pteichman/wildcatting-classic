@@ -196,9 +196,7 @@ class TestReportAction:
         )
 
     def testSpaceOnSurveyedTurnSells(self) -> None:
-        assert _report_action(ord(" "), 3, self.report_dict) == ReportInput(
-            sell=(2, 4)
-        )
+        assert _report_action(ord(" "), 3, self.report_dict) == ReportInput(sell=(2, 4))
 
     def testSpaceOnUnsurveyedTurnDoesNothing(self) -> None:
         assert _report_action(ord(" "), 4, self.report_dict) == ReportInput()

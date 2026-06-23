@@ -3,6 +3,7 @@ import logging
 import math
 import random
 import secrets
+from typing import Protocol
 
 from wildcatting.exceptions import WildcattingException
 from wildcatting.model import OilField, Player, Site, WeeklySummary
@@ -12,12 +13,11 @@ from .reservoir import Reservoir
 from .theme import DefaultTheme, Theme
 
 
-class Filler(abc.ABC):
-    @abc.abstractmethod
+class Filler(Protocol):
     def fill(self, field: OilField) -> None: ...
 
 
-class PeakedFiller(Filler):
+class PeakedFiller(abc.ABC):
     def fill(self, field: OilField) -> None:
         peaks = self._generate_peaks(field)
         self._fill_model(field, peaks)
@@ -148,7 +148,7 @@ class PotentialOilDepthFiller(PeakedFiller):
         return 1
 
 
-class ReservoirFiller(Filler):
+class ReservoirFiller:
     log = logging.getLogger("Wildcatting")
 
     def __init__(self, theme: Theme) -> None:
@@ -253,11 +253,15 @@ class Game:
         self._prices = theme.get_oil_prices()
 
         self._oil_field = OilField(width, height)
-        OilFiller(theme).fill(self._oil_field)
-        PotentialOilDepthFiller(theme).fill(self._oil_field)
-        ReservoirFiller(theme).fill(self._oil_field)
-        DrillCostFiller(theme).fill(self._oil_field)
-        TaxFiller(theme).fill(self._oil_field)
+        fillers: list[Filler] = [
+            OilFiller(theme),
+            PotentialOilDepthFiller(theme),
+            ReservoirFiller(theme),
+            DrillCostFiller(theme),
+            TaxFiller(theme),
+        ]
+        for filler in fillers:
+            filler.fill(self._oil_field)
 
     def _new_client_id(self) -> str:
         client_id = self._generate_secret()
@@ -346,10 +350,10 @@ class Game:
         site = self._oil_field.get_site(row, col)
         well = site.well
         assert well is not None
-        foundOil, cost = well.drill(site, self._theme.get_drill_increment())
-        well.player.expense(cost)
+        result = well.drill(site, self._theme.get_drill_increment())
+        well.player.expense(result.cost)
 
-        if foundOil:
+        if result.found_oil:
             site.oil_depth = well.drill_depth
             theory = self._theme.get_well_theory()
             reservoir = site.reservoir
@@ -357,7 +361,7 @@ class Game:
             output = theory.start(well, reservoir)
             well.output = output
 
-        return foundOil
+        return result.found_oil
 
     def end_turn(self, player: Player) -> None:
         self._week.end_turn(player)

@@ -1,7 +1,7 @@
 import curses
 import logging
 import time
-from typing import Any
+from typing import Any, NamedTuple
 
 from wildcatting.model import (
     ClientInfo,
@@ -27,6 +27,11 @@ from .view import (
 )
 
 
+class UpdateResult(NamedTuple):
+    updated: bool
+    week_updated: bool
+
+
 class Wildcatting:
     def __init__(self) -> None:
         self.player_field: OilField | None = None
@@ -40,7 +45,7 @@ class Wildcatting:
         assert self.player_field is not None
         self.player_field.set_site(site.row, site.col, site)
 
-    def update(self, update: Update) -> tuple[bool, bool]:
+    def update(self, update: Update) -> UpdateResult:
         game_finished = update.game_finished
         week = update.week
         players_turn = update.players_turn
@@ -66,7 +71,7 @@ class Wildcatting:
         self.game_finished = game_finished
         self.oil_price = oil_price
 
-        return updated, week_updated
+        return UpdateResult(updated, week_updated)
 
 
 class Client:
@@ -289,7 +294,7 @@ class Client:
         while not weekly_summary_view.input():
             pass
 
-    def _update_wildcatting(self) -> tuple[bool, bool]:
+    def _update_wildcatting(self) -> UpdateResult:
         assert self._client_info is not None
         update = Update.deserialize(
             self._server.game.get_update(self._client_info.client_handle)

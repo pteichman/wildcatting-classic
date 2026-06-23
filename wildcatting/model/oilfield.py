@@ -1,4 +1,4 @@
-from typing import Protocol
+from typing import NamedTuple, Protocol
 
 from wildcatting.reservoir import Reservoir
 
@@ -6,10 +6,20 @@ from .player import Player
 from .serialize import Serializable
 
 
+class DrillResult(NamedTuple):
+    found_oil: bool
+    cost: int
+
+
+class TickResult(NamedTuple):
+    output: float
+    capacity: int
+
+
 class WellTheory(Protocol):
     def tick(
         self, well: "Well", reservoir: Reservoir, current_week: int
-    ) -> tuple[float, int]: ...
+    ) -> TickResult: ...
 
     def start(self, well: "Well", reservoir: Reservoir) -> float: ...
 
@@ -169,7 +179,7 @@ class Well(Serializable):
         self.profit_and_loss += price
         return price
 
-    def drill(self, site: Site, drill_increment: int) -> tuple[bool, int]:
+    def drill(self, site: Site, drill_increment: int) -> DrillResult:
         assert 0 <= self.drill_depth <= 10
 
         oil_depth: int | None = None
@@ -187,7 +197,7 @@ class Well(Serializable):
         self.initial_cost += cost
         self.profit_and_loss -= cost
 
-        return self.drill_depth == oil_depth, cost
+        return DrillResult(self.drill_depth == oil_depth, cost)
 
     @staticmethod
     def _compute_weekly_pnl(

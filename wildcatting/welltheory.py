@@ -1,6 +1,6 @@
 import math
 
-from wildcatting.model.oilfield import Well
+from wildcatting.model.oilfield import TickResult, Well
 from wildcatting.reservoir import Reservoir
 
 
@@ -32,9 +32,7 @@ class SimpleWellTheory:
     def start(self, well: Well, reservoir: Reservoir) -> float:
         return self._get_output(well, reservoir)
 
-    def tick(
-        self, well: Well, reservoir: Reservoir, current_week: int
-    ) -> tuple[float, int]:
+    def tick(self, well: Well, reservoir: Reservoir, current_week: int) -> TickResult:
         weeks_operational = current_week - well.week
 
         new_capacity = well.capacity
@@ -43,4 +41,4 @@ class SimpleWellTheory:
             new_capacity += 1
 
         output = self._get_output(well, reservoir, new_capacity)
-        return output, new_capacity
+        return TickResult(output, new_capacity)

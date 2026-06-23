@@ -2,10 +2,16 @@ from .clientinfo import (
     ClientInfo as ClientInfo,
 )
 from .oilfield import (
+    DrillResult as DrillResult,
+)
+from .oilfield import (
     OilField as OilField,
 )
 from .oilfield import (
     Site as Site,
+)
+from .oilfield import (
+    TickResult as TickResult,
 )
 from .oilfield import (
     Well as Well,

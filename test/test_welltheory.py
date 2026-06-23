@@ -18,15 +18,15 @@ class TestSimpleWellTheory:
         theory = SimpleWellTheory(66)
         initial_capacity = well.capacity
         for current_week in (2, 3, 4):
-            _, new_capacity = theory.tick(well, reservoir, current_week)
-            assert new_capacity == initial_capacity + 1
+            result = theory.tick(well, reservoir, current_week)
+            assert result.capacity == initial_capacity + 1
 
     def test_capacity_stable_after_ramp_up(self) -> None:
         # weeks_operational=4 (current_week=5, well.week=1) → no increment
         well, reservoir = self._make_setup()
         theory = SimpleWellTheory(66)
-        _, new_capacity = theory.tick(well, reservoir, 5)
-        assert new_capacity == well.capacity
+        result = theory.tick(well, reservoir, 5)
+        assert result.capacity == well.capacity
 
     def test_output_positive_with_reserves(self) -> None:
         well, reservoir = self._make_setup()

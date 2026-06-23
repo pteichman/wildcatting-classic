@@ -16,8 +16,8 @@ class TestDrilling:
         drill_increment = 10
         site, well, player = self._make_well_on_site(drill_cost)
 
-        _, cost = well.drill(site, drill_increment)
-        player.expense(cost)
+        result = well.drill(site, drill_increment)
+        player.expense(result.cost)
 
         assert well.initial_cost == drill_cost * drill_increment
         assert player.profit_and_loss == -(drill_cost * drill_increment)
@@ -41,12 +41,12 @@ class TestDrilling:
         site.well = well
 
         for _ in range(oil_depth - 1):
-            found, _ = well.drill(site, 10)
-            assert not found
+            result = well.drill(site, 10)
+            assert not result.found_oil
             assert site.oil_depth is None
 
-        found, _ = well.drill(site, 10)
-        assert found
+        result = well.drill(site, 10)
+        assert result.found_oil
         site.oil_depth = well.drill_depth
         assert site.oil_depth == oil_depth
         assert well.drill_depth == oil_depth
@@ -67,8 +67,8 @@ class TestDrilling:
     def test_sell_credits_player_half_initial_cost(self) -> None:
         site, well, player = self._make_well_on_site(drill_cost=10)
 
-        _, cost = well.drill(site, 10)
-        player.expense(cost)
+        result = well.drill(site, 10)
+        player.expense(result.cost)
         pnl_after_drill = player.profit_and_loss
 
         initial_cost = well.initial_cost

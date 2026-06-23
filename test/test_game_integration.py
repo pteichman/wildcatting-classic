@@ -117,12 +117,12 @@ class TestOilDiscovery:
         assert oil_depth is not None
 
         for _ in range(oil_depth - 1):
-            found, _ = well.drill(oil_site, theme.get_drill_increment())
-            assert not found
+            result = well.drill(oil_site, theme.get_drill_increment())
+            assert not result.found_oil
             assert oil_site.oil_depth is None
 
-        found, _ = well.drill(oil_site, theme.get_drill_increment())
-        assert found
+        result = well.drill(oil_site, theme.get_drill_increment())
+        assert result.found_oil
         oil_site.oil_depth = well.drill_depth
         assert oil_site.oil_depth == oil_depth
         assert well.drill_depth == oil_depth

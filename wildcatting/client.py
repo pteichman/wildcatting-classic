@@ -15,16 +15,14 @@ from wildcatting.server import ServerProtocol
 
 from .report import WeeklyReport
 from .state import UpdateResult, Wildcatting
-from .view import (
-    DrillView,
-    PlayerCountView,
-    PlayerNamesView,
+from .view.playerview import PlayerCountView, PlayerNamesView
+from .view.reportview import (
     PregameReportView,
     SurveyorsReportView,
     WeeklyReportView,
     WeeklySummaryView,
-    WildcattingView,
 )
+from .view.wildcattingview import DrillView, WildcattingView
 
 
 class Client:

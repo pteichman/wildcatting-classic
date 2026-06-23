@@ -6,12 +6,14 @@ from argparse import Namespace
 from wildcatting.cmdparse import Command
 from wildcatting.game import Game
 from wildcatting.state import Wildcatting
-from wildcatting.view import (
+from wildcatting.view.oilfieldview import (
     FadeInOilFieldCursesAnimator,
+    OilFieldTextView,
+)
+from wildcatting.view.wildcattingview import (
     OilFieldCursesView,
     OilFieldDrillCostView,
     OilFieldProbabilityView,
-    OilFieldTextView,
 )
 
 

@@ -1,11 +1,17 @@
-from typing import TYPE_CHECKING
+from typing import Protocol
+
+from wildcatting.reservoir import Reservoir
 
 from .player import Player
 from .serialize import Serializable
 
-if TYPE_CHECKING:
-    from wildcatting.reservoir import Reservoir
-    from wildcatting.welltheory import SimpleWellTheory
+
+class WellTheory(Protocol):
+    def tick(
+        self, well: "Well", reservoir: Reservoir, current_week: int
+    ) -> tuple[float, int]: ...
+
+    def start(self, well: "Well", reservoir: Reservoir) -> float: ...
 
 
 class OilField(Serializable):
@@ -18,7 +24,7 @@ class OilField(Serializable):
         ]
 
     def tick(
-        self, oil_price: float, well_theory: "SimpleWellTheory", current_week: int
+        self, oil_price: float, well_theory: WellTheory, current_week: int
     ) -> None:
         for row in self._rows:
             for site in row:
@@ -106,11 +112,11 @@ class Site(Serializable):
         self._tax = tax
 
     @property
-    def reservoir(self) -> "Reservoir | None":
+    def reservoir(self) -> Reservoir | None:
         return self.__reservoir
 
     @reservoir.setter
-    def reservoir(self, reservoir: "Reservoir | None") -> None:
+    def reservoir(self, reservoir: Reservoir | None) -> None:
         self.__reservoir = reservoir
 
     @property
@@ -122,7 +128,7 @@ class Site(Serializable):
         self.__oil_flag = oil_flag
 
     def tick(
-        self, oil_price: float, well_theory: "SimpleWellTheory", current_week: int
+        self, oil_price: float, well_theory: WellTheory, current_week: int
     ) -> None:
         if self._well is not None:
             reservoir = self.__reservoir

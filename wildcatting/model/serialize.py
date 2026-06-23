@@ -1,8 +1,6 @@
 from pprint import PrettyPrinter
 from typing import Any, Self
 
-import wildcatting.model
-
 # pretty-printer for getting a single line (but sorted nicely)
 # representation of objects
 _pp = PrettyPrinter(width=100000)
@@ -11,6 +9,11 @@ _pp = PrettyPrinter(width=100000)
 class Serializable:
     CLASS_KEY = "wildcatting.model.Serializable.class"
     STATE_KEY = "wildcatting.model.Serializable.state"
+    _registry: "dict[str, type[Serializable]]" = {}
+
+    def __init_subclass__(cls, **kwargs: Any) -> None:
+        super().__init_subclass__(**kwargs)
+        Serializable._registry[cls.__name__] = cls
 
     def __repr__(self) -> str:
         cls = self.__class__.__name__
@@ -38,8 +41,7 @@ class Serializable:
     def __deserialize_subinstance(self, state: Any) -> Any:
         if isinstance(state, dict) and Serializable.CLASS_KEY in state:
             clsname = state[Serializable.CLASS_KEY]
-
-            cls = getattr(wildcatting.model, clsname)
+            cls = Serializable._registry[clsname]
             return cls.deserialize(state)
 
         return self.__deserialize_item(state)

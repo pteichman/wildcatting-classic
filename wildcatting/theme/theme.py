@@ -1,11 +1,9 @@
 import abc
 import logging
-from typing import TYPE_CHECKING, Any
+from typing import Any
 
 import wildcatting.model
-
-if TYPE_CHECKING:
-    from wildcatting.welltheory import SimpleWellTheory
+from wildcatting.welltheory import SimpleWellTheory
 
 
 class Theme(abc.ABC):
@@ -59,7 +57,7 @@ class Theme(abc.ABC):
 
     ## extraction
     @abc.abstractmethod
-    def get_well_theory(self) -> "SimpleWellTheory": ...
+    def get_well_theory(self) -> SimpleWellTheory: ...
 
     @abc.abstractmethod
     def get_mean_site_reserves(self) -> int: ...

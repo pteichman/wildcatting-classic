@@ -1,13 +1,11 @@
-from typing import TYPE_CHECKING, Any
+from typing import Any
 
+from .player import Player
 from .serialize import Serializable
-
-if TYPE_CHECKING:
-    from .player import Player
 
 
 class WeeklySummary(Serializable):
-    def __init__(self, player_order: "list[Player]", week: int) -> None:
+    def __init__(self, player_order: list[Player], week: int) -> None:
         self._player_order = player_order
         self.week = week
 

@@ -1,9 +1,5 @@
-from typing import TYPE_CHECKING
-
+from .oilfield import Site
 from .serialize import Serializable
-
-if TYPE_CHECKING:
-    from .oilfield import Site
 
 
 class Update(Serializable):
@@ -14,7 +10,7 @@ class Update(Serializable):
         players_turn: str | None,
         pending_players: list[str],
         game_finished: bool,
-        sites: "list[Site]",
+        sites: list[Site],
     ) -> None:
         self.week = week
         self.oil_price = oil_price

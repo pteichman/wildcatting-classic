@@ -4,8 +4,8 @@ import textwrap
 from argparse import Namespace
 from typing import Any
 
-import wildcatting.table
 import wildcatting.theme
+from wildcatting.table import format_table
 
 from .cmdparse import Command
 
@@ -109,4 +109,4 @@ class ThemeInfo(Command):
                 )
             )
 
-        print(wildcatting.table.format_table(cols, rows))
+        print(format_table(cols, rows))

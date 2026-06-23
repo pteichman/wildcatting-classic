@@ -3,18 +3,17 @@ import curses
 import random
 from typing import Any
 
-import wildcatting.game
-import wildcatting.model
 from wildcatting.colors import Colors
+from wildcatting.model import OilField, Site
 
 from .view import View
 
 
 class OilFieldTextView(View):
-    def __init__(self, model: wildcatting.model.OilField) -> None:
+    def __init__(self, model: OilField) -> None:
         self._model = model
 
-    def bracket(self, site: wildcatting.model.Site) -> int:
+    def bracket(self, site: Site) -> int:
         p = site.probability
         if p > 95:
             b = 0
@@ -30,7 +29,7 @@ class OilFieldTextView(View):
             b = 5
         return b
 
-    def to_ascii(self, site: wildcatting.model.Site) -> str:
+    def to_ascii(self, site: Site) -> str:
         b = self.bracket(site)
         return ".x%*&#"[b]
 
@@ -42,7 +41,7 @@ class OilFieldTextView(View):
                 line += self.to_ascii(model.get_site(row, col))
             print(line)
 
-    def to_ansi(self, site: wildcatting.model.Site) -> str:
+    def to_ansi(self, site: Site) -> str:
         b = self.bracket(site) % 9
         ansi = chr(27) + "[" + str(32 + b) + "m" + "O"
         return ansi
@@ -69,18 +68,18 @@ class ColorChooser(abc.ABC):
         ]
 
     @abc.abstractmethod
-    def _choose_color(self, site: wildcatting.model.Site, colors: list[int]) -> int: ...
+    def _choose_color(self, site: Site, colors: list[int]) -> int: ...
 
     def get_colors(self) -> list[int]:
         return self._colors[:]
 
-    def site_color(self, site: wildcatting.model.Site | None) -> int:
+    def site_color(self, site: Site | None) -> int:
         if site is None:
             return Colors.get(curses.COLOR_WHITE, curses.COLOR_BLACK)
 
         return self._choose_color(site, self._colors)
 
-    def blank_color(self, site: wildcatting.model.Site | None) -> int:
+    def blank_color(self, site: Site | None) -> int:
         if site is None:
             return Colors.get(curses.COLOR_WHITE, curses.COLOR_BLACK)
 
@@ -88,7 +87,7 @@ class ColorChooser(abc.ABC):
 
 
 class ProbabilityColorChooser(ColorChooser):
-    def _choose_color(self, site: wildcatting.model.Site, colors: list[int]) -> int:
+    def _choose_color(self, site: Site, colors: list[int]) -> int:
         p = site.probability
         if p == 100:
             return colors[-1]
@@ -103,7 +102,7 @@ class DrillCostColorChooser(ColorChooser):
         self._min_drill_cost = min_drill_cost
         self._max_drill_cost = max_drill_cost
 
-    def _choose_color(self, site: wildcatting.model.Site, colors: list[int]) -> int:
+    def _choose_color(self, site: Site, colors: list[int]) -> int:
         drill_cost = site.drill_cost * 1.0
         cost_range = self._max_drill_cost - self._min_drill_cost
         idx = int(drill_cost / cost_range * (len(colors) - 1))
@@ -112,7 +111,7 @@ class DrillCostColorChooser(ColorChooser):
 
 
 class DepthColorChooser(ColorChooser):
-    def _choose_color(self, site: wildcatting.model.Site, colors: list[int]) -> int:
+    def _choose_color(self, site: Site, colors: list[int]) -> int:
         oil_depth = site.oil_depth
         if oil_depth is None:
             color = Colors.get(curses.COLOR_WHITE, curses.COLOR_BLACK)
@@ -125,7 +124,7 @@ class DepthColorChooser(ColorChooser):
 
 
 class FadeInOilFieldCursesAnimator:
-    def __init__(self, field: wildcatting.model.OilField) -> None:
+    def __init__(self, field: OilField) -> None:
         self._field = field
 
         self._coords: list[tuple[int, int]] = [
@@ -167,7 +166,7 @@ class OilFieldCursesView(View, abc.ABC):
 
         self._win.refresh()
 
-    def display_site(self, site: wildcatting.model.Site) -> None:
+    def display_site(self, site: Site) -> None:
         well = site.well
         if well is None:
             # work around an MacOS X terminal problem with
@@ -219,7 +218,7 @@ class OilFieldDepthView(OilFieldCursesView):
     def get_key_label(self) -> str:
         return "OIL DEPTH"
 
-    def display_site(self, site: wildcatting.model.Site) -> None:
+    def display_site(self, site: Site) -> None:
         well = site.well
         if well is None:
             # show a "." for surveyed sites

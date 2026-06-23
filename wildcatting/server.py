@@ -6,10 +6,18 @@ from typing import Any, Protocol, cast
 from xmlrpc.client import ServerProxy
 from xmlrpc.server import SimpleXMLRPCServer
 
-import wildcatting.model
-import wildcatting.turn
 from wildcatting.exceptions import WildcattingException
 from wildcatting.game import Game
+from wildcatting.model import (
+    ClientInfo,
+    OilField,
+    Player,
+    Site,
+    Update,
+    WeeklySummary,
+    Well,
+)
+from wildcatting.turn import Turn
 
 from . import version
 from .theme import DefaultTheme
@@ -83,7 +91,7 @@ class GameService:
 
         return game
 
-    def _read_handle(self, handle: str) -> tuple[Game, wildcatting.model.Player]:
+    def _read_handle(self, handle: str) -> tuple[Game, Player]:
         if not isinstance(handle, str):
             raise WildcattingException("Invalid handle")
 
@@ -106,9 +114,7 @@ class GameService:
 
         return (game, client_id)
 
-    def _ensure_survey_turn(
-        self, game: Game, player: wildcatting.model.Player
-    ) -> wildcatting.turn.Turn:
+    def _ensure_survey_turn(self, game: Game, player: Player) -> Turn:
         if game.finished:
             raise WildcattingException("Game is over")
 
@@ -119,9 +125,7 @@ class GameService:
 
         return week.get_player_turn(player)
 
-    def _ensure_turn(
-        self, game: Game, player: wildcatting.model.Player
-    ) -> wildcatting.turn.Turn:
+    def _ensure_turn(self, game: Game, player: Player) -> Turn:
         if game.finished:
             raise WildcattingException("Game is over")
 
@@ -132,9 +136,7 @@ class GameService:
 
         return week.get_player_turn(player)
 
-    def _encode_game_handle(
-        self, game_id: str, player: wildcatting.model.Player, secret: str
-    ) -> str:
+    def _encode_game_handle(self, game_id: str, player: Player, secret: str) -> str:
         handle = GameService.HANDLE_SEP.join((game_id, player.username, secret))
         return base64.b64encode(handle.encode("utf-8")).decode("utf-8")
 
@@ -202,7 +204,7 @@ class GameService:
         game_id, client_id = self._decode_client_handle(client_handle)
         game = self._games[game_id]
 
-        player = wildcatting.model.Player(username, symbol)
+        player = Player(username, symbol)
         game.add_player(client_id, player)
 
         handle = self._encode_game_handle(game_id, player, player.secret)
@@ -218,7 +220,7 @@ class GameService:
         game_id, client_id = self._decode_client_handle(client_handle)
         game = self._games[game_id]
 
-        client_info = wildcatting.model.ClientInfo(client_handle, game_id)
+        client_info = ClientInfo(client_handle, game_id)
 
         for player in game.get_client_players(client_id):
             handle = self._encode_game_handle(game_id, player, player.secret)
@@ -257,7 +259,7 @@ class GameService:
         field = game.oil_field
 
         site = field.get_site(row, col)
-        well = wildcatting.model.Well(week=game.week.week_num, player=player)
+        well = Well(week=game.week.week_num, player=player)
         site.well = well
         game.drill(row, col)
         turn.drilled_site = site
@@ -367,7 +369,7 @@ class GameService:
         game_finished = game.finished
         sites = game.pop_updated_sites(client_id)
 
-        update = wildcatting.model.Update(
+        update = Update(
             week, oil_price, players_turn, pending_players, game_finished, sites
         )
         return update.serialize()
@@ -394,9 +396,7 @@ class GameService:
 
         return well_updates
 
-    def _update_player_site(
-        self, player_site: wildcatting.model.Site, site: wildcatting.model.Site
-    ) -> None:
+    def _update_player_site(self, player_site: Site, site: Site) -> None:
         player_site.drill_cost = site.drill_cost
         player_site.probability = site.probability
         player_site.well = site.well
@@ -404,8 +404,8 @@ class GameService:
         player_site.surveyed = site.surveyed
         player_site.oil_depth = site.oil_depth
 
-    def _make_player_site(self, site: wildcatting.model.Site) -> wildcatting.model.Site:
-        player_site = wildcatting.model.Site(site.row, site.col)
+    def _make_player_site(self, site: Site) -> Site:
+        player_site = Site(site.row, site.col)
         if site.surveyed:
             self._update_player_site(player_site, site)
 
@@ -428,7 +428,7 @@ class GameService:
         field = game.oil_field
 
         width, height = field.width, field.height
-        player_field = wildcatting.model.OilField(width, height)
+        player_field = OilField(width, height)
 
         game_finished = game.finished
 
@@ -450,7 +450,7 @@ class GameService:
     def get_weekly_summary(self, client_handle: str) -> dict[str, Any]:
         game, client_id = self._read_client_handle(client_handle)
 
-        return wildcatting.model.WeeklySummary.serialize(game.weekly_summary)
+        return WeeklySummary.serialize(game.weekly_summary)
 
 
 class GameProtocol(Protocol):

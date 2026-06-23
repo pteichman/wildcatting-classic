@@ -2,7 +2,7 @@ import abc
 import logging
 from typing import Any
 
-import wildcatting.model
+from wildcatting.model import Setting
 from wildcatting.welltheory import SimpleWellTheory
 
 
@@ -26,8 +26,8 @@ class Theme(abc.ABC):
 
         self._facts = facts
 
-    def generate_setting(self) -> wildcatting.model.Setting:
-        setting = wildcatting.model.Setting()
+    def generate_setting(self) -> Setting:
+        setting = Setting()
         setting.location = self.get_location()
         setting.era = self.get_era()
         setting.price_format = self.get_price_format()

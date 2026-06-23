@@ -1,6 +1,5 @@
 import logging
 
-import wildcatting.turn
 from wildcatting.model import Player
 from wildcatting.turn import Turn
 
@@ -21,7 +20,7 @@ class Week:
         self._turns: dict[Player, Turn] = {}
 
         for player in self._players:
-            self._turns[player] = wildcatting.turn.Turn(week=week_num, player=player)
+            self._turns[player] = Turn(week=week_num, player=player)
 
     @property
     def survey_player(self) -> Player | None:

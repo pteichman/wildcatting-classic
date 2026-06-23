@@ -2,11 +2,17 @@ import logging
 import socket
 from argparse import Namespace
 
-import wildcatting.server
-import wildcatting.theme
-import wildcatting.util
-import wildcatting.version
 from wildcatting.cmdparse import Command
+from wildcatting.server import (
+    AdminService,
+    BaseService,
+    GameService,
+    SettingService,
+    TieredXMLRPCServer,
+)
+from wildcatting.theme import DefaultTheme
+from wildcatting.util import start_logger
+from wildcatting.version import VERSION_STRING
 
 
 class ServerCommand(Command):
@@ -18,23 +24,23 @@ class ServerCommand(Command):
         self.add_argument("-p", "--port", type=int, default=7777, help="server port")
 
     def run(self, options: Namespace, args: list[str]) -> None:
-        wildcatting.util.start_logger("server.log")
+        start_logger("server.log")
 
         host = options.host
 
-        s = wildcatting.server.TieredXMLRPCServer((host, options.port))
+        s = TieredXMLRPCServer((host, options.port))
 
-        theme = wildcatting.theme.DefaultTheme()
+        theme = DefaultTheme()
 
-        base = wildcatting.server.BaseService()
+        base = BaseService()
         s.register_function(base.echo)
         s.register_function(base.ping)
         s.register_function(base.version)
 
-        admin = wildcatting.server.AdminService()
+        admin = AdminService()
         s.register_function(admin.ping, "admin.ping")
 
-        game = wildcatting.server.GameService(theme)
+        game = GameService(theme)
         s.register_function(game.drill, "game.drill")
         s.register_function(game.end_turn, "game.endTurn")
         s.register_function(game.erect, "game.erect")
@@ -59,7 +65,7 @@ class ServerCommand(Command):
         s.register_function(game.start, "game.start")
         s.register_function(game.survey, "game.survey")
 
-        setting = wildcatting.server.SettingService(theme)
+        setting = SettingService(theme)
         s.register_function(setting.get_setting, "setting.getSetting")
         s.register_introspection_functions()
 
@@ -71,7 +77,7 @@ class ServerCommand(Command):
         url = f"http://{host}:{options.port}/"
 
         self.log.info("Wildcatting server start")
-        print(f"{wildcatting.version.VERSION_STRING} server listening at {url}")
+        print(f"{VERSION_STRING} server listening at {url}")
         try:
             s.serve_forever()
         finally:

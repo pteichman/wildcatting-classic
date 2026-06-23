@@ -1,10 +1,112 @@
-from wildcatting.oilprices import TrendingGaussianPrices
+import abc
+import logging
+
+from wildcatting.model import Setting
+from wildcatting.oilprices import OilPrices, TrendingGaussianPrices
 from wildcatting.welltheory import SimpleWellTheory
 
-from .theme import Theme
+
+class Theme(abc.ABC):
+    log = logging.getLogger("Wildcatting")
+
+    def __init__(self) -> None:
+        self._facts: list[str] = []
+
+    def _load_facts(self, raw_facts: str) -> None:
+        facts = []
+        for line in raw_facts.split("\n"):
+            fact = line.strip()
+            if fact == "":
+                continue
+
+            if fact[0] == "#":
+                continue
+
+            facts.append(fact)
+
+        self._facts = facts
+
+    def generate_setting(self) -> Setting:
+        setting = Setting()
+        setting.location = self.get_location()
+        setting.era = self.get_era()
+        setting.price_format = self.get_price_format()
+        setting.facts = self.facts
+        setting.min_drill_cost = self.get_min_drill_cost()
+        setting.max_drill_cost = self.get_max_drill_cost()
+        setting.drill_increment = self.get_drill_increment()
+        return setting
+
+    @property
+    def facts(self) -> list[str]:
+        return self._facts
+
+    ## literary setting
+    @abc.abstractmethod
+    def get_location(self) -> str: ...
+
+    @abc.abstractmethod
+    def get_era(self) -> str: ...
+
+    # units
+    @abc.abstractmethod
+    def get_drill_increment(self) -> int: ...
+
+    @abc.abstractmethod
+    def get_price_format(self) -> str: ...
+
+    ## extraction
+    @abc.abstractmethod
+    def get_well_theory(self) -> SimpleWellTheory: ...
+
+    @abc.abstractmethod
+    def get_mean_site_reserves(self) -> int: ...
+
+    ## economics
+    @abc.abstractmethod
+    def get_min_drill_cost(self) -> int: ...
+
+    @abc.abstractmethod
+    def get_max_drill_cost(self) -> int: ...
+
+    @abc.abstractmethod
+    def get_min_tax(self) -> int: ...
+
+    @abc.abstractmethod
+    def get_max_tax(self) -> int: ...
+
+    @abc.abstractmethod
+    def get_min_output(self) -> int: ...
+
+    @abc.abstractmethod
+    def get_max_output(self) -> int: ...
+
+    @abc.abstractmethod
+    def get_oil_prices(self) -> OilPrices: ...
+
+    ## oil probability distribution
+    @abc.abstractmethod
+    def get_oil_max_peaks(self) -> int: ...
+
+    @abc.abstractmethod
+    def get_oil_fudge(self) -> int: ...
+
+    @abc.abstractmethod
+    def get_oil_lesser_peak_factor(self) -> int: ...
+
+    ## drill cost distribution
+    @abc.abstractmethod
+    def get_drill_cost_max_peaks(self) -> int: ...
+
+    @abc.abstractmethod
+    def get_drill_cost_fudge(self) -> int: ...
+
+    @abc.abstractmethod
+    def get_drill_cost_lesser_peak_factor(self) -> int: ...
+
 
 # we don't want to send _raw_facts into our importers' namespaces
-__all__ = ["WestTexas"]
+__all__ = ["Theme", "WestTexas", "DefaultTheme"]
 
 _raw_facts = """
 Anadarko will rule the world as we know it. They don't like partners, they now own the UPR strip, much of which is now looking like the biggest gas basins in the US, and they like to drill.
@@ -133,3 +235,6 @@ class WestTexas(Theme):
 
     def get_drill_cost_lesser_peak_factor(self) -> int:
         return 1
+
+
+DefaultTheme = WestTexas

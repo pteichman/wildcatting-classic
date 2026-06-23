@@ -17,11 +17,10 @@ from wildcatting.model import (
     WeeklySummary,
     Well,
 )
-from wildcatting.theme import Theme
+from wildcatting.theme import DefaultTheme, Theme
 from wildcatting.turn import Turn
 
 from . import version
-from .theme import DefaultTheme
 
 
 class TieredXMLRPCServer(SimpleXMLRPCServer):

@@ -1,6 +1,6 @@
 import math
 
-from wildcatting.model.oilfield import TickResult, Well
+from wildcatting.model import TickResult, Well
 from wildcatting.reservoir import Reservoir
 
 

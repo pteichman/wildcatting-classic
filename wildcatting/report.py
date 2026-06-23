@@ -1,8 +1,7 @@
 import logging
 from typing import Any
 
-from wildcatting.model.oilfield import OilField
-from wildcatting.model.setting import Setting
+from wildcatting.model import OilField, Setting
 
 
 def main(stdscr: Any) -> None:

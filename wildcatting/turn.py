@@ -1,7 +1,6 @@
 from dataclasses import dataclass
 
-from wildcatting.model.oilfield import Site
-from wildcatting.model.player import Player
+from wildcatting.model import Player, Site
 
 
 @dataclass

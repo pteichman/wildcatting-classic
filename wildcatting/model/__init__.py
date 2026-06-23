@@ -1,30 +1,19 @@
-from .clientinfo import (
-    ClientInfo as ClientInfo,
-)
-from .oilfield import (
-    DrillResult as DrillResult,
-)
-from .oilfield import (
-    OilField as OilField,
-)
-from .oilfield import (
-    Site as Site,
-)
-from .oilfield import (
-    TickResult as TickResult,
-)
-from .oilfield import (
-    Well as Well,
-)
-from .player import (
-    Player as Player,
-)
-from .report import (
-    WeeklySummary as WeeklySummary,
-)
-from .setting import (
-    Setting as Setting,
-)
-from .update import (
-    Update as Update,
-)
+from .clientinfo import ClientInfo
+from .oilfield import DrillResult, OilField, Site, TickResult, Well
+from .player import Player
+from .report import WeeklySummary
+from .setting import Setting
+from .update import Update
+
+__all__ = [
+    "ClientInfo",
+    "DrillResult",
+    "OilField",
+    "Player",
+    "Setting",
+    "Site",
+    "TickResult",
+    "Update",
+    "Well",
+    "WeeklySummary",
+]

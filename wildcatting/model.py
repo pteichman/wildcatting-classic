@@ -1,3 +1,4 @@
+from dataclasses import dataclass
 from pprint import pformat
 from typing import Any, NamedTuple, Protocol, Self
 
@@ -447,19 +448,11 @@ class WeeklySummary(Serializable):
         return rows
 
 
+@dataclass(repr=False, eq=False)
 class Update(Serializable):
-    def __init__(
-        self,
-        week: int,
-        oil_price: float,
-        players_turn: str | None,
-        pending_players: list[str],
-        game_finished: bool,
-        sites: list[Site],
-    ) -> None:
-        self.week = week
-        self.oil_price = oil_price
-        self.players_turn = players_turn
-        self.pending_players = pending_players
-        self.game_finished = game_finished
-        self.sites = sites
+    week: int
+    oil_price: float
+    players_turn: str | None
+    pending_players: list[str]
+    game_finished: bool
+    sites: list[Site]

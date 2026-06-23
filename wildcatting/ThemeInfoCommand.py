@@ -5,7 +5,7 @@ from argparse import Namespace
 
 import wildcatting.theme
 from wildcatting.table import format_table
-from wildcatting.theme.theme import Theme
+from wildcatting.theme import Theme
 
 from .cmdparse import Command
 

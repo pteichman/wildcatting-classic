@@ -17,7 +17,7 @@ from wildcatting.model import (
     WeeklySummary,
     Well,
 )
-from wildcatting.theme.theme import Theme
+from wildcatting.theme import Theme
 from wildcatting.turn import Turn
 
 from . import version

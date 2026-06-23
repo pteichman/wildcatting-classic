@@ -1,6 +1,7 @@
 from wildcatting.oilprices import TrendingGaussianPrices
-from wildcatting.theme.theme import Theme
 from wildcatting.welltheory import SimpleWellTheory
+
+from .theme import Theme
 
 # we don't want to send _raw_facts into our importers' namespaces
 __all__ = ["WestTexas"]
